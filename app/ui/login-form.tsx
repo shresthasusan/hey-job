@@ -21,10 +21,7 @@ export default function LoginForm() {
 
   return (
     <form className="space-y-3">
-      <div
-        className="flex-1 border-2 justify-items-center  rounded-3xl text-center 
-       border-yellow-500 px-20 pb-4 pt-8"
-      >
+      <div className="flex-1 border-2 justify-items-center  rounded-3xl text-center     border-yellow-500 px-20 pb-4 pt-8">
         <h1
           className={`${roboto.className} text-gray-700 font-bold mb-3 text-2xl`}
         >
