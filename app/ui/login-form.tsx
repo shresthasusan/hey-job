@@ -71,7 +71,7 @@ export default function LoginForm() {
         >
           Continue
         </Button>
-        <p className="m-5"> Don't have a HeyJob account?</p>
+        <p className="m-5"> Don&apos;t have a HeyJob account?</p>
         <Button
           className=" w-full bg-white justify-center
         border-2 border-primary-600
