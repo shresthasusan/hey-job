@@ -20,14 +20,14 @@ export default function LoginForm() {
   //   );
 
   return (
-    <form className="space-y-3">
-      <div className="flex-1 border-2 justify-items-center  rounded-3xl text-center     border-yellow-500 px-20 pb-4 pt-8">
+    <form className="space-y-3 ">
+      <div className="flex-1 justify-items-center w-[300px] text-center align-items-center    border-yellow-500  pb-4 pt-8">
         <h1
           className={`${roboto.className} text-gray-700 font-bold mb-3 text-2xl`}
         >
           Log in to HeyJob
         </h1>
-        <div className="w-300">
+        <div>
           <div>
             <label
               className="mb-3 mt-5 block text-xs font-medium text-gray-900"
@@ -66,12 +66,18 @@ export default function LoginForm() {
         </div>
         <Button
           className="mt-5 w-full
-          justify-center text-white"
+          justify-center text-white hover:bg-primary-500"
           // aria-disabled={isPending}
         >
           Continue
         </Button>
-        <p className="m-5"> Don&apos;t have a HeyJob account?</p>
+        <div className="relative flex py-5 items-center">
+          <div className="flex-grow border-t border-gray-400"></div>
+
+          <p> Don&apos;t have a HeyJob account?</p>
+          <div className="flex-grow border-t border-gray-400"></div>
+        </div>
+
         <Button
           className=" w-full bg-white justify-center
         border-2 border-primary-600

@@ -16,3 +16,14 @@ input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
+input:focus-visible {
+  -moz-appearance: textfield;
+  appearance: textfield;
+  /* outline-color: #e2e8f0; */
+  outline: none;
+}
+
+input[type="search"]:hover {
+  background-color: white !important;
+}

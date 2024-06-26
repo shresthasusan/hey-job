@@ -1,6 +1,5 @@
-import "./ui/globals.css";
-import { roboto } from "./ui/fonts";
-import NavBar from "./ui/navbar";
+import { roboto } from "../ui/fonts";
+import "../ui/globals.css";
 
 export default function RootLayout({
   children,
