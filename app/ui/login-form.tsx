@@ -75,7 +75,7 @@ export default function LoginForm() {
         <Button
           className=" w-full bg-white justify-center
         border-2 border-primary-600
-        text-primary-600 hover:bg-primary-600 hover:text-white"
+        text-primary-600 hover:bg-gray-50 "
         >
           Signup
         </Button>

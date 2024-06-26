@@ -14,7 +14,7 @@ const config: Config = {
       colors: {
         primary: {
           400: '#2589FE',
-          500: '#FFD04F',
+          500: '#ffc82c',
           600: '#FFC00E',
           700: '#FFAC10',
         },
@@ -39,7 +39,7 @@ const config: Config = {
     },
   },
   plugins: [
- 
+
   ],
 };
 export default config;
