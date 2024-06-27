@@ -1,6 +1,6 @@
 "use client";
 
-import { roboto } from "@/app/ui/fonts";
+import { poppins } from "@/app/ui/fonts";
 import {
   AtSymbolIcon,
   KeyIcon,
@@ -23,7 +23,7 @@ export default function LoginForm() {
     <form className="space-y-3 ">
       <div className="flex-1 justify-items-center w-[300px] text-center align-items-center    border-yellow-500  pb-4 pt-8">
         <h1
-          className={`${roboto.className} text-gray-700 font-bold mb-3 text-2xl`}
+          className={`${poppins.className} text-gray-700 font-bold mb-3 text-2xl`}
         >
           Log in to HeyJob
         </h1>

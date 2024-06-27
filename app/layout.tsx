@@ -1,5 +1,5 @@
 import "./ui/globals.css";
-import { roboto } from "./ui/fonts";
+import { poppins } from "./ui/fonts";
 import NavBar from "./ui/navbar";
 
 export default function RootLayout({
@@ -9,7 +9,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={roboto.className}>{children}</body>
+      <body className={poppins.className}>{children}</body>
     </html>
   );
 }
