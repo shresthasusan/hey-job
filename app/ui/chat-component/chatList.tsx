@@ -1,5 +1,5 @@
 import React from "react";
-import users from "../../lib/data.js"; // Adjust the path as necessary
+import { users } from "../../lib/data.js"; // Adjust the path as necessary
 
 const ChatList = () => {
   return (

@@ -6,13 +6,13 @@ const ReviewsCard = () => {
     {
       name: "Gandu singh",
       review:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, metus a ultricies vehicula, felis justo aliquam nunc, et varius nisl turpis et metus. ",
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, metus a ultricies vehicula, felis justo aliquam nunc, et varius nisl turpis et metus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, metus a ultricies vehicula, felis justo aliquam nunc, et varius nisl turpis et metus. ",
       rating: 4,
     },
     {
       name: "Jane Doe",
       review:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, metus a ultricies vehicula, felis justo aliquam nunc, et varius nisl turpis et metus. ",
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, metus a ultricies vehicula, felis justo aliquam nunc, et varius nisl turpis et metus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, metus a ultricies vehicula, felis justo aliquam nunc, et varius nisl turpis et metus. ",
       rating: 3,
     },
   ];
@@ -21,7 +21,7 @@ const ReviewsCard = () => {
     if (str.length <= num) {
       return str;
     }
-    return str.slice(0, num) + "...";
+    return str.slice(0, num) + "... ";
   };
 
   return (
@@ -42,7 +42,7 @@ const ReviewsCard = () => {
               <StarRating rating={review.rating} /> <div>1 week ago</div>{" "}
             </div>
             <p className="text-gray-600  text-[.7rem] ">
-              {truncateString(review.review, 300)}
+              {truncateString(review.review, 100)}
               {review.review.length > 100 ? (
                 <button className="text-primary-600">Read More</button>
               ) : null}

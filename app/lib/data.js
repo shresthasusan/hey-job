@@ -121,4 +121,82 @@ const users = [
   },
 ];
 
-module.exports = users;
+const jobsData = [
+  {
+    time: "2 hours ago",
+    title: "Frontend Developer",
+    type: "Fixed-price",
+    experience: "Intermediate",
+    budget: 500,
+    description:
+      "Looking for an experienced frontend developer to revamp our e-commerce site. The ideal candidate must be proficient in React, HTML, CSS, and have solid experience with responsive design. The project involves redesigning the user interface to improve user experience and increase conversion rates. Familiarity with UX principles and SEO optimization is a plus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, metus a ultricies vehicula, felis justo aliquam nunc, et varius nisl turpis et metus.",
+    tags: ["React", "HTML", "CSS", "Responsive Design"],
+    location: "Remote",
+    saved: true,
+  },
+  {
+    time: "1 day ago",
+    title: "Full-stack Developer",
+    type: "Fixed-price - Expert",
+    experience: "Entry Level",
+    budget: 3000,
+    description:
+      "We need a full-stack developer to build a web application from scratch. The project requires a developer with experience in Node.js, MongoDB, Express, and React. The ideal candidate should be able to work independently, design the database schema, implement backend logic, and develop a responsive frontend. Knowledge of cloud services and deployment is essential.",
+    tags: ["Node.js", "MongoDB", "Express", "React"],
+    location: "Remote",
+    saved: false,
+  },
+  {
+    time: "3 days ago",
+    title: "Mobile App Developer",
+    type: "Fixed-price - Intermediate",
+    experience: "Entry Level",
+    budget: 2000,
+    description:
+      "Seeking a mobile app developer to create a social media application. The project requires experience with Flutter and Firebase. The developer should be capable of implementing custom user interfaces and integrating third-party APIs. Previous work with social media apps or real-time chat applications will be considered an advantage.",
+    tags: ["Flutter", "Firebase", "Mobile App Development"],
+    location: "Remote",
+    saved: true,
+  },
+  {
+    time: "1 week ago",
+    title: "SEO Specialist",
+    type: "Hourly",
+    experience: "Entry Level",
+    budget: 15,
+    description:
+      "Looking for an SEO specialist to improve our website's Google ranking. The project involves comprehensive keyword research, backlink analysis, and content optimization. The ideal candidate should have a proven track record of successful SEO strategies and be familiar with the latest SEO tools and techniques. Experience with Google Analytics and Search Console is required.",
+    tags: ["SEO", "Keyword Research", "Content Optimization"],
+    location: "Remote",
+    saved: false,
+  },
+  // Added data
+  {
+    time: "2 weeks ago",
+    title: "Graphic Designer for Branding Project",
+    type: "Fixed-price - Expert",
+    experience: "Intermediate",
+    budget: 1500,
+    description:
+      "We are looking for a talented graphic designer to lead our branding project. The project includes logo design, brand guidelines, and marketing materials. The ideal candidate should have a strong portfolio showcasing innovative design solutions and experience in brand identity projects. Proficiency in Adobe Creative Suite is required.",
+    tags: ["Graphic Design", "Branding", "Adobe Creative Suite"],
+    location: "Remote",
+    saved: false,
+  },
+  {
+    time: "3 weeks ago",
+    title: "Data Analyst for Market Research",
+    type: "Hourly - Intermediate",
+    experience: "Expert",
+    budget: 35,
+    description:
+      "Seeking a data analyst to conduct market research and provide insights for our new product launch. The project involves analyzing customer data, market trends, and competitor analysis. The ideal candidate should have experience with data visualization tools and statistical analysis. Familiarity with SQL and Python for data manipulation is a plus.",
+    tags: ["Data Analysis", "Market Research", "SQL", "Python"],
+    location: "Remote",
+    saved: true,
+  },
+];
+module.exports = {
+  users,
+  jobsData,
+};
