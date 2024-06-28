@@ -19,18 +19,22 @@ const ChatList = () => {
       <div className=" h-full  overflow-scroll">
         <div className=" flex flex-col">
           {users.map((user, index) => (
-            <div className="flex flex-row  py-2 px-2 justify-center hover:bg-gray-200 items-center border-b-2">
-              <div key={user.id} className="w-1/4">
+            <div
+              key={user.id}
+              className="flex flex-row py-2 px-2 justify-center hover:bg-gray-200 items-center border-b-2"
+            >
+              {" "}
+              {/* Moved key prop here */}
+              <div className="w-1/4">
                 <img
-                  key={user.id}
                   src={user.image}
                   className="object-cover h-12 w-12 rounded-full"
                   alt=""
                 />
               </div>
-              <div className="w-[80%]  relative">
+              <div className="w-[80%] relative">
                 <div className="text-lg font-semibold">{user.name}</div>
-                <div className="text-sm w-[80%] overflow-hidden  text-gray-500">
+                <div className="text-sm w-[80%] overflow-hidden text-gray-500">
                   {user.message}
                 </div>
                 <span className="absolute text-[.7rem] right-0 bottom-0 text-gray-500">
