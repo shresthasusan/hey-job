@@ -13,8 +13,8 @@ import Link from "next/link";
 
 const NavBar = () => {
   return (
-    <nav className="border-b-2">
-      <div className="flex  max-w-[1980px] m-auto justify-between items-center py-3 px-4">
+    <nav className="border-b-2 ">
+      <div className="flex  max-w-[1980px] m-auto justify-between items-center  py-3 px-10">
         <div className="flex">
           <Image src="/logo/login-logo.png" alt="logo" width={50} height={50} />
           <ul className="flex mx-5 p-2 font-semibold text-sm gap-5 content-center items-center">
