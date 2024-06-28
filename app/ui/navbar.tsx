@@ -9,6 +9,7 @@ import {
   RectangleGroupIcon,
   UserCircleIcon,
 } from "@heroicons/react/24/outline";
+import Link from "next/link";
 
 const NavBar = () => {
   return (
@@ -24,7 +25,8 @@ const NavBar = () => {
               My Business <ChevronDownIcon className="h-5 w-5" />
             </li>
             <li className="hover:text-primary-600 flex align-items-center justify-center">
-              Messages <ChevronDownIcon className="h-5 w-5" />
+              <Link href={"/user/chatroom"}>Messages</Link>{" "}
+              <ChevronDownIcon className="h-5 w-5" />
             </li>
             <li className="hover:text-primary-600 flex align-items-center justify-center">
               Analytics <ChevronDownIcon className="h-5 w-5" />

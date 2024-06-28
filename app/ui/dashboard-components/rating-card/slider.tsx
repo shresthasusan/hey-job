@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components"; // Add this import
 import clsx from "clsx";
 import exp from "constants";
-import Emoji from "../Emoji";
+import Emoji from "./Emoji";
 
 interface userRating {
   rating: number;

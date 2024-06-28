@@ -8,8 +8,10 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      gridTemplateColumns: {
-        '13': 'repeat(13, minmax(0, 1fr))',
+      gridTemplateRows: {
+
+        // Complex site-specific row configuration
+        'dashboard': '200px minmax(500px, 1fr) 100px',
       },
       colors: {
         primary: {
@@ -34,6 +36,7 @@ const config: Config = {
           600: '#FF0000',
         },
       },
+
     },
     keyframes: {
       shimmer: {
@@ -41,7 +44,16 @@ const config: Config = {
           transform: 'translateX(100%)',
         },
       },
+      pulse: {
+        '0%, 100%': {
+          opacity: '1',
+        },
+        '50%': {
+          opacity: '0.5',
+        },
+      },
     },
+
   },
   plugins: [
 
