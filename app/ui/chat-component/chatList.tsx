@@ -18,10 +18,11 @@ const ChatList = () => {
       {/* <!-- user list --> */}
       <div className=" h-full  overflow-scroll">
         <div className=" flex flex-col">
-          {users.map((user) => (
+          {users.map((user, index) => (
             <div className="flex flex-row  py-2 px-2 justify-center hover:bg-gray-200 items-center border-b-2">
               <div key={user.id} className="w-1/4">
                 <img
+                  key={user.id}
                   src={user.image}
                   className="object-cover h-12 w-12 rounded-full"
                   alt=""
