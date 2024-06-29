@@ -16,9 +16,17 @@ const ProfileCard = () => {
         </div>
         <div
           className="bg-yellow-400  rounded-full
-              absolute translate-y-[50%]  translate-x-1/2 right-[50%]
+              absolute translate-y-[50%] overflow-hidden  translate-x-1/2 right-[50%]
            h-24 w-24"
-        />
+        >
+          <Image
+            src="/images/image1.png"
+            alt="profile"
+            width={150}
+            height={150}
+            className="rounded-full "
+          />
+        </div>
         <div className=" px-3 font-semibold items-center justify-center h-2/3  flex flex-col">
           {/* <Image src="/" alt="profile" className="rounded-full" width={150} height={150} /> */}
           <div className=" text-center pt-10 ">
