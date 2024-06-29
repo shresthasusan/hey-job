@@ -1,6 +1,6 @@
 import "../ui/globals.css";
 import { poppins } from "../ui/fonts";
-import NavBar from "../ui/navbar";
+import NavBar from "../ui/navbar/navbar";
 
 export default function RootLayout({
   children,

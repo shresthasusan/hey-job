@@ -10,6 +10,7 @@ import {
   UserCircleIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import Links from "./links";
 
 const NavBar = () => {
   return (
@@ -17,21 +18,7 @@ const NavBar = () => {
       <div className="flex  max-w-[1980px] m-auto justify-between items-center  py-3 px-10">
         <div className="flex">
           <Image src="/logo/login-logo.png" alt="logo" width={50} height={50} />
-          <ul className="flex mx-5 p-2 font-medium text-sm gap-5 content-center items-center">
-            <li className="hover:text-primary-600  flex align-items-center justify-center">
-              Dashboard <ChevronDownIcon className="h-5 w-5 ml-1" />
-            </li>
-            <li className="hover:text-primary-600 flex align-items-center justify-center">
-              My Business <ChevronDownIcon className="h-5 w-5" />
-            </li>
-            <li className="hover:text-primary-600 flex align-items-center justify-center">
-              <Link href={"/user/chatroom"}>Messages</Link>{" "}
-              <ChevronDownIcon className="h-5 w-5" />
-            </li>
-            <li className="hover:text-primary-600 flex align-items-center justify-center">
-              Analytics <ChevronDownIcon className="h-5 w-5" />
-            </li>
-          </ul>
+          <Links />
         </div>
         <div className="flex justify-end w-[40%]">
           <form
@@ -54,7 +41,7 @@ const NavBar = () => {
               <select
                 name="jobs"
                 id="job"
-                className=" w-full block  rounded-full py-[10px] pl-5 bg-inherit hover:bg-white outline-2 placeholder:text-gray-500 "
+                className=" w-full block  rounded-full py-[5px] pl-5 bg-inherit hover:bg-white outline-2 placeholder:text-gray-500 "
               >
                 <option value="job">Jobs</option>
                 <option value="Projects">Projects</option>

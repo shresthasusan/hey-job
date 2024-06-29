@@ -51,7 +51,7 @@ const JobList = ({ bestMatches, mostRecent, savedJobs }: Props) => {
   // Render logic or other operations can go here
 
   return (
-    <div className="flex boader flex-col mt-5  ">
+    <div className="flex boader flex-col mt-8  ">
       {data.map((job, index) => (
         <div
           key={index}
