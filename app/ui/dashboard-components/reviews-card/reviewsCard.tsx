@@ -26,7 +26,7 @@ const ReviewsCard = () => {
 
   return (
     <div className="flex flex-col max-w-[600px] gap-2   relative rounded-3xl h-[250px] px-5 py-2 overflow-hidden shadow-[0_10px_20px_rgba(228,228,228,_0.7)]">
-      <h1 className="text-2xl font-semibold"> Reviews</h1>
+      <h1 className="text-2xl font-medium"> Reviews</h1>
       {reviews.map((review, index) => (
         <div key={index} className="w-full flex gap-2  flex-row ">
           <div>

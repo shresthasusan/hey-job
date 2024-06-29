@@ -22,7 +22,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </div>
       <div className="w-full   bg-white  gap-12 2xl:grid 2xl:grid-cols-5 ">
         <div
-          className="  h-1/3 hidden sticky top-28 2xl:block rounded-3xl  
+          className="  h-[35%] hidden sticky top-28 2xl:block rounded-3xl  
     "
         >
           <ChatList />

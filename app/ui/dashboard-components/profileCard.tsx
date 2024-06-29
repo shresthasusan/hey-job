@@ -30,10 +30,8 @@ const ProfileCard = () => {
         <div className=" px-3  items-center justify-center h-2/3  flex flex-col">
           {/* <Image src="/" alt="profile" className="rounded-full" width={150} height={150} /> */}
           <div className=" text-center pt-10 ">
-            <h2 className="text-3xl  font-semibold "> Rabin Yadav</h2>
-            <p className="text-base font-medium text-gray-300">
-              Student | Freelancer
-            </p>
+            <h2 className="text-3xl  font-medium "> Rabin Yadav</h2>
+            <p className="text-base  text-gray-400">Student | Freelancer</p>
           </div>
         </div>
       </div>
