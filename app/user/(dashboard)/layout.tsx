@@ -12,8 +12,8 @@ import RightCard from "@/app/ui/dashboard-components/rightCard";
 export const experimental_ppr = true;
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="grid p-10 py-10 gap-10 dashboard:grid-rows-2  ">
-      <div className=" flex flex-wrap justify-center lg:justify-between   md:gap-x-5 gap-y-10  w-full ">
+    <div className="grid p-10 py-10 gap-5 dashboard:grid-rows-2  ">
+      <div className=" flex flex-wrap  lg:justify-between   md:gap-x-5 gap-y-10  w-full ">
         <ProfileCard />
         <OrderCard />
         <RatingCard />
