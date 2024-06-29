@@ -1,7 +1,9 @@
-import { jobsData, saved, recent } from "@/app/lib/data";
+"use client";
 
+import { jobsData, recent } from "@/app/lib/data";
 import { HeartIcon as Unliked, MapPinIcon } from "@heroicons/react/24/outline";
 import { HeartIcon as Liked } from "@heroicons/react/24/solid";
+import { useState, useEffect } from "react";
 const truncateString = (str: string, num: number) => {
   if (str.length <= num) {
     return str;
@@ -15,21 +17,45 @@ interface Props {
   savedJobs?: boolean;
 }
 
+interface Job {
+  title: string;
+  time: string;
+  type: string;
+  experience: string;
+  budget: number; // Changed from string to number to match the provided data structure
+  description: string;
+  tags: string[];
+  location: string;
+  saved: boolean;
+}
+
+// Assuming jobsData, recent, and a way to filter saved jobs are available in the scope
+// For saved jobs, assuming there's a need to filter jobsData or recent based on the saved property
 const JobList = ({ bestMatches, mostRecent, savedJobs }: Props) => {
-  if (bestMatches) {
-    const data = jobsData;
-  } else if (mostRecent) {
-    const data = recent;
-  } else {
-    const data = saved;
-  }
+  const [data, setData] = useState<Job[]>([]); // Corrected the type to Job[] and initialized as an empty array
+
+  useEffect(() => {
+    let filteredData: Job[] = []; // Temporary array to hold filtered data
+    if (bestMatches) {
+      // Assuming bestMatches logic is to show all jobs from jobsData for this example
+      filteredData = jobsData;
+    } else if (mostRecent) {
+      filteredData = recent;
+    } else if (savedJobs) {
+      // Assuming we filter jobsData for saved jobs, similar logic can be applied to 'recent' if needed
+      filteredData = jobsData.filter((job) => job.saved);
+    }
+    setData(filteredData); // Update the state with the filtered data
+  }, [bestMatches, mostRecent, savedJobs]);
+
+  // Render logic or other operations can go here
 
   return (
     <div className="flex boader flex-col mt-5  ">
-      {jobsData.map((job, index) => (
+      {data.map((job, index) => (
         <div
           key={index}
-          className="flex flex-col gap-1  p-5 border-t-2 border-gray-200 "
+          className="flex flex-col gap-1  p-5 border-t-2  border-gray-200 "
         >
           <p className="text-xs text-gray-400"> Posted {job.time}</p>
           <div className="flex items-center justify-between ">

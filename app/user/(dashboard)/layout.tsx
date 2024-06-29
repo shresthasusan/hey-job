@@ -12,7 +12,7 @@ import RightCard from "@/app/ui/dashboard-components/rightCard";
 export const experimental_ppr = true;
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="grid p-10 py-10 gap-5 dashboard:grid-rows-2  ">
+    <div className="grid p-10 py-10 gap-16  dashboard:grid-rows-2  ">
       <div className=" flex flex-wrap  lg:justify-between   md:gap-x-5 gap-y-10  w-full ">
         <ProfileCard />
         <OrderCard />
@@ -20,24 +20,21 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <FinanceCard />
         <ReviewsCard />
       </div>
-      <div className="w-full sticky top-75 gap-12 2xl:grid 2xl:grid-cols-5 ">
+      <div className="w-full   bg-white  gap-12 2xl:grid 2xl:grid-cols-5 ">
         <div
-          className="  h-1/3 hidden 2xl:block rounded-3xl  
-   border-0 overflow-hidden  shadow-[0_10px_20px_rgba(228,228,228,_0.7)]"
+          className="  h-1/3 hidden sticky top-28 2xl:block rounded-3xl  
+    "
         >
           <ChatList />
         </div>
-        <div className="w-full  col-span-4 ">
-          <SearchInput />
-          <div className="flex  ">
-            <div>
-              <h1 className="text-2xl font-medium mt-5">Jobs you might like</h1>
-              <JobNavBar />
-
-              <div>{children}</div>
-            </div>
-            <div className="w-[70%] p-8">{/* <RightCard /> */}</div>
+        <div className="w-full col-span-4 ">
+          <div className="sticky top-[75px]  py-5   bg-white">
+            <SearchInput />
+            <h1 className="text-2xl font-medium mt-5">Jobs you might like</h1>
+            <JobNavBar />
           </div>
+
+          <div className="w-[75%]">{children}</div>
         </div>
       </div>
     </div>

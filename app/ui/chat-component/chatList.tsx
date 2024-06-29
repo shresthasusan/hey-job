@@ -3,7 +3,7 @@ import { users } from "../../lib/data.js"; // Adjust the path as necessary
 
 const ChatList = () => {
   return (
-    <div className="  h-full relative  overflow-hidden  border-r-2 ">
+    <div className="  h-full relative  overflow-hidden rounded-2xl  shadow-[0_10px_20px_rgba(228,228,228,_0.7)]  border-r-2 ">
       {/* <!-- search compt --> */}
 
       <div className="border-b-2  py-4 px-2">
