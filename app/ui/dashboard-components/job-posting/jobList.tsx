@@ -1,4 +1,5 @@
-import { jobsData } from "@/app/lib/data";
+import { jobsData, saved, recent } from "@/app/lib/data";
+
 import { HeartIcon as Unliked, MapPinIcon } from "@heroicons/react/24/outline";
 import { HeartIcon as Liked } from "@heroicons/react/24/solid";
 const truncateString = (str: string, num: number) => {
@@ -8,7 +9,21 @@ const truncateString = (str: string, num: number) => {
   return str.slice(0, num) + "... ";
 };
 
-const JobList = () => {
+interface Props {
+  bestMatches?: boolean;
+  mostRecent?: boolean;
+  savedJobs?: boolean;
+}
+
+const JobList = ({ bestMatches, mostRecent, savedJobs }: Props) => {
+  if (bestMatches) {
+    const data = jobsData;
+  } else if (mostRecent) {
+    const data = recent;
+  } else {
+    const data = saved;
+  }
+
   return (
     <div className="flex boader flex-col mt-5  ">
       {jobsData.map((job, index) => (

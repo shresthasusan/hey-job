@@ -196,7 +196,113 @@ const jobsData = [
     saved: true,
   },
 ];
+
+const recent = [
+  {
+    time: "Just now",
+    title: "Backend Developer for FinTech Startup",
+    type: "Fixed-price - Expert",
+    experience: "Expert",
+    budget: 4000,
+    description:
+      "Looking for a seasoned backend developer to join our FinTech startup. The project involves developing secure, scalable APIs and integrating payment gateways. Proficiency in Node.js, Express, and MongoDB is required. Experience with financial services and knowledge of PCI compliance is a plus.",
+    tags: ["Node.js", "Express", "MongoDB", "FinTech"],
+    location: "Remote",
+    saved: false,
+  },
+  {
+    time: "5 minutes ago",
+    title: "UI/UX Designer for Mobile App",
+    type: "Hourly - Intermediate",
+    experience: "Intermediate",
+    budget: 25,
+    description:
+      "Seeking a creative UI/UX designer to revamp our existing mobile application. The ideal candidate should have a strong portfolio in mobile app design, focusing on user experience and modern design trends. Proficiency in Sketch or Figma is required. Experience with user testing and research is a plus.",
+    tags: ["UI/UX Design", "Sketch", "Figma", "Mobile App"],
+    location: "Remote",
+    saved: true,
+  },
+  {
+    time: "30 minutes ago",
+    title: "WordPress Developer for E-commerce Site",
+    type: "Fixed-price - Intermediate",
+    experience: "Intermediate",
+    budget: 1000,
+    description:
+      "We need a WordPress developer to create a custom e-commerce site. The project requires experience with WooCommerce, custom theme development, and plugin customization. The ideal candidate should be able to optimize the site for performance and SEO.",
+    tags: ["WordPress", "WooCommerce", "E-commerce"],
+    location: "Remote",
+    saved: false,
+  },
+  {
+    time: "1 hour ago",
+    title: "Digital Marketing Specialist",
+    type: "Hourly - Expert",
+    experience: "Expert",
+    budget: 50,
+    description:
+      "Looking for a digital marketing specialist to enhance our online presence. The project involves social media marketing, PPC campaigns, email marketing, and SEO. The ideal candidate should have a proven track record in increasing online engagement and sales.",
+    tags: ["Digital Marketing", "SEO", "PPC", "Email Marketing"],
+    location: "Remote",
+    saved: true,
+  },
+  {
+    time: "2 hours ago",
+    title: "Cloud Engineer for Infrastructure Setup",
+    type: "Hourly - Expert",
+    experience: "Expert",
+    budget: 70,
+    description:
+      "Seeking a cloud engineer to set up our cloud infrastructure. The project requires experience with AWS, Azure, or Google Cloud. The ideal candidate should be able to design a scalable, secure, and cost-effective cloud environment.",
+    tags: ["Cloud Engineering", "AWS", "Azure", "Google Cloud"],
+    location: "Remote",
+    saved: false,
+  },
+];
+
+const saved = [
+  {
+    time: "3 days ago",
+    title: "Mobile App Developer",
+    type: "Fixed-price - Intermediate",
+    experience: "Entry Level",
+    budget: 2000,
+    description:
+      "Seeking a mobile app developer to create a social media application. The project requires experience with Flutter and Firebase. The developer should be capable of implementing custom user interfaces and integrating third-party APIs. Previous work with social media apps or real-time chat applications will be considered an advantage.",
+    tags: ["Flutter", "Firebase", "Mobile App Development"],
+    location: "Remote",
+    saved: true,
+  },
+  {
+    time: "1 week ago",
+    title: "SEO Specialist",
+    type: "Hourly",
+    experience: "Entry Level",
+    budget: 15,
+    description:
+      "Looking for an SEO specialist to improve our website's Google ranking. The project involves comprehensive keyword research, backlink analysis, and content optimization. The ideal candidate should have a proven track record of successful SEO strategies and be familiar with the latest SEO tools and techniques. Experience with Google Analytics and Search Console is required.",
+    tags: ["SEO", "Keyword Research", "Content Optimization"],
+    location: "Remote",
+    saved: false,
+  },
+  // Added data
+  {
+    time: "2 weeks ago",
+    title: "Graphic Designer for Branding Project",
+    type: "Fixed-price - Expert",
+    experience: "Intermediate",
+    budget: 1500,
+    description:
+      "We are looking for a talented graphic designer to lead our branding project. The project includes logo design, brand guidelines, and marketing materials. The ideal candidate should have a strong portfolio showcasing innovative design solutions and experience in brand identity projects. Proficiency in Adobe Creative Suite is required.",
+    tags: ["Graphic Design", "Branding", "Adobe Creative Suite"],
+    location: "Remote",
+    saved: false,
+  },
+];
+
 module.exports = {
   users,
   jobsData,
+  recent,
+  saved,
 };
