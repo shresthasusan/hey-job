@@ -5,7 +5,7 @@ interface Props {
 }
 
 const Emoji = ({ rating }: Props) => {
-  if (rating > 4.5) {
+  if (rating > 4) {
     return (
       <Image
         src="/icons/bulls-eye.webp"
