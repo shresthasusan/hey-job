@@ -3,7 +3,7 @@ import SliderRating from "./slider";
 import clsx from "clsx";
 
 const Rating = () => {
-  const rating = 4.5;
+  const rating = 5;
   return (
     <div
       className=" min-w-[250px] flex flex-col gap-5 justify-center items-center relative rounded-3xl h-[250px] p-5 overflow-hidden 
