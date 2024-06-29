@@ -28,7 +28,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <ChatList />
         </div>
         <div className="w-full col-span-4 ">
-          <div className="sticky top-[75px]  py-5   bg-white">
+          <div className="sticky top-[75px]  pt-5   bg-white">
             <SearchInput />
             <h1 className="text-2xl font-medium mt-5">Jobs you might like</h1>
             <JobNavBar />

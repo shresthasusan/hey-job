@@ -17,7 +17,7 @@ const NavBar = () => {
       <div className="flex  max-w-[1980px] m-auto justify-between items-center  py-3 px-10">
         <div className="flex">
           <Image src="/logo/login-logo.png" alt="logo" width={50} height={50} />
-          <ul className="flex mx-5 p-2 font-semibold text-sm gap-5 content-center items-center">
+          <ul className="flex mx-5 p-2 font-medium text-sm gap-5 content-center items-center">
             <li className="hover:text-primary-600  flex align-items-center justify-center">
               Dashboard <ChevronDownIcon className="h-5 w-5 ml-1" />
             </li>
@@ -44,7 +44,7 @@ const NavBar = () => {
                 type="search"
                 name="search"
                 placeholder="Search"
-                className="  w-full block bg-inherit rounded-full py-[8px] pl-10  outline-2
+                className="  w-full block bg-inherit rounded-full py-[5px] pl-10  outline-2
                  placeholder:text-gray-500 "
               />
               <MagnifyingGlassIcon className="pointer-events-none  absolute left-3 top-1/2 h-[20px] w-[20px] -translate-y-1/2 text-black peer-focus:text-gray-900" />
@@ -64,16 +64,16 @@ const NavBar = () => {
           </form>
           <ul className="flex gap-5  ml-2 items-center">
             <li>
-              <QuestionMarkCircleIcon className="h-10 w-10" />
+              <QuestionMarkCircleIcon className="h-9 w-9" />
             </li>
             <li>
-              <RectangleGroupIcon className="h-10 w-10" />
+              <RectangleGroupIcon className="h-9 w-9" />
             </li>
             <li>
-              <BellIcon className="h-10 w-10" />
+              <BellIcon className="h-9 w-9" />
             </li>
             <li>
-              <UserCircleIcon className="h-10 w-10" />
+              <UserCircleIcon className="h-9 w-9" />
             </li>
           </ul>
         </div>
