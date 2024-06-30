@@ -49,8 +49,12 @@ const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
 
     if (query) {
       const queryWords = query.toLowerCase().split(/\s+/); // Split query into words or letters, and convert to lowercase for case-insensitive matching
-      filteredData = filteredData.filter((job) =>
-        queryWords.some((word) => job.title.toLowerCase().includes(word))
+      filteredData = filteredData.filter(
+        (job) =>
+          queryWords.some((word) => job.title.toLowerCase().includes(word)) ||
+          job.tags.some((tag) =>
+            queryWords.some((word) => tag.toLowerCase().includes(word))
+          )
       );
     }
 
