@@ -97,7 +97,7 @@ const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
             {job.tags.map((tag, index) => (
               <div
                 key={index}
-                className="bg-slate-200 p-3 flex justify-center items-center  rounded-2xl"
+                className="bg-slate-200 text-slate-500 p-3 flex justify-center items-center  rounded-2xl"
               >
                 {tag}
               </div>
