@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React from "react";
+import React, { Suspense } from "react";
 import {
   BellIcon,
   ChevronDownIcon,
@@ -19,7 +19,9 @@ const NavBar = () => {
     <nav className="border-b-2 ">
       <div className="flex  max-w-[1980px] m-auto justify-between items-center  py-3 px-10">
         <div className="flex lg:hidden flex-col">
-          <MenuBar />
+          <Suspense>
+            <MenuBar />
+          </Suspense>
         </div>
         <div className="flex">
           <Link href={"/"}>
@@ -31,7 +33,9 @@ const NavBar = () => {
               style={{ minBlockSize: "50px" }}
             />
           </Link>
-          <Links />
+          <Suspense>
+            <Links />
+          </Suspense>
         </div>
         <div className="flex items-center justify-end lg:w-[40%]">
           <NavSearchBar />

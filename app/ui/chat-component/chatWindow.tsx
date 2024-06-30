@@ -1,4 +1,4 @@
-import React from "react";
+import { Suspense } from "react";
 import ChatList from "./chatList";
 
 const ChatWindow = () => {
@@ -16,7 +16,9 @@ const ChatWindow = () => {
             className=" w-1/3 h-[calc(100vh-120px)] rounded-3xl 
     shadow-[0_10px_20px_rgba(228,228,228,_0.7)] overflow-hidden  "
           >
-            <ChatList />
+            <Suspense>
+              <ChatList />
+            </Suspense>
           </div>
           {/* <!-- end chat list --> */}
           {/* <!-- message --> */}
