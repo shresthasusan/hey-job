@@ -1,7 +1,15 @@
 import JobList from "@/app/ui/dashboard-components/job-posting/jobList";
+interface searchParams {
+  title: string;
+}
 
-const page = () => {
-  return <JobList bestMatches={true} />;
+interface Props {
+  searchParams?: searchParams | undefined;
+}
+
+const page = ({ searchParams }: Props) => {
+  const query = searchParams?.title || "";
+  return <JobList query={query} bestMatches={true} />;
 };
 
 export default page;

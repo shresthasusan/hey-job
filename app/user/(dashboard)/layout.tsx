@@ -10,10 +10,11 @@ import React from "react";
 import RightCard from "@/app/ui/dashboard-components/rightCard";
 
 export const experimental_ppr = true;
+
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="grid p-10 py-10 gap-16  dashboard:grid-rows-2  ">
-      <div className=" flex flex-wrap  lg:justify-between   md:gap-x-5 gap-y-10  w-full ">
+    <div className="grid px-5 py-10 md:px-10 gap-16  dashboard:grid-rows-2  ">
+      <div className="   hidden xl:flex xl:justify-between   sm:gap-x-5 gap-y-10  w-full ">
         <ProfileCard />
         <OrderCard />
         <RatingCard />
@@ -22,7 +23,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </div>
       <div className="w-full   bg-white  gap-12 2xl:grid 2xl:grid-cols-5 ">
         <div
-          className="  h-[750px] hidden sticky top-28 2xl:block rounded-3xl  
+          className="  h-[770px] PB-5 hidden sticky top-28 2xl:block rounded-3xl  
     "
         >
           <ChatList />
@@ -34,7 +35,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <JobNavBar />
           </div>
 
-          <div className="w-[75%]">{children}</div>
+          <div className="2xl:w-[75%] w-[90%]">{children}</div>
         </div>
       </div>
     </div>

@@ -15,6 +15,7 @@ interface Props {
   bestMatches?: boolean;
   mostRecent?: boolean;
   savedJobs?: boolean;
+  query?: string;
 }
 
 interface Job {
@@ -31,7 +32,7 @@ interface Job {
 
 // Assuming jobsData, recent, and a way to filter saved jobs are available in the scope
 // For saved jobs, assuming there's a need to filter jobsData or recent based on the saved property
-const JobList = ({ bestMatches, mostRecent, savedJobs }: Props) => {
+const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
   const [data, setData] = useState<Job[]>([]); // Corrected the type to Job[] and initialized as an empty array
 
   useEffect(() => {
@@ -45,8 +46,16 @@ const JobList = ({ bestMatches, mostRecent, savedJobs }: Props) => {
       // Assuming we filter jobsData for saved jobs, similar logic can be applied to 'recent' if needed
       filteredData = jobsData.filter((job) => job.saved);
     }
+
+    if (query) {
+      const queryWords = query.toLowerCase().split(/\s+/); // Split query into words or letters, and convert to lowercase for case-insensitive matching
+      filteredData = filteredData.filter((job) =>
+        queryWords.some((word) => job.title.toLowerCase().includes(word))
+      );
+    }
+
     setData(filteredData); // Update the state with the filtered data
-  }, [bestMatches, mostRecent, savedJobs]);
+  }, [bestMatches, mostRecent, savedJobs, query]);
 
   // Render logic or other operations can go here
 
@@ -90,7 +99,7 @@ const JobList = ({ bestMatches, mostRecent, savedJobs }: Props) => {
               </div>
             ))}
           </div>
-          <p className="text-sm mt-5 flex font-semibold  text-gray-500">
+          <p className="text-sm mt-5 flex font-medium  text-gray-500">
             <MapPinIcon className="w-5 h-5 " /> {job.location}
           </p>
         </div>

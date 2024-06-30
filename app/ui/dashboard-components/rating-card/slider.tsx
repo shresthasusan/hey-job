@@ -10,9 +10,9 @@ interface userRating {
 
 const SliderRating = ({ rating }: userRating) => {
   return (
-    <div className="flex flex-ro gap-1">
+    <div className="flex  gap-1">
       <p className="text-slate-500">0</p>
-      <div className="rounded-xl m-auto max-w-[200px] w-full relative h-[12px] bg-slate-200">
+      <div className="rounded-xl m-auto max-w-[250px] w-full relative h-[12px] bg-slate-200">
         <div
           className={clsx(
             "relative w-0 h-[12px]  rounded-xl transition-all duration-300 ease-in-out ",

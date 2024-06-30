@@ -6,12 +6,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 
+interface Props {
+  isOpen: boolean;
+}
+
 const Links = () => {
   const currentPath = usePathname();
   console.log(currentPath);
   return (
     <>
-      <ul className="flex mx-5 p-2 font-medium text-sm gap-5 content-center items-center">
+      <ul className="lg:flex  mx-5 p-2 hidden font-medium text-sm gap-5 content-center items-center">
         <li className="hover:text-primary-600 flex flex-row align-items-center justify-center">
           <Link
             href="/user/best-matches"

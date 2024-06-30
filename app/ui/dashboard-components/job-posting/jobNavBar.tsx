@@ -21,8 +21,10 @@ const JobNavBar = () => {
         </Link>
         <div
           className={clsx(
-            "h-1 w-full border-r-[5px] border-white   absolute -bottom-3",
-            currentPath == "/user/best-matches" ? "bg-primary-600" : "hidden"
+            "h-1  border-r-[5px] bg-primary-600 transition-all duration-80 ease-in-out   absolute -bottom-3",
+            currentPath == "/user/best-matches"
+              ? "w-full  opacity-100 border-white"
+              : "w-0 opacity-0"
           )}
         />
       </li>
@@ -38,8 +40,10 @@ const JobNavBar = () => {
         </Link>
         <div
           className={clsx(
-            "h-1 w-[110px] -left-1 border-x-[5px] border-white   absolute -bottom-3",
-            currentPath == "/user/most-recent" ? "bg-primary-600" : "hidden"
+            "h-1  -left-1 border-x-[5px]  bg-primary-600 transition-all duration-80 ease-in-out  absolute -bottom-3",
+            currentPath == "/user/most-recent"
+              ? "w-[110px] opacity-100 border-white"
+              : "w-0 opacity-0"
           )}
         />
       </li>
@@ -55,8 +59,10 @@ const JobNavBar = () => {
         </Link>
         <div
           className={clsx(
-            "h-1 w-[100px] -left-1 border-x-[5px] border-white   absolute -bottom-3",
-            currentPath == "/user/saved-jobs" ? "bg-primary-600" : "hidden"
+            "h-1  -left-1 border-x-[5px]  transition-all duration-80 ease-in-out bg-primary-600 absolute -bottom-3",
+            currentPath == "/user/saved-jobs"
+              ? "w-[100px] opacity-100 border-white"
+              : "w-0 opacity-0"
           )}
         />
       </li>

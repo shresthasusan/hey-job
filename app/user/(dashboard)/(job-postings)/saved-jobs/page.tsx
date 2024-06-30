@@ -1,7 +1,16 @@
 import JobList from "@/app/ui/dashboard-components/job-posting/jobList";
 
-const page = () => {
-  return <JobList savedJobs={true} />;
+interface searchParams {
+  title: string;
+}
+
+interface Props {
+  searchParams?: searchParams | undefined;
+}
+
+const page = ({ searchParams }: Props) => {
+  const query = searchParams?.title || "";
+  return <JobList query={query} savedJobs={true} />;
 };
 
 export default page;
