@@ -21,7 +21,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <FinanceCard />
         <ReviewsCard />
       </div>
-      <div className="w-full   bg-white  gap-12 2xl:grid 2xl:grid-cols-5 ">
+      <div
+        className="w-full 
+      bg-white 
+       gap-12 
+       2xl:grid 
+       2xl:grid-cols-5 "
+      >
         <div
           className="  h-[770px] PB-5 hidden sticky top-28 2xl:block rounded-3xl  
     "
