@@ -93,7 +93,7 @@ const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
             ) : null}
           </p>
 
-          <div className="flex justify-start gap-5 items-center">
+          <div className="flex justify-start gap-5 flex-wrap items-center">
             {job.tags.map((tag, index) => (
               <div
                 key={index}
