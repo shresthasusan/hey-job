@@ -117,7 +117,9 @@ const LinksRight = () => {
                   <span className="flex items-center gap-1">
                     <ArrowLeftStartOnRectangleIcon className="size-8" />
                     <span className="flex flex-col ">
-                      <p>Log out</p>
+                      <Link href={"/login"}>
+                        <p>Log out</p>
+                      </Link>
                     </span>
                   </span>
                 </Link>
