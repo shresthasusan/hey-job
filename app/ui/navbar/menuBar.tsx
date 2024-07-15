@@ -40,6 +40,7 @@ const MenuBar = () => {
                   currentPath == "/user/most-recent" ||
                   currentPath == "/user/saved-jobs",
               })}
+              onClick={() => setIsOpen(!isOpen)}
             >
               Dashboard
             </Link>
@@ -50,6 +51,7 @@ const MenuBar = () => {
               className={clsx({
                 "text-primary-600": currentPath == "/user/business",
               })}
+              onClick={() => setIsOpen(!isOpen)}
             >
               My Business
             </Link>
@@ -60,6 +62,7 @@ const MenuBar = () => {
               className={clsx({
                 "text-primary-600": currentPath == "/user/chatroom",
               })}
+              onClick={() => setIsOpen(!isOpen)}
             >
               Messages
             </Link>
@@ -70,6 +73,7 @@ const MenuBar = () => {
               className={clsx({
                 "text-primary-600": currentPath == "/user/analytics",
               })}
+              onClick={() => setIsOpen(!isOpen)}
             >
               Analytics
             </Link>

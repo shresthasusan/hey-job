@@ -13,6 +13,7 @@ import Link from "next/link";
 import Links from "./links";
 import NavSearchBar from "./navSearchBar";
 import MenuBar from "./menuBar";
+import LinksRight from "./linksRight";
 
 const NavBar = () => {
   return (
@@ -39,20 +40,7 @@ const NavBar = () => {
         </div>
         <div className="flex items-center justify-end lg:w-[40%]">
           <NavSearchBar />
-          <ul className="lg:flex gap-5 hidden  ml-2 items-center">
-            <li>
-              <QuestionMarkCircleIcon className="h-9 w-9" />
-            </li>
-            <li>
-              <RectangleGroupIcon className="h-9 w-9" />
-            </li>
-            <li>
-              <BellIcon className="h-9 w-9" />
-            </li>
-            <li>
-              <UserCircleIcon className="h-9 w-9" />
-            </li>
-          </ul>
+          <LinksRight />
         </div>
       </div>
     </nav>

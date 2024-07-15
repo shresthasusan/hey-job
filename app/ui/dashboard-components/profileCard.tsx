@@ -31,7 +31,7 @@ const ProfileCard = () => {
           {/* <Image src="/" alt="profile" className="rounded-full" width={150} height={150} /> */}
           <div className=" text-center pt-10 ">
             <h2 className="text-3xl  font-medium "> Rabin Yadav</h2>
-            <p className="text-base  text-gray-400">Student | Freelancer</p>
+            <p className="text-base  text-gray-400">Freelancer</p>
           </div>
         </div>
       </div>
