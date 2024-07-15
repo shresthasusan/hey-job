@@ -37,14 +37,33 @@ const LinksRight = () => {
   }, []);
   return (
     <ul className="lg:flex gap-5 hidden  ml-2 items-center">
-      <li>
-        <QuestionMarkCircleIcon className="h-9 w-9" />
+      <li
+        onMouseEnter={() => setDropdownVisible("3")}
+        onMouseLeave={() => setDropdownVisible("0")}
+        className="relative"
+      >
+        <QuestionMarkCircleIcon className="h-9 w-9 " />
+        {isDropdownVisible === "3" && (
+          <div className="absolute rounded-xl  p-2 bg-white text-xm right-0 top-10 shadow-[0_0px_20px_rgba(228,228,228,1)] before:absolute before:-top-1 before:right-2 before:translateX-1/2 before:rotate-[135deg] before:z-10  before:bg-white before:border-white before:border-8  z-10 after:w-full after:h-6 after:absolute after:-top-5">
+            Help
+          </div>
+        )}
       </li>
+
       <li>
         <RectangleGroupIcon className="h-9 w-9" />
       </li>
-      <li>
+      <li
+        onMouseEnter={() => setDropdownVisible("4")}
+        onMouseLeave={() => setDropdownVisible("0")}
+        className="relative"
+      >
         <BellIcon className="h-9 w-9" />
+        {isDropdownVisible === "4" && (
+          <div className="absolute rounded-xl  p-2 bg-white text-xm right-0 top-10 shadow-[0_0px_20px_rgba(228,228,228,1)] before:absolute before:-top-1 before:right-2 before:translateX-1/2 before:rotate-[135deg] before:z-10  before:bg-white before:border-white before:border-8  z-10 after:w-full after:h-6 after:absolute after:-top-5">
+            Notification
+          </div>
+        )}
       </li>
       <li>
         <div
@@ -124,6 +143,11 @@ const LinksRight = () => {
                   </span>
                 </Link>
               </div>
+            </div>
+          )}
+          {isDropdownVisible === "6" && (
+            <div className="absolute rounded-xl w-[160px] p-2 bg-white text-xm right-0 top-10 shadow-[0_0px_20px_rgba(228,228,228,1)] before:absolute before:-top-1 before:right-2 before:translateX-1/2 before:rotate-[135deg] before:z-10  before:bg-white before:border-white before:border-8  z-10 after:w-full after:h-6 after:absolute after:-top-5">
+              Account Settings
             </div>
           )}
         </div>
