@@ -9,8 +9,6 @@ import SearchInput from "../../ui/dashboard-components/job-posting/searchBar";
 import React, { Suspense } from "react";
 import RightCard from "@/app/ui/dashboard-components/rightCard";
 
-export const experimental_ppr = true;
-
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="grid px-5 py-10 md:px-10 gap-16  dashboard:grid-rows-2  ">
