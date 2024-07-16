@@ -1,6 +1,5 @@
 import "./ui/globals.css";
 import { poppins } from "./ui/fonts";
-import NavBar from "./ui/navbar/navbar";
 
 export default function RootLayout({
   children,
@@ -9,7 +8,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth subpixel-antialiased ">
-      <body className={poppins.className}>{children}</body>
+      <body>
+        <div className={`min-h-screen ${poppins.className}`}>{children}</div>
+      </body>
     </html>
   );
 }

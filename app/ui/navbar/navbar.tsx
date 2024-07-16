@@ -1,14 +1,5 @@
 import Image from "next/image";
 import React, { Suspense } from "react";
-import {
-  BellIcon,
-  ChevronDownIcon,
-  MagnifyingGlassCircleIcon,
-  MagnifyingGlassIcon,
-  QuestionMarkCircleIcon,
-  RectangleGroupIcon,
-  UserCircleIcon,
-} from "@heroicons/react/24/outline";
 import Link from "next/link";
 import Links from "./links";
 import NavSearchBar from "./navSearchBar";
@@ -34,9 +25,11 @@ const NavBar = () => {
               style={{ minBlockSize: "50px" }}
             />
           </Link>
-          <Suspense>
-            <Links />
-          </Suspense>
+          {
+            <Suspense>
+              <Links />
+            </Suspense>
+          }
         </div>
         <div className="flex items-center justify-end lg:w-[40%]">
           <NavSearchBar />

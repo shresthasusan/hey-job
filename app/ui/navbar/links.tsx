@@ -5,24 +5,19 @@ import clsx from "clsx";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
-
-interface Props {
-  isOpen: boolean;
-}
+import LinksDropdown from "./linksDropdown";
 
 const Links = () => {
   const currentPath = usePathname();
-  const [isDropdownVisible, setDropdownVisible] = useState("0");
-
-  console.log(currentPath);
+  const [isDropdownVisible, setDropdownVisible] = useState(0);
   return (
     <>
       <ul className="lg:flex  mx-5 p-2 hidden font-medium text-sm gap-5 content-center items-center">
         <li>
           <div
             className=" flex flex-row align-items-center justify-center relative"
-            onMouseEnter={() => setDropdownVisible("1")}
-            onMouseLeave={() => setDropdownVisible("0")}
+            onMouseEnter={() => setDropdownVisible(1)}
+            onMouseLeave={() => setDropdownVisible(0)}
           >
             <Link
               href="/user/best-matches"
@@ -36,39 +31,46 @@ const Links = () => {
               Dashboard
             </Link>
             <ChevronDownIcon className="h-5 w-5 ml-1" />
-            {isDropdownVisible === "1" && (
-              <div className="absolute text-black left-0 shadow-[0_0px_20px_rgba(228,228,228,1)] rounded-xl before:absolute before:-top-2 before:left-7 before:translateX-1/2 before:rotate-[135deg] before:z-10  before:bg-white before:border-white before:border-8 bg-white top-8 z-10 after:w-full after:h-6 after:absolute after:-top-5">
-                <ul className="flex flex-col  py-5 w-72">
-                  <li className=" p-3 hover:bg-slate-100">Pending</li>
-                  <li className=" p-3 hover:bg-slate-100">Jobs</li>
-                  <li className=" p-3 hover:bg-slate-100">Saved Jobs</li>
-                </ul>
-              </div>
+            {isDropdownVisible === 1 && (
+              <LinksDropdown
+                isDropdownVisible={isDropdownVisible}
+                currentMode={currentPath}
+              />
             )}
           </div>
         </li>
         <li className=" flex align-items-center justify-center">
           <div
             className=" flex flex-row align-items-center justify-center relative"
-            onMouseEnter={() => setDropdownVisible("2")}
-            onMouseLeave={() => setDropdownVisible("0")}
+            onMouseEnter={() => setDropdownVisible(2)}
+            onMouseLeave={() => setDropdownVisible(0)}
           >
-            <Link
-              href="/user/business"
-              className={clsx("hover:text-primary-600", {
-                "text-primary-600": currentPath == "/user/business",
-              })}
-            >
-              My Business
-            </Link>
-            {isDropdownVisible === "2" && (
-              <div className="absolute text-black left-0 shadow-[0_0px_20px_rgba(228,228,228,1)] rounded-xl before:absolute before:-top-2 before:left-7 before:translateX-1/2 before:rotate-[135deg] before:z-10  before:bg-white before:border-white before:border-8 bg-white top-8 z-10 after:w-full after:h-6 after:absolute after:-top-5">
-                <ul className="flex flex-col gap-3 py-5 w-72">
-                  <li className=" p-3 hover:bg-slate-100">Payment History</li>
-                  <li className=" p-3 hover:bg-slate-100">Transaction</li>
-                  <li className=" p-3 hover:bg-slate-100">Saved Jobs</li>
-                </ul>
-              </div>
+            {currentPath.startsWith("/user") && (
+              <Link
+                href="/user/business"
+                className={clsx("hover:text-primary-600", {
+                  "text-primary-600": currentPath == "/user/business",
+                })}
+              >
+                My Business
+              </Link>
+            )}
+
+            {currentPath.startsWith("/client") && (
+              <Link
+                href="/client/talents"
+                className={clsx("hover:text-primary-600", {
+                  "text-primary-600": currentPath == "/client/talents",
+                })}
+              >
+                Talents
+              </Link>
+            )}
+            {isDropdownVisible === 2 && (
+              <LinksDropdown
+                isDropdownVisible={isDropdownVisible}
+                currentMode={currentPath}
+              />
             )}
             <ChevronDownIcon className="h-5 w-5" />
           </div>

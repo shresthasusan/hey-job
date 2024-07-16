@@ -37,14 +37,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </Suspense>
         </div>
         <div className="w-full col-span-4 ">
-          <div className="sticky top-[75px]  pt-5   bg-white">
-            <Suspense>
-              <SearchInput />
-            </Suspense>
-            <h1 className="text-2xl font-medium mt-5">Jobs you might like</h1>
-            <JobNavBar />
-          </div>
-
           <div className="2xl:w-[75%] w-[90%]">{children}</div>
         </div>
       </div>

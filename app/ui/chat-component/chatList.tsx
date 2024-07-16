@@ -34,8 +34,7 @@ const ChatList = ({ searchParams }: Props) => {
         queryWords.some((word) => user.name.toLowerCase().includes(word))
       );
     }
-    console.log(filteredData);
-    console.log(query);
+
     setData(filteredData); // Update the state with the filtered data
   }, [query]);
 
