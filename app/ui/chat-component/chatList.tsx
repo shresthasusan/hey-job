@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { users } from "../../lib/data.js"; // Adjust the path as necessary
 import SearchChat from "./searchChat";
+import Image from "next/image.js";
 
 interface searchParams {
   title?: string;
@@ -58,10 +59,12 @@ const ChatList = ({ searchParams }: Props) => {
               {" "}
               {/* Moved key prop here */}
               <div className="w-1/4">
-                <img
+                <Image
                   src={user.image}
                   className="object-cover h-12 w-12 rounded-full"
                   alt=""
+                  width={48}
+                  height={48}
                 />
               </div>
               <div className="w-[80%] relative">

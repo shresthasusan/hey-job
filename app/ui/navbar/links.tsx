@@ -19,17 +19,32 @@ const Links = () => {
             onMouseEnter={() => setDropdownVisible(1)}
             onMouseLeave={() => setDropdownVisible(0)}
           >
-            <Link
-              href="/user/best-matches"
-              className={clsx("hover:text-primary-600", {
-                "text-primary-600":
-                  currentPath == "/user/best-matches" ||
-                  currentPath == "/user/most-recent" ||
-                  currentPath == "/user/saved-jobs",
-              })}
-            >
-              Dashboard
-            </Link>
+            {currentPath.startsWith("/user") && (
+              <Link
+                href="/user/best-matches"
+                className={clsx("hover:text-primary-600", {
+                  "text-primary-600":
+                    currentPath == "/user/best-matches" ||
+                    currentPath == "/user/most-recent" ||
+                    currentPath == "/user/saved-jobs",
+                })}
+              >
+                Dashboard
+              </Link>
+            )}
+            {currentPath.startsWith("/client") && (
+              <Link
+                href="/client"
+                className={clsx("hover:text-primary-600", {
+                  "text-primary-600":
+                    currentPath == "/user/best-matches" ||
+                    currentPath == "/user/most-recent" ||
+                    currentPath == "/user/saved-jobs",
+                })}
+              >
+                Dashboard
+              </Link>
+            )}
             <ChevronDownIcon className="h-5 w-5 ml-1" />
             {isDropdownVisible === 1 && (
               <LinksDropdown
