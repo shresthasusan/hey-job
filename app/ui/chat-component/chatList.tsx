@@ -5,8 +5,7 @@ import { users } from "../../lib/data.js"; // Adjust the path as necessary
 import SearchChat from "./searchChat";
 import Image from "next/image.js";
 
-interface searchParams {
-  title?: string;
+interface Props {
   name?: string;
 }
 interface user {
@@ -17,13 +16,9 @@ interface user {
   image: string;
 }
 
-interface Props {
-  searchParams?: searchParams | undefined;
-}
-
-const ChatList = ({ searchParams }: Props) => {
-  const query = searchParams?.name || "";
-
+const ChatList = ({ name }: Props) => {
+  const query = name || "";
+  console.log(query);
   const [data, setData] = useState<user[]>([]); // Corrected the type to Job[] and initialized as an empty array
 
   useEffect(() => {

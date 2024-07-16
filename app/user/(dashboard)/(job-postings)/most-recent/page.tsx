@@ -11,6 +11,7 @@ interface Props {
 
 const page = ({ searchParams }: Props) => {
   const query = searchParams?.title || "";
+  console.log(query);
   return (
     <Suspense>
       <JobList query={query} mostRecent={true} />

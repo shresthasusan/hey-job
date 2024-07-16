@@ -1,7 +1,12 @@
 import { Suspense } from "react";
 import ChatList from "./chatList";
 
-const ChatWindow = () => {
+interface Props {
+  query?: string;
+}
+
+const ChatWindow = ({ query }: Props) => {
+  console.log(query);
   return (
     <>
       {/* <!-- This is an example component --> */}
@@ -17,7 +22,7 @@ const ChatWindow = () => {
     shadow-[0_10px_20px_rgba(228,228,228,_0.7)] overflow-hidden  "
           >
             <Suspense>
-              <ChatList />
+              <ChatList name={query} />
             </Suspense>
           </div>
           {/* <!-- end chat list --> */}

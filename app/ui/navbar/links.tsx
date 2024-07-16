@@ -92,7 +92,7 @@ const Links = () => {
         </li>
         <li className="flex align-items-center justify-center">
           <Link
-            href="/user/chatroom"
+            href="/client/chatroom"
             className={clsx("hover:text-primary-600", {
               "text-primary-600": currentPath == "/user/chatroom",
             })}

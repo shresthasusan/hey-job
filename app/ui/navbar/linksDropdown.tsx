@@ -12,7 +12,6 @@ interface Props {
   currentMode?: String;
 }
 const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
-  console.log(currentMode);
   return (
     <>
       {isDropdownVisible === 1 && (

@@ -20,17 +20,6 @@ const SearchInput = () => {
       pathname + (params.toString() ? `?${params.toString()}` : "");
     replace(newUrl);
   };
-  // const handleSearch = useDebouncedCallback((term) => {
-  //   const params = new URLSearchParams(searchParams);
-  //   params.set("page", "1");
-
-  //   if (term) {
-  //     params.set("query", term);
-  //   } else {
-  //     params.delete("query");
-  //   }
-  //   replace(`${pathname}?${params.toString()}`);
-  // }, 300);
 
   return (
     <form>

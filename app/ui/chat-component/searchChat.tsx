@@ -1,8 +1,6 @@
 "use client";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
-import React from "react";
-
 const SearchChat = () => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -29,6 +27,7 @@ const SearchChat = () => {
         onChange={(e) => {
           handleSearch(e.target.value);
         }}
+        defaultValue={searchParams.get("name")?.toString()}
       />
     </div>
   );

@@ -7,9 +7,17 @@ import ReviewsCard from "../../ui/dashboard-components/reviews-card/reviewsCard"
 import JobNavBar from "../../ui/dashboard-components/job-posting/jobNavBar";
 import SearchInput from "../../ui/dashboard-components/job-posting/searchBar";
 import React, { Suspense } from "react";
-import RightCard from "@/app/ui/dashboard-components/rightCard";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+interface searchParams {
+  name: string;
+}
+interface Props {
+  searchParams: searchParams | undefined;
+  children: React.ReactNode;
+}
+
+export default function Layout({ searchParams, children }: Props) {
+  console.log(searchParams?.name);
   return (
     <div className="grid px-5 py-10 md:px-10 gap-16  dashboard:grid-rows-2  ">
       <div className="   hidden xl:flex xl:justify-between   sm:gap-x-5 gap-y-10  w-full ">
@@ -31,7 +39,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     "
         >
           <Suspense>
-            <ChatList />
+            <ChatList name={searchParams?.name} />
           </Suspense>
         </div>
         <div className="w-full col-span-4 ">
