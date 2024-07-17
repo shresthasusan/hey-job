@@ -1,5 +1,4 @@
 import ChatWindow from "@/app/ui/chat-component/chatWindow";
-import { captureRejectionSymbol } from "events";
 
 interface searchParams {
   name: string;
@@ -10,7 +9,7 @@ interface Props {
 
 const ChatRoom = ({ searchParams }: Props) => {
   const name = searchParams?.name || "";
-
+  console.log(name);
   return <ChatWindow query={name} />;
 };
 
