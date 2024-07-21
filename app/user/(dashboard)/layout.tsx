@@ -16,7 +16,7 @@ export default function Layout({ children }: Props) {
   return (
     <div className="grid px-5 py-10 md:px-10 gap-16  dashboard:grid-rows-2  ">
       <div className="   hidden xl:flex xl:justify-between   sm:gap-x-5 gap-y-10  w-full ">
-        <ProfileCard />
+        <ProfileCard mode={"Freelancer"} />
         <OrderCard />
         <RatingCard />
         <FinanceCard />

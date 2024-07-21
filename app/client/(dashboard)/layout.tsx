@@ -4,10 +4,6 @@ import OrderCard from "../../ui/dashboard-components/orderCard";
 import RatingCard from "../../ui/dashboard-components/rating-card/ratingCard";
 import FinanceCard from "../../ui/dashboard-components/financeCard";
 import ReviewsCard from "../../ui/dashboard-components/reviews-card/reviewsCard";
-import JobNavBar from "../../ui/dashboard-components/job-posting/jobNavBar";
-import SearchInput from "../../ui/dashboard-components/job-posting/searchBar";
-import React, { Suspense } from "react";
-import RightCard from "@/app/ui/dashboard-components/rightCard";
 
 // root layout for client dashboard pages
 
@@ -17,7 +13,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <div className="grid px-5 py-10 md:px-10 gap-16  dashboard:grid-rows-2  ">
       {/* profile card, order card, rating card, finance card, reviews card components */}
       <div className="   hidden xl:flex xl:justify-between   sm:gap-x-5 gap-y-10  w-full ">
-        <ProfileCard />
+        <ProfileCard mode={"Client"} />
         <OrderCard />
         <RatingCard />
         <FinanceCard />

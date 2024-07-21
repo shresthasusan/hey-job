@@ -1,7 +1,11 @@
 import Image from "next/image";
 import React from "react";
 
-const ProfileCard = () => {
+interface Props {
+  mode: string;
+}
+
+const ProfileCard = ({ mode }: Props) => {
   return (
     <>
       <div className="flex  min-w-[280px] w-[15%] flex-col relative rounded-3xl h-[250px] overflow-hidden shadow-[0_10px_20px_rgba(228,228,228,_0.7)] ">
@@ -31,7 +35,7 @@ const ProfileCard = () => {
           {/* <Image src="/" alt="profile" className="rounded-full" width={150} height={150} /> */}
           <div className=" text-center pt-10 ">
             <h2 className="text-3xl  font-medium "> Rabin Yadav</h2>
-            <p className="text-base  text-gray-400">Freelancer</p>
+            <p className="text-base  text-gray-400">{mode}</p>
           </div>
         </div>
       </div>
