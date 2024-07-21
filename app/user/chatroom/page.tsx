@@ -11,7 +11,7 @@ interface Props {
 const ChatRoom = ({ searchParams }: Props) => {
   const name = searchParams?.name || "";
 
-  return <ChatWindow query={name} />;
+  return <ChatWindow />;
 };
 
 export default ChatRoom;
