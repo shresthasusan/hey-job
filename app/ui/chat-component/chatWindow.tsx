@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import ChatList from "./chatList";
+import Image from "next/image";
 
 // interface Props {
 //   query?: string;
@@ -33,17 +34,21 @@ const ChatWindow = () => {
                 <div className="mr-2 py-3 px-4 bg-primary-500 rounded-bl-3xl rounded-tl-3xl rounded-tr-xl text-white">
                   Welcome to group everyone !
                 </div>
-                <img
+                <Image
                   src="https://source.unsplash.com/vpOeXr5wmR4/600x600"
                   className="object-cover h-8 w-8 rounded-full"
                   alt=""
+                  width={32}
+                  height={32}
                 />
               </div>
               <div className="flex justify-start  mb-4">
-                <img
+                <Image
                   src="https://source.unsplash.com/vpOeXr5wmR4/600x600"
                   className="object-cover h-8 w-8 rounded-full"
                   alt=""
+                  width={32}
+                  height={32}
                 />
                 <div className="ml-2 py-3 px-4 bg-gray-300 rounded-br-3xl rounded-tr-3xl rounded-tl-xl text-white">
                   Lorem ipsum dolor sit amet consectetur adipisicing elit.
@@ -64,17 +69,21 @@ const ChatWindow = () => {
                     Debitis, reiciendis!
                   </div>
                 </div>
-                <img
+                <Image
                   src="https://source.unsplash.com/vpOeXr5wmR4/600x600"
                   className="object-cover h-8 w-8 rounded-full"
                   alt=""
+                  width={32}
+                  height={32}
                 />
               </div>
               <div className="flex justify-start mb-4">
-                <img
+                <Image
                   src="https://source.unsplash.com/vpOeXr5wmR4/600x600"
                   className="object-cover h-8 w-8 rounded-full"
                   alt=""
+                  width={32}
+                  height={32}
                 />
                 <div className="ml-2 py-3 px-4 bg-gray-300 rounded-br-3xl rounded-tr-3xl rounded-tl-xl text-white">
                   happy holiday guys!
@@ -93,10 +102,12 @@ const ChatWindow = () => {
           <div className="w-2/5 border-l-2 px-5">
             <div className="flex flex-col">
               <div className="font-semibold text-xl py-4">Mern Stack Group</div>
-              <img
+              <Image
                 src="https://source.unsplash.com/L2cxSuKWbpo/600x600"
                 className="object-cover rounded-xl h-64"
                 alt=""
+                width={32}
+                height={32}
               />
               <div className="font-semibold py-4">Created 22 Sep 2021</div>
               <div className="font-light">

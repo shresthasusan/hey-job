@@ -4,6 +4,7 @@ import OrderCard from "../../ui/dashboard-components/orderCard";
 import RatingCard from "../../ui/dashboard-components/rating-card/ratingCard";
 import FinanceCard from "../../ui/dashboard-components/financeCard";
 import ReviewsCard from "../../ui/dashboard-components/reviews-card/reviewsCard";
+import { Suspense } from "react";
 
 // root layout for client dashboard pages
 
