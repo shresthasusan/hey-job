@@ -32,3 +32,21 @@ input:focus-visible {
 input[type="search"]:hover {
   background-color: white !important;
 }
+
+.after-line {
+  content: "";
+  display: block;
+  height: 1px;
+  background-color: #e2e8f0;
+  width: 25%;
+  margin: 5px;
+}
+
+.before-line {
+  content: "";
+  display: block;
+  height: 1px;
+  background-color: #e2e8f0;
+  width: 25%;
+  margin: 5px;
+}
