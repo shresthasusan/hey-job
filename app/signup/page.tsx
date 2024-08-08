@@ -18,7 +18,7 @@ const SignUppage = () => {
           Sign Up to HeyJob
         </h1>
         <SignupForm />
-        <div className="flex justify-center  w-full items-center mt-20">
+        <div className="flex justify-center  w-full items-center mt-5">
           <div className="before-line"></div>
           <p className="text-gray-500 text-center text-sm ">
             Already have an account?{" "}
