@@ -21,7 +21,7 @@ const SignUppage = () => {
         <div className="flex justify-center  w-full items-center mt-5">
           <div className="before-line"></div>
           <p className="text-gray-500 text-center text-sm ">
-            Already have an accounnt?{" "}
+            Already have an account?{" "}
           </p>
           <div className="after-line"></div>
         </div>
