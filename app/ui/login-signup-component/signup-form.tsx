@@ -3,7 +3,7 @@
 import { EnvelopeIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { Button } from "../button";
-import { ok } from "assert";
+import { useRouter } from "next/navigation";
 
 const SignupForm = () => {
   const [name, setName] = useState("");
@@ -11,6 +11,8 @@ const SignupForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -49,6 +51,7 @@ const SignupForm = () => {
       if (res.ok) {
         const form = e.target as HTMLFormElement;
         form.reset();
+        router.push("/signup/import-resume");
       }
       console.log("success");
     } catch (error) {
