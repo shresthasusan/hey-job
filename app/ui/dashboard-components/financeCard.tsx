@@ -8,7 +8,7 @@ const FinanceCard = () => {
       <div className="w-full flex gap-1 divide-y-2 flex-col ">
         <div className="flex flex-col gap-1 ">
           <p className="text-gray-400 text-sm ">Earning</p>
-          <h1 className="text-sucess-600 text-center text-2xl "> $6969</h1>
+          <h1 className="text-sucess-600 text-center text-2xl "> $779</h1>
         </div>
         <div className="flex flex-col gap-1 ">
           <p className="text-gray-400 text-sm">Expenses</p>
