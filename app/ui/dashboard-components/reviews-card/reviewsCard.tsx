@@ -4,7 +4,7 @@ import StarRating from "./starRating";
 const ReviewsCard = () => {
   const reviews = [
     {
-      name: "Gandu singh",
+      name: "Harry Doe",
       review:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, metus a ultricies vehicula, felis justo aliquam nunc, et varius nisl turpis et metus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, metus a ultricies vehicula, felis justo aliquam nunc, et varius nisl turpis et metus. ",
       rating: 4,
