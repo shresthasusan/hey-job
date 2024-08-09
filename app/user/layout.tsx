@@ -1,7 +1,5 @@
 import "../ui/globals.css";
-import { poppins } from "../ui/fonts";
 import NavBar from "../ui/navbar/navbar";
-import AuthProvider from "../providers";
 
 export default function RootLayout({
   children,
@@ -14,7 +12,7 @@ export default function RootLayout({
         <NavBar />
       </div>
       <div className="max-w-[1980px] body-container pt-[75px] m-auto">
-        <AuthProvider>{children}</AuthProvider>
+        {children}
       </div>
     </div>
   );

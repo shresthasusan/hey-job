@@ -1,9 +1,29 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import SliderRating from "./slider";
 import clsx from "clsx";
 
 const Rating = () => {
   const rating = 4.6;
+  const initialValue = 0;
+  const targetValue = rating;
+  const [count, setCount] = useState(initialValue);
+  const duration = 120; // 4 seconds
+
+  useEffect(() => {
+    let startValue = initialValue;
+    const interval = Math.floor(duration / (targetValue - initialValue));
+
+    const incrementCount = (i: number) => {
+      if (i <= targetValue) {
+        setCount(parseFloat(i.toFixed(1)));
+        setTimeout(() => incrementCount(i + 0.1), interval);
+      }
+    };
+
+    incrementCount(startValue);
+  }, [targetValue, initialValue]);
   return (
     <div
       className=" min-w-[250px] w-[15%] flex flex-col gap-1 justify-center items-center relative rounded-3xl h-[250px] p-5 overflow-hidden 
@@ -28,11 +48,11 @@ const Rating = () => {
           "text-green-600": rating > 4,
         })}
       >
-        {rating}
+        {count}
       </h1>
 
       <div className="w-full  ">
-        <SliderRating rating={rating} />
+        <SliderRating rating={targetValue} />
       </div>
     </div>
   );

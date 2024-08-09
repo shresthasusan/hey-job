@@ -1,4 +1,4 @@
-"use Client";
+"use client";
 
 import {
   UserCircleIcon,
@@ -8,6 +8,7 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 
 interface Props {
   isDropdownVisible?: Number;
@@ -15,6 +16,8 @@ interface Props {
   currentMode?: String;
 }
 const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
+  const { data: session } = useSession();
+
   return (
     <>
       {isDropdownVisible === 1 && (
@@ -92,7 +95,10 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
             </div>
 
             <div className=" text-center pt-1 ">
-              <h2 className="text-2xl  font-medium "> Rabin Yadav</h2>
+              <h2 className="text-2xl  font-medium ">
+                {" "}
+                {session?.user?.name} {session?.user?.lastName}
+              </h2>
               <p className="text-xs  text-gray-400">
                 {currentMode?.startsWith("/user") && <>Freelancer</>}
                 {currentMode?.startsWith("/client") && <>Client</>}

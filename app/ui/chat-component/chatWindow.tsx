@@ -35,7 +35,7 @@ const ChatWindow = () => {
                   Welcome to group everyone !
                 </div>
                 <Image
-                  src="https://source.unsplash.com/vpOeXr5wmR4/600x600"
+                  src="/"
                   className="object-cover h-8 w-8 rounded-full"
                   alt=""
                   width={32}
@@ -44,7 +44,7 @@ const ChatWindow = () => {
               </div>
               <div className="flex justify-start  mb-4">
                 <Image
-                  src="https://source.unsplash.com/vpOeXr5wmR4/600x600"
+                  src="/"
                   className="object-cover h-8 w-8 rounded-full"
                   alt=""
                   width={32}
@@ -70,7 +70,7 @@ const ChatWindow = () => {
                   </div>
                 </div>
                 <Image
-                  src="https://source.unsplash.com/vpOeXr5wmR4/600x600"
+                  src="/"
                   className="object-cover h-8 w-8 rounded-full"
                   alt=""
                   width={32}
@@ -79,7 +79,7 @@ const ChatWindow = () => {
               </div>
               <div className="flex justify-start mb-4">
                 <Image
-                  src="https://source.unsplash.com/vpOeXr5wmR4/600x600"
+                  src="/"
                   className="object-cover h-8 w-8 rounded-full"
                   alt=""
                   width={32}
@@ -103,7 +103,7 @@ const ChatWindow = () => {
             <div className="flex flex-col">
               <div className="font-semibold text-xl py-4">Mern Stack Group</div>
               <Image
-                src="https://source.unsplash.com/L2cxSuKWbpo/600x600"
+                src="/"
                 className="object-cover rounded-xl h-64"
                 alt=""
                 width={32}

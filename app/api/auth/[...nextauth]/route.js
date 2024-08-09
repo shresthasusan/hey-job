@@ -4,7 +4,7 @@ import { connectMongoDB } from "../../../lib/mongodb";
 import bcrypt from "bcryptjs";
 import User from "@/models/User";
 
-const authOptions = {
+export const authOptions = {
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -17,6 +17,7 @@ const authOptions = {
         try {
           await connectMongoDB();
           const user = await User.findOne({ email });
+          console.log(user);
           if (!user) {
             return null;
           }
@@ -38,6 +39,22 @@ const authOptions = {
   secrets: process.env.NEXTAUTH_SECRET,
   pages: {
     signIn: "/login",
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.name = user.name;
+        token.email = user.email;
+        token.lastName = user.lastName;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      session.user.name = token.name;
+      session.user.email = token.email;
+      session.user.lastName = token.lastName;
+      return session;
+    },
   },
 };
 

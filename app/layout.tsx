@@ -10,7 +10,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth subpixel-antialiased ">
       <body>
-        <div className={`min-h-screen ${poppins.className}`}>{children}</div>
+        <div className={`min-h-screen ${poppins.className}`}>
+          <AuthProvider>{children}</AuthProvider>
+        </div>
       </body>
     </html>
   );

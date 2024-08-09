@@ -6,6 +6,9 @@ import { LifebuoyIcon, ShieldCheckIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -13,6 +16,8 @@ const LoginForm = () => {
   const [error, setError] = useState("");
 
   const router = useRouter();
+  // const session = await getServerSession(authOptions);
+  // if (session) redirect("/"); might be version error
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

@@ -17,7 +17,6 @@ interface user {
 const ChatList = () => {
   const searchParam = useSearchParams();
   const query = searchParam.get("name");
-  console.log(query);
   const [data, setData] = useState<user[]>([]); // Corrected the type to Job[] and initialized as an empty array
 
   useEffect(() => {
