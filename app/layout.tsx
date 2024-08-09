@@ -11,8 +11,8 @@ export default function RootLayout({
     <html lang="en" className="scroll-smooth subpixel-antialiased ">
       <body>
         <div className={`min-h-screen ${poppins.className}`}>
-          {/* <AuthProvider>{children}</AuthProvider> */}
-          {children}
+          <AuthProvider>{children}</AuthProvider>
+          {/* {children} */}
         </div>
       </body>
     </html>
