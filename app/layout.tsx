@@ -1,5 +1,6 @@
 import "./ui/globals.css";
 import { poppins } from "./ui/fonts";
+import AuthProvider from "./providers";
 
 export default function RootLayout({
   children,
@@ -9,7 +10,10 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth subpixel-antialiased ">
       <body>
-        <div className={`min-h-screen ${poppins.className}`}>{children}</div>
+        <div className={`min-h-screen ${poppins.className}`}>
+          {/* <AuthProvider>{children}</AuthProvider> */}
+          {children}
+        </div>
       </body>
     </html>
   );

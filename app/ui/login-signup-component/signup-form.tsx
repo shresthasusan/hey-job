@@ -51,7 +51,7 @@ const SignupForm = () => {
       if (res.ok) {
         const form = e.target as HTMLFormElement;
         form.reset();
-        router.push("/signup/import-resume");
+        router.push("/login");
       }
       console.log("success");
     } catch (error) {

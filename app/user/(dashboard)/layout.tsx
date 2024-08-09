@@ -6,7 +6,7 @@ import FinanceCard from "../../ui/dashboard-components/financeCard";
 import ReviewsCard from "../../ui/dashboard-components/reviews-card/reviewsCard";
 import JobNavBar from "../../ui/dashboard-components/job-posting/jobNavBar";
 import SearchInput from "../../ui/dashboard-components/job-posting/searchBar";
-import React, { ReactNode, Suspense } from "react";
+import { ReactNode, Suspense } from "react";
 
 interface Props {
   children: ReactNode;

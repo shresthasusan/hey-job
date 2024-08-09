@@ -1,3 +1,5 @@
+"use Client";
+
 import {
   UserCircleIcon,
   Cog6ToothIcon,
@@ -5,6 +7,7 @@ import {
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import Image from "next/image";
+import { signOut } from "next-auth/react";
 
 interface Props {
   isDropdownVisible?: Number;
@@ -144,9 +147,9 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
             <span className="flex items-center gap-1">
               <ArrowLeftStartOnRectangleIcon className="size-8" />
               <span className="flex flex-col ">
-                <Link href={"/login"}>
+                <button onClick={() => signOut()}>
                   <p>Log out</p>
-                </Link>
+                </button>
               </span>
             </span>
           </div>

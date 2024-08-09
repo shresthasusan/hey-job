@@ -1,26 +1,47 @@
 "use client";
 
-import { poppins } from "@/app/ui/fonts";
-import {
-  AtSymbolIcon,
-  CheckBadgeIcon,
-  KeyIcon,
-} from "@heroicons/react/24/outline";
-import { ArrowRightIcon } from "@heroicons/react/20/solid";
-// import { useFormState } from 'react-dom';
-// import { authenticate } from '@/app/lib/actions';
-
+import { AtSymbolIcon, KeyIcon } from "@heroicons/react/24/outline";
 import { Button } from "../button";
-import {
-  CheckCircleIcon,
-  LifebuoyIcon,
-  ShieldCheckIcon,
-} from "@heroicons/react/24/solid";
+import { LifebuoyIcon, ShieldCheckIcon } from "@heroicons/react/24/solid";
+import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const LoginForm = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError("");
+    if (email === "" || password === "") {
+      setError("Please fill in all fields");
+      return;
+    }
+
+    try {
+      const res = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+      if (res?.error) {
+        setError("Invalid Credentials");
+        return;
+      }
+
+      router.replace("/");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <>
-      <form className="w-2/3">
+      <form className="w-2/3" onSubmit={handleSubmit}>
         <div>
           <div>
             <label
@@ -34,7 +55,7 @@ const LoginForm = () => {
                 type="email"
                 name="email"
                 placeholder="Email Address"
-                required
+                onChange={(e) => setEmail(e.target.value)}
               />
               <AtSymbolIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
             </div>
@@ -51,8 +72,7 @@ const LoginForm = () => {
                 type="password"
                 name="password"
                 placeholder="Password"
-                required
-                minLength={6}
+                onChange={(e) => setPassword(e.target.value)}
               />
               <KeyIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
             </div>
@@ -65,6 +85,12 @@ const LoginForm = () => {
         >
           Continue
         </Button>
+        {error && (
+          <div className="bg-red-500 p-5 my-5 rounded-md">
+            <p className="text-white text-sm">{error}</p>
+          </div>
+        )}
+
         <div className="flex justify-center  w-full items-center mt-3">
           <div className="before-line"></div>
           <p className="text-gray-500 text-center text-sm ">Or </p>
