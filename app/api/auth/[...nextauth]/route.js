@@ -3,6 +3,8 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { connectMongoDB } from "../../../lib/mongodb";
 import bcrypt from "bcryptjs";
 import path from "path";
+import { NextAuthOptions } from "next-auth";
+
 console.log("Current directory:", __dirname);
 console.log(
   "Resolved path:",
@@ -11,12 +13,12 @@ console.log(
 
 import User from "../../../../models/User";
 
-export const authOptions = {
+const authOptions = {
   providers: [
     CredentialsProvider({
       name: "credentials",
       credentials: {
-        email: { label: "Email", type: "email" },
+        email: { label: "Email", type: "text" }, //change to type email in signup and login form if error occurs
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
@@ -67,6 +69,17 @@ export const authOptions = {
     },
   },
 };
+
+// Ensure the type of authOptions matches the expected type
+// checkFields <
+//   Diff <
+//   {
+//     GET: Function,
+//     HEAD: Function,
+//     OPTIONS: Function,
+//     authOptions: NextAuthOptions,
+//   } >>
+//     authOptions;
 
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };

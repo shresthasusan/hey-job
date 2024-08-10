@@ -8,7 +8,6 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
