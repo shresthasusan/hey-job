@@ -17,15 +17,15 @@ const SliderRating = ({ rating }: userRating) => {
 
   useEffect(() => {
     let startValue = initialValue;
-    const maxInterval = 40; // Maximum interval for the slowest increments
-    const minInterval = 10; // Minimum interval for the fastest increments
-    const incrementStep = 0.08; // Smaller increment step for smoother transition
+    const maxInterval = 10; // Maximum interval for the slowest increments
+    const minInterval = 15; // Minimum interval for the fastest increments
+    const incrementStep = 0.09; // Smaller increment step for smoother transition
 
     const incrementCount = (i: number) => {
       if (i <= targetValue) {
         setCount(parseFloat(i.toFixed(2))); // Adjust precision to match increment step
         const progress = (i - startValue) / (targetValue - startValue); // Calculate progress as a value between 0 and 1
-        const interval = minInterval + progress * (maxInterval - minInterval); // Linearly interpolate interval based on progress
+        const interval = maxInterval + progress * (minInterval - maxInterval); // Linearly interpolate interval based on progress
         setTimeout(() => incrementCount(i + incrementStep), interval);
       }
     };

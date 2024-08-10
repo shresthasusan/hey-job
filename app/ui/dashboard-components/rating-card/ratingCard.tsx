@@ -9,7 +9,7 @@ const Rating = () => {
   const initialValue = 0;
   const targetValue = rating;
   const [count, setCount] = useState(initialValue);
-  const duration = 120; // 4 seconds
+  const duration = 100; // 4 seconds
 
   useEffect(() => {
     let startValue = initialValue;
@@ -41,11 +41,11 @@ const Rating = () => {
       </div> */}
       <h1
         className={clsx("text-8xl  font-semibold", {
-          "text-red-700": rating <= 1,
-          "text-red-500": rating > 1 && rating <= 2,
-          "text-amber-500": rating > 2 && rating <= 3,
-          "text-green-400": rating > 3 && rating <= 4,
-          "text-green-600": rating > 4,
+          "text-red-700": count <= 1,
+          "text-red-500": count > 1 && count <= 2,
+          "text-amber-500": count > 2 && count <= 3,
+          "text-green-400": count > 3 && count <= 4,
+          "text-green-600": count > 4,
         })}
       >
         {count}
