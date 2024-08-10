@@ -2,6 +2,13 @@ import NextAuth from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { connectMongoDB } from "../../../lib/mongodb";
 import bcrypt from "bcryptjs";
+import path from "path";
+console.log("Current directory:", __dirname);
+console.log(
+  "Resolved path:",
+  path.resolve(__dirname, "../../../../models/User")
+);
+
 import User from "../../../../models/User";
 
 export const authOptions = {
