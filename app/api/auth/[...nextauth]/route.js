@@ -7,10 +7,10 @@ import path from "path";
 console.log("Current directory:", __dirname);
 console.log(
   "Resolved path:",
-  path.resolve(__dirname, "../../../../models/User")
+  path.resolve(__dirname, "../../../../models/user")
 );
 
-import User from "../../../../models/User";
+import User from "../../../../models/user";
 
 if (!User) {
   console.error("User model is not defined");
