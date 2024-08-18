@@ -1,8 +1,16 @@
 import LoginForm from "@/app/ui/login-signup-component/login-form";
+import { getServerSession } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { authOptions } from "../api/auth/[...nextauth]/route";
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const session = await getServerSession(authOptions);
+  if (session) redirect("/"); //might be version error also error after callback
+  //   return <p>error</p>;
+  // }
+
   return (
     <div className="flex justify-center p-10 items-center align-middle   h-screen relative ">
       <Image

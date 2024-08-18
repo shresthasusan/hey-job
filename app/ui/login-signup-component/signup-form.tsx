@@ -6,7 +6,7 @@ import { Button } from "../button";
 import { useRouter } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-// import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 const SignupForm = () => {
   const [name, setName] = useState("");
@@ -16,8 +16,6 @@ const SignupForm = () => {
   const [error, setError] = useState("");
 
   const router = useRouter();
-  // const session = await getServerSession(authOptions);
-  // if (session) redirect("/");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

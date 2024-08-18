@@ -1,8 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import SignupForm from "../ui/login-signup-component/signup-form";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
+import { authOptions } from "../api/auth/[...nextauth]/route";
 
-const SignUppage = () => {
+const SignUppage = async () => {
+  const session = await getServerSession(authOptions); //typescript error
+  if (session) redirect("/");
+
   return (
     <div className="flex justify-center p-10 items-center h-screen relative ">
       <Image

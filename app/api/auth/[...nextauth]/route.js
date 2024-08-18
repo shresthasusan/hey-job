@@ -3,7 +3,6 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { connectMongoDB } from "../../../lib/mongodb";
 import bcrypt from "bcryptjs";
 import path from "path";
-import { NextAuthOptions } from "next-auth";
 
 console.log("Current directory:", __dirname);
 console.log(
@@ -13,7 +12,11 @@ console.log(
 
 import User from "../../../../models/User";
 
-const authOptions = {
+if (!User) {
+  console.error("User model is not defined");
+}
+
+export const authOptions = {
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -26,28 +29,32 @@ const authOptions = {
         try {
           await connectMongoDB();
           const user = await User.findOne({ email });
-          // console.log(user);
+          // console.log(User);
           if (!user) {
+            console.log("User not found:", email); // Added logging for debugging
             return null;
           }
 
           const passwordsMatch = await bcrypt.compare(password, user.password);
           if (!passwordsMatch) {
+            console.log("Password mismatch for user:", email); // Added logging for debugging
             return null;
           }
+          console.log("user authorized ");
           return user;
         } catch (error) {
-          console.error(error);
+          console.error("Authorization error:", error); // Added logging for errors
         }
       },
     }),
   ],
-  sessions: {
+  session: {
     strategy: "jwt",
   },
   secrets: process.env.NEXTAUTH_SECRET,
   pages: {
     signIn: "/login",
+    // signOut: "/login",
   },
   callbacks: {
     async jwt({ token, user, session }) {
@@ -57,29 +64,18 @@ const authOptions = {
         token.email = user.email;
         token.lastName = user.lastName;
       }
-      console.log("jwt callback", { token, user, session });
+      // console.log("jwt callback", { token, user, session });
       return token;
     },
     async session({ session, token }) {
       session.user.name = token.name;
       session.user.email = token.email;
       session.user.lastName = token.lastName;
-      console.log("session callback", { session, token });
+      // console.log("session callback", { session, token });
       return session;
     },
   },
 };
-
-// Ensure the type of authOptions matches the expected type
-// checkFields <
-//   Diff <
-//   {
-//     GET: Function,
-//     HEAD: Function,
-//     OPTIONS: Function,
-//     authOptions: NextAuthOptions,
-//   } >>
-//     authOptions;
 
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };

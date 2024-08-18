@@ -111,7 +111,7 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
                 <span className="flex items-center gap-1">
                   <UserCircleIcon className="size-8" />
                   <span className="flex flex-col ">
-                    <p>Susan Shrestha</p>
+                    {session?.user?.name} {session?.user?.lastName}
                     <p className="text-xs text-gray-400">Client</p>
                   </span>
                 </span>
@@ -122,7 +122,7 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
                 <span className="flex items-center gap-1">
                   <UserCircleIcon className="size-8" />
                   <span className="flex flex-col ">
-                    <p>Susan Shrestha</p>
+                    {session?.user?.name} {session?.user?.lastName}
                     <p className="text-xs text-gray-400">Freelancer</p>
                   </span>
                 </span>
