@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import SignupForm from "../ui/login-signup-component/signup-form";
 import { getServerSession } from "next-auth";
+// import { authOptions } from "../lib/auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 

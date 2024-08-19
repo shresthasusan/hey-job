@@ -1,8 +1,9 @@
-import NextAuth from "next-auth/next";
-import CredentialsProvider from "next-auth/providers/credentials";
-import { connectMongoDB } from "../../../lib/mongodb";
-import bcrypt from "bcryptjs";
+import User from "@/models/user";
+import { NextAuthOptions } from "next-auth";
 import path from "path";
+import { connectMongoDB } from "./mongodb";
+import CredentialsProvider from "next-auth/providers/credentials";
+import bcrypt from "bcryptjs";
 
 console.log("Current directory:", __dirname);
 console.log(
@@ -10,40 +11,51 @@ console.log(
   path.resolve(__dirname, "../../../../models/user")
 );
 
-import User from "../../../../models/user";
-
 if (!User) {
   console.error("User model is not defined");
 }
 
-export const authOptions = {
+interface User {
+  name: string;
+  email: string;
+  lastname: string;
+}
+
+// Define the authOptions with proper TypeScript types
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "credentials",
       credentials: {
-        email: { label: "Email", type: "text" }, //change to type email in signup and login form if error occurs
+        email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("Email and password are required");
+        }
+
         const { email, password } = credentials;
         try {
           await connectMongoDB();
           const user = await User.findOne({ email });
-          // console.log(User);
+
           if (!user) {
-            console.log("User not found:", email); // Added logging for debugging
+            console.log("User not found:", email);
             return null;
           }
 
           const passwordsMatch = await bcrypt.compare(password, user.password);
           if (!passwordsMatch) {
-            console.log("Password mismatch for user:", email); // Added logging for debugging
+            console.log("Password mismatch for user:", email);
             return null;
           }
-          console.log("user authorized ");
+
+          console.log("User authorized:", user);
           return user;
         } catch (error) {
-          console.error("Authorization error:", error); // Added logging for errors
+          console.error("Authorization error:", error);
+          return null;
         }
       },
     }),
@@ -51,31 +63,29 @@ export const authOptions = {
   session: {
     strategy: "jwt",
   },
-  secrets: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET,
   pages: {
     signIn: "/login",
-    // signOut: "/login",
   },
   callbacks: {
-    async jwt({ token, user, session }) {
-      // console.log("jwt callback", { token, user, session });
+    async jwt({ token, user }) {
       if (user) {
         token.name = user.name;
         token.email = user.email;
         token.lastName = user.lastName;
       }
-      // console.log("jwt callback", { token, user, session });
       return token;
     },
     async session({ session, token }) {
-      session.user.name = token.name;
-      session.user.email = token.email;
-      session.user.lastName = token.lastName;
-      // console.log("session callback", { session, token });
+      if (token) {
+        session.user = {
+          ...session.user,
+          name: token.name as string,
+          email: token.email as string,
+          lastName: token.lastName as string,
+        };
+      }
       return session;
     },
   },
 };
-
-const handler = NextAuth(authOptions);
-export { handler as GET, handler as POST };

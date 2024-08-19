@@ -4,9 +4,6 @@ import { EnvelopeIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { Button } from "../button";
 import { useRouter } from "next/navigation";
-import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 const SignupForm = () => {
   const [name, setName] = useState("");
