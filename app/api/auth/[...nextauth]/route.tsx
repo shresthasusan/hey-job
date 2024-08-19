@@ -1,5 +1,5 @@
 import NextAuth from "next-auth";
-import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
+import { NextApiHandler, NextApiResponse, NextApiRequest } from "next";
 import { authOptions } from "@/app/lib/auth";
 import { NextRequest } from "next/server";
 
