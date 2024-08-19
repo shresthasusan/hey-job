@@ -4,7 +4,7 @@ import SignupForm from "../ui/login-signup-component/signup-form";
 import { getServerSession } from "next-auth";
 // import { authOptions } from "../lib/auth";
 import { redirect } from "next/navigation";
-import { authOptions } from "../api/auth/[...nextauth]/route";
+import { authOptions } from "../lib/auth";
 
 const SignUppage = async () => {
   const session = await getServerSession(authOptions); //typescript error
