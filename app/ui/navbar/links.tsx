@@ -91,14 +91,26 @@ const Links = () => {
           </div>
         </li>
         <li className="flex align-items-center justify-center">
-          <Link
-            href="/client/chatroom"
-            className={clsx("hover:text-primary-600", {
-              "text-primary-600": currentPath == "/user/chatroom",
-            })}
-          >
-            Messages
-          </Link>
+          {currentPath.startsWith("/user") && (
+            <Link
+              href="/user/chatroom"
+              className={clsx("hover:text-primary-600", {
+                "text-primary-600": currentPath == "/user/chatroom",
+              })}
+            >
+              Messages
+            </Link>
+          )}
+          {currentPath.startsWith("/client") && (
+            <Link
+              href="/client/chatroom"
+              className={clsx("hover:text-primary-600", {
+                "text-primary-600": currentPath == "/user/chatroom",
+              })}
+            >
+              Messages
+            </Link>
+          )}
         </li>
         <li className=" flex align-items-center justify-center">
           <Link
