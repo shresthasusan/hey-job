@@ -16,8 +16,9 @@ export default async function LoginPage() {
       <Image
         src="/logo/login-logo.png"
         alt="logo"
-        width="100"
-        height="100"
+        width={50}
+        height={50}
+        style={{ minBlockSize: "50px" }}
         className="absolute top-5 left-5"
       />
       <div className="relative md:-translate-x-[50px] border-2 border-primary-600 rounded-3xl items-center justify-center flex w-full sm:w-[500px] flex-col  p-6">

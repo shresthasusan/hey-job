@@ -3,10 +3,10 @@ import { NextApiHandler } from "next";
 import { authOptions } from "@/app/lib/auth";
 
 // Type the handler properly for TypeScript
-const handler: NextApiHandler = (req, res) => NextAuth(req, res, authOptions);
+const handler: NextApiHandler = NextAuth(authOptions);
 
 // Export the handler for GET and POST requests
-export { handler as GET, handler as POST, authOptions };
+export { handler as GET, handler as POST };
 
 //************************************ */
 // import { NextApiRequest, NextApiResponse } from "next";
