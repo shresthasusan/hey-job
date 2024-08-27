@@ -73,7 +73,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.name = user.name;
         token.email = user.email;
-        // token.lastName = user.lastName;
+        token.lastName = user.lastName;
       }
       return token;
     },
