@@ -5,21 +5,21 @@ import { connectMongoDB } from "./mongodb";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 
-// console.log("Current directory:", __dirname);
-// console.log(
-//   "Resolved path:",
-//   path.resolve(__dirname, "../../../../models/user")
-// );
+import { type DefaultSession, type DefaultUser } from "next-auth";
 
-// if (!User) {
-//   console.error("User model is not defined");
-// }
-
-interface User {
-  name: string;
-  email: string;
-  lastname: string;
-  password: string;
+declare module "next-auth" {
+  interface Session extends DefaultSession {
+    user: {
+      name: string;
+      email: string;
+      lastName: string;
+    };
+  }
+  interface User extends DefaultUser {
+    name: string;
+    email: string;
+    lastName: string;
+  }
 }
 
 // Define the authOptions with proper TypeScript types
