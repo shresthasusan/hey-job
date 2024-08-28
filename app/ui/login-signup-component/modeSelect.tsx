@@ -48,7 +48,7 @@ const ModeSelect = () => {
         >
           <Circle selected={mode === "client"} />
           <BriefcaseIcon className="h-10 w-10 absolute top-2 left-3" />
-          <p className="text-xl">I'm a client, looking for freelancers</p>
+          <p className="text-xl">I&apos;m a client, looking for freelancers</p>
         </button>
         <button
           className={clsx(
@@ -60,7 +60,7 @@ const ModeSelect = () => {
           <Circle selected={mode === "freelancer"} />
           <ComputerDesktopIcon className="h-10 w-10 absolute top-2 left-3" />
           <p className="text-xl text-left ml-2">
-            I'm a Freelancer, looking for work
+            I&apos;m a Freelancer, looking for work
           </p>
         </button>
       </div>
