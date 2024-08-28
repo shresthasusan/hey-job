@@ -107,7 +107,7 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
           </div>
           <div className="hover:bg-slate-200 p-1">
             {currentMode?.startsWith("/user") && (
-              <Link href={"/client"}>
+              <Link href={"/client/best-matches"}>
                 <span className="flex items-center gap-1">
                   <UserCircleIcon className="size-8" />
                   <span className="flex flex-col ">

@@ -7,7 +7,7 @@ import ReviewSkeletonCard from "./skeletons/reviewSkeletonCard";
 import OrderSkeletonCard from "./skeletons/orderSkeletonCard";
 import RatingSkeletonCard from "./skeletons/ratingSkeletonCard";
 import FinanceSkeletonCard from "./skeletons/financeSkeletonCard";
-import JobPostingSkeleton from "./skeletons/jobPostingSkeleton";
+import JobPostingSkeleton from "./skeletons/postingSkeleton";
 import ChatListSkeleton from "./skeletons/chatListSkeleton";
 
 const DashboardSkeleton = () => {

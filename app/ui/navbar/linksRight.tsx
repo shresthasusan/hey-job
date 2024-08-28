@@ -73,11 +73,9 @@ const LinksRight = () => {
           className="relative"
           onMouseEnter={() => setDropdownVisible(6)}
           onMouseLeave={() => setDropdownVisible(0)}
+          onClick={() => setIsOpen(!isOpen)}
         >
-          <UserCircleIcon
-            className="size-8"
-            onClick={() => setIsOpen(!isOpen)}
-          />
+          <UserCircleIcon className="size-8" />
           {isOpen && (
             <div
               ref={dropdownRef}

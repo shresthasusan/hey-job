@@ -1,6 +1,6 @@
 import React from "react";
 
-const JobPostingSkeleton = () => {
+const PostingSkeleton = () => {
   return (
     <>
       <div className="w-full flex gap-10 flex-col  col-span-3">
@@ -42,4 +42,4 @@ const JobPostingSkeleton = () => {
   );
 };
 
-export default JobPostingSkeleton;
+export default PostingSkeleton;
