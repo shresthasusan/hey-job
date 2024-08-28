@@ -34,7 +34,7 @@ const Links = () => {
             )}
             {currentPath.startsWith("/client") && (
               <Link
-                href="/client"
+                href="/client/best-matches"
                 className={clsx("hover:text-primary-600", {
                   "text-primary-600":
                     currentPath == "/user/best-matches" ||
