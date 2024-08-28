@@ -5,10 +5,9 @@ import RatingCard from "../../ui/dashboard-components/rating-card/ratingCard";
 import FinanceCard from "../../ui/dashboard-components/financeCard";
 import ReviewsCard from "../../ui/dashboard-components/reviews-card/reviewsCard";
 import { Suspense } from "react";
-import ClientDashboard from "@/app/ui/dashboard-components/talent-posting/dashboard";
 import ProjectCarousel from "@/app/ui/dashboard-components/talent-posting/projectCarousel";
 import SearchBar from "@/app/ui/dashboard-components/talent-posting/searchBar";
-import NavBar from "@/app/ui/navbar/navbar";
+
 import { InformationCircleIcon, PlusIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import TalentNavBar from "@/app/ui/dashboard-components/talent-posting/navBar";

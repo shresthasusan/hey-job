@@ -4,6 +4,7 @@ import { EnvelopeIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { Button } from "../button";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 const SignupForm = () => {
   const [name, setName] = useState("");
@@ -50,8 +51,18 @@ const SignupForm = () => {
       });
       if (res.ok) {
         const form = e.target as HTMLFormElement;
+        const response = await signIn("credentials", {
+          email,
+          password,
+          redirect: false,
+        });
+        if (response?.error) {
+          setError("Invalid Credentials");
+          return;
+        }
+
         form.reset();
-        router.push("/login");
+        router.push("/signup/usermode-select");
       }
       console.log("success");
     } catch (error) {
