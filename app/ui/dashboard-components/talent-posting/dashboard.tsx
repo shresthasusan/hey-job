@@ -5,6 +5,7 @@ import { PlusIcon } from "@heroicons/react/24/solid";
 import ProjectCarousel from "./projectCarousel";
 import SearchBar from "./searchBar";
 import NavBar from "./navBar";
+import { Suspense } from "react";
 
 const ClientDashboard = () => {
   return (
@@ -29,7 +30,9 @@ const ClientDashboard = () => {
       </div>
       <ProjectCarousel />
       <div className="sticky top-[75px]  pt-5   bg-white">
-        <SearchBar />
+        <Suspense>
+          <SearchBar />
+        </Suspense>
         <NavBar />
       </div>{" "}
     </div>
