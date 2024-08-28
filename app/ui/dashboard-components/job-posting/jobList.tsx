@@ -4,7 +4,7 @@ import { jobsData, recent } from "@/app/lib/data";
 import { HeartIcon as Unliked, MapPinIcon } from "@heroicons/react/24/outline";
 import { HeartIcon as Liked } from "@heroicons/react/24/solid";
 import { useState, useEffect } from "react";
-// import styles from "./jobListingCss.module.css";
+import styles from "./jobListingCss.module.css";
 
 const truncateString = (str: string, num: number) => {
   if (str.length <= num) {
@@ -74,9 +74,7 @@ const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
         >
           <p className="text-xs text-gray-400"> Posted {job.time}</p>
           <div className="flex items-center justify-between ">
-            <h1 className={`text-2xl text-gray-500   font-medium`}>
-              {job.title}
-            </h1>
+            <h1 className="text-2xl text-gray-500  font-medium">{job.title}</h1>
             {job.saved ? (
               <Liked className="w-6 h-6 text-red-600 " />
             ) : (

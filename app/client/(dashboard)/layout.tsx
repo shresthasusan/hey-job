@@ -5,6 +5,7 @@ import RatingCard from "../../ui/dashboard-components/rating-card/ratingCard";
 import FinanceCard from "../../ui/dashboard-components/financeCard";
 import ReviewsCard from "../../ui/dashboard-components/reviews-card/reviewsCard";
 import { Suspense } from "react";
+import ClientDashboard from "@/app/ui/dashboard-components/talent-posting/dashboard";
 
 // root layout for client dashboard pages
 
@@ -15,7 +16,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {/* profile card, order card, rating card, finance card, reviews card components */}
       <div className="   hidden xl:flex xl:justify-between   sm:gap-x-5 gap-y-10  w-full ">
         <ProfileCard mode={"Client"} />
-        <OrderCard />
+        <OrderCard mode={"Client"} />
         <RatingCard />
         <FinanceCard />
         <ReviewsCard />
@@ -33,6 +34,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <ChatList />
           </Suspense>
         </div>
+        <ClientDashboard />
+
         {/* job posting space  */}
         <div className="w-full col-span-4 ">
           <div className="2xl:w-[75%] w-[90%]">{children}</div>

@@ -1,3 +1,4 @@
+/// for messages
 const users = [
   {
     name: "John Doe",
@@ -120,7 +121,7 @@ const users = [
     id: 17,
   },
 ];
-
+// for jobs dashboard
 const jobsData = [
   {
     time: "2 hours ago",
@@ -260,43 +261,137 @@ const recent = [
   },
 ];
 
-const saved = [
+// const saved = [
+//   {
+//     time: "3 days ago",
+//     title: "Mobile App Developer",
+//     type: "Fixed-price - Intermediate",
+//     experience: "Entry Level",
+//     budget: 2000,
+//     description:
+//       "Seeking a mobile app developer to create a social media application. The project requires experience with Flutter and Firebase. The developer should be capable of implementing custom user interfaces and integrating third-party APIs. Previous work with social media apps or real-time chat applications will be considered an advantage.",
+//     tags: ["Flutter", "Firebase", "Mobile App Development"],
+//     location: "Remote",
+//     saved: true,
+//   },
+//   {
+//     time: "1 week ago",
+//     title: "SEO Specialist",
+//     type: "Hourly",
+//     experience: "Entry Level",
+//     budget: 15,
+//     description:
+//       "Looking for an SEO specialist to improve our website's Google ranking. The project involves comprehensive keyword research, backlink analysis, and content optimization. The ideal candidate should have a proven track record of successful SEO strategies and be familiar with the latest SEO tools and techniques. Experience with Google Analytics and Search Console is required.",
+//     tags: ["SEO", "Keyword Research", "Content Optimization"],
+//     location: "Remote",
+//     saved: false,
+//   },
+//   // Added data
+//   {
+//     time: "2 weeks ago",
+//     title: "Graphic Designer for Branding Project",
+//     type: "Fixed-price - Expert",
+//     experience: "Intermediate",
+//     budget: 1500,
+//     description:
+//       "We are looking for a talented graphic designer to lead our branding project. The project includes logo design, brand guidelines, and marketing materials. The ideal candidate should have a strong portfolio showcasing innovative design solutions and experience in brand identity projects. Proficiency in Adobe Creative Suite is required.",
+//     tags: ["Graphic Design", "Branding", "Adobe Creative Suite"],
+//     location: "Remote",
+//     saved: false,
+//   },
+// ];
+
+/// ongoing jobs data
+const ongoingProjects = [
   {
-    time: "3 days ago",
-    title: "Mobile App Developer",
-    type: "Fixed-price - Intermediate",
-    experience: "Entry Level",
-    budget: 2000,
+    projectName: "E-commerce Website Redesign",
+    category: "Web Development",
     description:
-      "Seeking a mobile app developer to create a social media application. The project requires experience with Flutter and Firebase. The developer should be capable of implementing custom user interfaces and integrating third-party APIs. Previous work with social media apps or real-time chat applications will be considered an advantage.",
-    tags: ["Flutter", "Firebase", "Mobile App Development"],
-    location: "Remote",
-    saved: true,
+      "Redesign and optimize an existing e-commerce website for better UX/UI.",
+    budget: "$5,000",
+    deadline: "Sep 30, 2024",
+    clientName: "Alice Tech Solutions",
   },
   {
-    time: "1 week ago",
-    title: "SEO Specialist",
-    type: "Hourly",
-    experience: "Entry Level",
-    budget: 15,
+    projectName: "Mobile App for Delivery",
+    category: "Mobile Development",
     description:
-      "Looking for an SEO specialist to improve our website's Google ranking. The project involves comprehensive keyword research, backlink analysis, and content optimization. The ideal candidate should have a proven track record of successful SEO strategies and be familiar with the latest SEO tools and techniques. Experience with Google Analytics and Search Console is required.",
-    tags: ["SEO", "Keyword Research", "Content Optimization"],
-    location: "Remote",
-    saved: false,
+      "Develop a cross-platform mobile app for a local delivery service.",
+    budget: "$8,500",
+    deadline: "Oct 15, 2024",
+    clientName: "Urban Courier Inc.",
   },
-  // Added data
   {
-    time: "2 weeks ago",
-    title: "Graphic Designer for Branding Project",
-    type: "Fixed-price - Expert",
-    experience: "Intermediate",
-    budget: 1500,
+    projectName: "Marketing Automation Setup",
+    category: "Digital Marketing",
     description:
-      "We are looking for a talented graphic designer to lead our branding project. The project includes logo design, brand guidelines, and marketing materials. The ideal candidate should have a strong portfolio showcasing innovative design solutions and experience in brand identity projects. Proficiency in Adobe Creative Suite is required.",
-    tags: ["Graphic Design", "Branding", "Adobe Creative Suite"],
-    location: "Remote",
-    saved: false,
+      "Implement a marketing automation platform for targeted campaigns.",
+    budget: "$3,200",
+    deadline: "Sep 20, 2024",
+    clientName: "BrightStar Media",
+  },
+  {
+    projectName: "Custom CRM Development",
+    category: "Software Development",
+    description:
+      "Build a custom CRM solution tailored for a mid-sized business.",
+    budget: "$12,000",
+    deadline: "Nov 1, 2024",
+    clientName: "Prime Business Co.",
+  },
+  {
+    projectName: "Data Analysis Tool",
+    category: "Data Science & Analytics",
+    description:
+      "Develop a tool for analyzing sales data and generating reports.",
+    budget: "$4,500",
+    deadline: "Sep 25, 2024",
+    clientName: "Data Insights Ltd.",
+  },
+  {
+    projectName: "E-commerce Website Redesign",
+    category: "Web Development",
+    description:
+      "Redesign and optimize an existing e-commerce website for better UX/UI.",
+    budget: "$5,000",
+    deadline: "Sep 30, 2024",
+    clientName: "Alice Tech Solutions",
+  },
+  {
+    projectName: "Mobile App for Delivery",
+    category: "Mobile Development",
+    description:
+      "Develop a cross-platform mobile app for a local delivery service.",
+    budget: "$8,500",
+    deadline: "Oct 15, 2024",
+    clientName: "Urban Courier Inc.",
+  },
+  {
+    projectName: "Marketing Automation Setup",
+    category: "Digital Marketing",
+    description:
+      "Implement a marketing automation platform for targeted campaigns.",
+    budget: "$3,200",
+    deadline: "Sep 20, 2024",
+    clientName: "BrightStar Media",
+  },
+  {
+    projectName: "Custom CRM Development",
+    category: "Software Development",
+    description:
+      "Build a custom CRM solution tailored for a mid-sized business.",
+    budget: "$12,000",
+    deadline: "Nov 1, 2024",
+    clientName: "Prime Business Co.",
+  },
+  {
+    projectName: "Data Analysis Tool",
+    category: "Data Science & Analytics",
+    description:
+      "Develop a tool for analyzing sales data and generating reports.",
+    budget: "$4,500",
+    deadline: "Sep 25, 2024",
+    clientName: "Data Insights Ltd.",
   },
 ];
 
@@ -304,5 +399,5 @@ module.exports = {
   users,
   jobsData,
   recent,
-  saved,
+  ongoingProjects,
 };
