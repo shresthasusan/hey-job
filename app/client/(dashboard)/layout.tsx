@@ -6,6 +6,12 @@ import FinanceCard from "../../ui/dashboard-components/financeCard";
 import ReviewsCard from "../../ui/dashboard-components/reviews-card/reviewsCard";
 import { Suspense } from "react";
 import ClientDashboard from "@/app/ui/dashboard-components/talent-posting/dashboard";
+import ProjectCarousel from "@/app/ui/dashboard-components/talent-posting/projectCarousel";
+import SearchBar from "@/app/ui/dashboard-components/talent-posting/searchBar";
+import NavBar from "@/app/ui/navbar/navbar";
+import { InformationCircleIcon, PlusIcon } from "@heroicons/react/24/outline";
+import Link from "next/link";
+import TalentNavBar from "@/app/ui/dashboard-components/talent-posting/navBar";
 
 // root layout for client dashboard pages
 
@@ -34,11 +40,38 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <ChatList />
           </Suspense>
         </div>
-        <ClientDashboard />
-
-        {/* job posting space  */}
-        <div className="w-full col-span-4 ">
-          <div className="2xl:w-[75%] w-[90%]">{children}</div>
+        <div className="Clients-Jobs mt-5 w-full col-span-4">
+          <div className="flex justify-between">
+            <span className="text-2xl flex w-full flex-wrap items-center">
+              {" "}
+              Your Jobs
+              <InformationCircleIcon className="h-5 w-5 mx-1 " />
+              <p className="invisible ">
+                {" "}
+                Manage your jobs and contracts efficiently: those needing urgent
+                action and with time sensitivity are displayed first
+              </p>
+            </span>{" "}
+            <Link href={"#"}>
+              <div className="btn btn-primary text-white flex p-3 text-nowrap items-center bg-primary-700 rounded-xl ">
+                <PlusIcon className="h-6 w-6 m-1" />
+                Post a Job
+              </div>
+            </Link>
+          </div>
+          <ProjectCarousel />
+          <div>
+            <div className="sticky top-[75px]  pt-5  bg-white">
+              <Suspense>
+                <SearchBar />
+              </Suspense>
+              <TalentNavBar />
+            </div>
+            {/* job posting space  */}
+            <div className="w-full col-span-4 ">
+              <div className="2xl:w-[75%] w-[90%]">{children}</div>
+            </div>
+          </div>{" "}
         </div>
       </div>
     </div>

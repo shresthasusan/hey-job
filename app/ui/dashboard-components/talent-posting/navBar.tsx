@@ -4,7 +4,7 @@ import clsx from "clsx";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const NavBar = () => {
+const TalentNavBar = () => {
   const currentPath = usePathname();
   return (
     <ul className="flex border-b-4 mt-2 py-2 text-slate-600  flex-row gap-5 ">
@@ -51,4 +51,4 @@ const NavBar = () => {
   );
 };
 
-export default NavBar;
+export default TalentNavBar;

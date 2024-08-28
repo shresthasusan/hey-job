@@ -10,8 +10,8 @@ import { Suspense } from "react";
 const ClientDashboard = () => {
   return (
     <div className="Clients-Jobs mt-5 w-full col-span-4">
-      <div className="flex justify-between">
-        <span className="text-2xl flex  items-center">
+      <div className="flex ">
+        <span className="text-2xl   ">
           {" "}
           Your Jobs
           <InformationCircleIcon className={styles.hoverInfo} />

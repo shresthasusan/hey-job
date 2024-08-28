@@ -395,9 +395,82 @@ const ongoingProjects = [
   },
 ];
 
+const freelancersData = [
+  {
+    name: "John Doe",
+    title: "Full Stack Developer",
+    type: "Hourly",
+    experience: "Expert",
+    hourlyRate: 40,
+    rating: 4.8,
+    description:
+      "An experienced full stack developer skilled in JavaScript, React, and Node.js. Has a proven track record in building scalable web applications.",
+    skills: ["JavaScript", "React", "Node.js", "MongoDB"],
+    location: "New York, USA",
+    available: true, // Indicates if the freelancer is currently available for new projects
+    saved: true, // Indicates if the freelancer is saved in the user's list
+  },
+  {
+    name: "Jane Smith",
+    title: "UX/UI Designer",
+    type: "Hourly",
+    experience: "Intermediate",
+    hourlyRate: 35,
+    rating: 2.7,
+    description:
+      "Creative UX/UI designer with strong experience in designing user-friendly interfaces. Proficient in Figma, Sketch, and Adobe XD.",
+    skills: ["Figma", "Sketch", "Adobe XD", "Photoshop"],
+    location: "London, UK",
+    available: true,
+    saved: false, // Indicates if the freelancer is saved in the user's list
+  },
+  {
+    name: "Michael Brown",
+    title: "Mobile App Developer",
+    type: "Hourly ",
+    experience: "Expert",
+    hourlyRate: 50,
+    rating: 4.9,
+    description:
+      "Expert mobile app developer specializing in Flutter and React Native. Has successfully delivered high-quality mobile applications for various industries.",
+    skills: ["Flutter", "Swift", "Kotlin", "React Native"],
+    location: "Toronto, Canada",
+    available: true,
+    saved: true, // Indicates if the freelancer is saved in the user's list
+  },
+  {
+    name: "Emily White",
+    title: "Data Scientist",
+    type: "Hourlyt",
+    experience: "Expert",
+    hourlyRate: 60,
+    rating: 1.8,
+    description:
+      "Data scientist with expertise in Python and TensorFlow. Experienced in developing machine learning models and analyzing large datasets.",
+    skills: ["Python", "Rust", "TensorFlow", "Pandas"],
+    location: "San Francisco, USA",
+    available: false, // Currently not available for new projects
+    saved: false, // Indicates if the freelancer is saved in the user's list
+  },
+  {
+    name: "Carlos Garcia",
+    title: "DevOps Engineer",
+    type: "Hourly ",
+    experience: "Intermediate",
+    hourlyRate: 45,
+    rating: 0,
+    description:
+      "DevOps engineer with experience in AWS, Docker, and Kubernetes. Skilled in setting up CI/CD pipelines and automating cloud deployments.",
+    skills: ["AWS", "Docker", "Kubernetes", "CI/CD"],
+    location: "Madrid, Spain",
+    available: true,
+    saved: true, // Indicates if the freelancer is saved in the user's list
+  },
+];
 module.exports = {
   users,
   jobsData,
+  freelancersData,
   recent,
   ongoingProjects,
 };
