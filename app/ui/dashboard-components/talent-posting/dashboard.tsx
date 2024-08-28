@@ -3,7 +3,7 @@ import styles from "./dashboardCss.module.css";
 import Link from "next/link";
 import { PlusIcon } from "@heroicons/react/24/solid";
 import ProjectCarousel from "./projectCarousel";
-import Searchbar from "./searchbar";
+import SearchBar from "./searchBar";
 import NavBar from "./navBar";
 
 const ClientDashboard = () => {
@@ -29,7 +29,7 @@ const ClientDashboard = () => {
       </div>
       <ProjectCarousel />
       <div className="sticky top-[75px]  pt-5   bg-white">
-        <Searchbar />
+        <SearchBar />
         <NavBar />
       </div>{" "}
     </div>
