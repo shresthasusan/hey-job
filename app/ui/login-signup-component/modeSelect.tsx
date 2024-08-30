@@ -17,22 +17,27 @@ const ModeSelect = () => {
     selected: boolean;
   }
 
-  const Circle = ({ selected }: SelectProps) => {
-    return (
-      <div
-        className={clsx(
-          "rounded-full border-2 h-8 w-8 absolute top-3 right-3",
-          selected ? "bg-primary-600" : ""
-        )}
-      ></div>
-    );
+  const Circle = ({ selected }: { selected: boolean }) => (
+    <div
+      className={clsx(
+        "rounded-full border-2 h-8 w-8 absolute top-3 right-3 flex items-center justify-center",
+        selected && "bg-primary-600"
+      )}
+    >
+      {selected && <div className="rounded-full h-5 w-5 border-2"></div>}
+    </div>
+  );
+
+  const handleModeSelection = (selectedMode: string) => {
+    setMode(selectedMode);
   };
 
-  const selectClient = () => {
-    setMode("client");
-  };
-  const selectFreelancer = () => {
-    setMode("freelancer");
+  const handleContinue = () => {
+    if (!mode) {
+      console.log("Please select a mode");
+      return;
+    }
+    router.push(`/signup/${mode}`);
   };
 
   return (
@@ -44,7 +49,7 @@ const ModeSelect = () => {
             "h-44 border-2 w-60 relative rounded-xl",
             mode === "client" && "border-primary-600"
           )}
-          onClick={selectClient}
+          onClick={() => handleModeSelection("client")}
         >
           <Circle selected={mode === "client"} />
           <BriefcaseIcon className="h-10 w-10 absolute top-2 left-3" />
@@ -55,7 +60,7 @@ const ModeSelect = () => {
             "h-44 border-2 w-60 relative rounded-xl",
             mode === "freelancer" && "border-primary-600"
           )}
-          onClick={selectFreelancer}
+          onClick={() => handleModeSelection("freelancer")}
         >
           <Circle selected={mode === "freelancer"} />
           <ComputerDesktopIcon className="h-10 w-10 absolute top-2 left-3" />
@@ -69,11 +74,7 @@ const ModeSelect = () => {
           "button bg-primary-600 rounded-xl p-6 mt-5 text-white",
           !mode && "cursor-not-allowed opacity-50 disabled"
         )}
-        onClick={() => {
-          mode === "client"
-            ? router.push("/signup/client")
-            : router.push("/signup/freelancer");
-        }}
+        onClick={handleContinue}
       >
         {(mode === "client" && "Continue as a client") ||
           (mode === "freelancer" && "Continue as a freelancer") ||
