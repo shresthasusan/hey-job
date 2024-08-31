@@ -7,30 +7,26 @@ import {
 } from "@heroicons/react/24/outline";
 import { useSession } from "next-auth/react";
 import { Button } from "../../button";
+
+// import { useRouter } from "next/router";
 import { useRouter } from "next/navigation";
-import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
-import { connectMongoDB } from "@/app/lib/mongodb";
-import User from "@/models/user";
-import { start } from "repl";
+import { useState, useEffect } from "react";
 
 const WelcomeText = () => {
   const router = useRouter();
   const { data: session } = useSession();
   const userName = session?.user.name;
-  // await connectMongoDB();
-  // const user = await User.findOne({ name: userName }).select("_id");
-  // const id = user?._id;
-  const _id = "1";
+
+  const id = session?.user.id;
+
   // if (!session) {
   //   router.push("/login");
   // }
   const TextTyper = ({ text = "", className = "", startDelay = 0 }) => {
     const interval = 134;
     const [typedText, setTypedText] = useState<string>("");
-    const hasStarted = useRef(false);
+
     useEffect(() => {
-      if (hasStarted.current) return;
       let localTypingIndex = 0;
       let localTyping = "";
 
@@ -42,7 +38,6 @@ const WelcomeText = () => {
             localTypingIndex += 1;
           } else {
             clearInterval(printer);
-            hasStarted.current = true;
           }
         }, interval);
 
@@ -79,9 +74,15 @@ const WelcomeText = () => {
         <BanknotesIcon className="h-7 w-7 p-1 text-primary-600" /> Get paid for
         your work.
       </div>
-      <Link href={`/freelancer/forms-${_id}`}>
-        <Button className="mt-10 text-white p-5">Get Started</Button>
-      </Link>
+
+      <Button
+        className="mt-10 text-white p-5 "
+        onClick={() => {
+          router.push(`/signup/freelancer/${id}`);
+        }}
+      >
+        Get Started
+      </Button>
     </div>
   );
 };
