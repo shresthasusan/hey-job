@@ -8,49 +8,64 @@ import {
 import { useSession } from "next-auth/react";
 import { Button } from "../../button";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
-import { set } from "mongoose";
-import { clear } from "console";
+import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
+import { connectMongoDB } from "@/app/lib/mongodb";
+import User from "@/models/user";
 
 const WelcomeText = () => {
   const router = useRouter();
   const { data: session } = useSession();
+  const userName = session?.user.name;
+  // await connectMongoDB();
+  // const user = await User.findOne({ name: userName }).select("_id");
+  // const id = user?._id;
+  const _id = "1";
   // if (!session) {
   //   router.push("/login");
   // }
-  const LetterPop = ({ word }: { word: string }) => {
-    const [displayedLetters, setDisplayedLetters] = useState<string[]>([]);
-
+  const TextTyper = ({ text = "", className = "", startDelay = 0 }) => {
+    const interval = 134;
+    const [typedText, setTypedText] = useState<string>("");
+    const hasStarted = useRef(false);
     useEffect(() => {
-      const letters = word.split("");
-      let index = 0;
+      if (hasStarted.current) return;
+      let localTypingIndex = 0;
+      let localTyping = "";
 
-      const interval = setInterval(() => {
-        setDisplayedLetters((prev) => [...prev, letters[index]]);
-        index++;
-        if (index >= letters.length) {
-          clearInterval(interval);
-        }
-      }, 200);
+      const startTimeout = setTimeout(() => {
+        const printer = setInterval(() => {
+          if (localTypingIndex < text.length) {
+            localTyping += text[localTypingIndex];
+            setTypedText(localTyping);
+            localTypingIndex += 1;
+          } else {
+            clearInterval(printer);
+            hasStarted.current = true;
+          }
+        }, interval);
 
-      return () => clearInterval(interval);
-    }, [word]);
-    console.log(displayedLetters, "displayed");
+        return () => clearInterval(printer); // Cleanup the interval on component unmount
+      }, startDelay);
 
-    return (
-      <span className="text-primary-600">
-        {displayedLetters.map((letter, idx) => (
-          <span key={idx}>{letter}</span>
-        ))}
-      </span>
-    );
+      return () => clearInterval(startTimeout); // Cleanup the interval on component unmount
+    }, [text]);
+
+    return <span className={`${className}`}>{typedText}</span>;
   };
 
   return (
     <div className="flex flex-col items-center top-2/3 mt-[10%] h-screen">
       <div className="text-4xl">
-        hey <span>{session?.user.name}</span>. Are you ready for your next big{" "}
-        <LetterPop word="Endeavour?" />
+        Hey <span>{userName}. </span>
+        {/* <TextTyper text=" Are you ready for your next big" />{" "}
+         */}
+        Are you ready for your next big
+        <TextTyper
+          text=" Endeavour?"
+          startDelay={0}
+          className="text-primary-600"
+        />
       </div>
       <div className="text-2xl mt-10">
         Let&apos;s get started by filling out some basic information.
@@ -63,7 +78,9 @@ const WelcomeText = () => {
         <BanknotesIcon className="h-7 w-7 p-1 text-primary-600" /> Get paid for
         your work.
       </div>
-      <Button className="mt-10 text-white p-5">Get Started</Button>
+      <Link href={`/freelancer/forms-${_id}`}>
+        <Button className="mt-10 text-white p-5">Get Started</Button>
+      </Link>
     </div>
   );
 };

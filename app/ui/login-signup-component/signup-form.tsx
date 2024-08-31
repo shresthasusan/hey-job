@@ -11,6 +11,7 @@ const SignupForm = () => {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
   const [error, setError] = useState("");
 
   const router = useRouter();
@@ -19,6 +20,10 @@ const SignupForm = () => {
     e.preventDefault();
     if (!name || !lastName || !email || !password) {
       setError("Please fill in all fields");
+      return;
+    }
+    if (password !== passwordConfirm) {
+      setError("Passwords do not match");
       return;
     }
 
@@ -133,6 +138,23 @@ const SignupForm = () => {
           />
         </div>
       </div>
+      <div>
+        <label
+          className="mb-3 mt-5 block text-xs font-medium text-gray-900"
+          htmlFor="password"
+        />
+        <div className="relative">
+          <input
+            className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-5 text-sm outline-2 placeholder:text-gray-500"
+            id="passwordConfirm"
+            type="password"
+            name="passwordConfirm"
+            placeholder="Confirm Password"
+            onChange={(e) => setPasswordConfirm(e.target.value)}
+          />
+        </div>
+      </div>
+
       <Button
         className="mt-5 w-full
                   justify-center text-white "
