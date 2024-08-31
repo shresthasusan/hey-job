@@ -7,6 +7,7 @@ import bcrypt from "bcryptjs";
 
 import { type DefaultSession, type DefaultUser } from "next-auth";
 
+// Extend the NextAuth User and Session types
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
@@ -52,8 +53,16 @@ export const authOptions: NextAuthOptions = {
             return null;
           }
 
-          console.log("User authorized:", user);
-          return user;
+          // Transform the Mongoose document into a plain JavaScript object
+          const plainUser = {
+            name: user.name,
+            email: user.email,
+            lastName: user.lastName,
+            id: user.id,
+          };
+
+          console.log("User authorized:", plainUser);
+          return plainUser;
         } catch (error) {
           console.error("Authorization error:", error);
           return null;

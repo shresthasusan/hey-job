@@ -12,6 +12,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { connectMongoDB } from "@/app/lib/mongodb";
 import User from "@/models/user";
+import { start } from "repl";
 
 const WelcomeText = () => {
   const router = useRouter();
@@ -49,7 +50,7 @@ const WelcomeText = () => {
       }, startDelay);
 
       return () => clearInterval(startTimeout); // Cleanup the interval on component unmount
-    }, [text]);
+    }, [text, startDelay]);
 
     return <span className={`${className}`}>{typedText}</span>;
   };

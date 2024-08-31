@@ -2,6 +2,7 @@ import mongoose, { Document, Model, Schema } from "mongoose";
 
 // Define an interface representing a document in MongoDB.
 interface IUser extends Document {
+  _id: string;
   name: string;
   lastName: string;
   email: string;
