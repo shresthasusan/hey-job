@@ -53,7 +53,7 @@ const WelcomeText = () => {
         <LetterPop word="Endeavour?" />
       </div>
       <div className="text-2xl mt-10">
-        Let's get started by filling out some basic information.
+        Let&apos;s get started by filling out some basic information.
       </div>
       <div className="text-xl mt-10 flex  ">
         <UserIcon className="h-7 w-7 p-1 text-primary-600 " /> Answer few
