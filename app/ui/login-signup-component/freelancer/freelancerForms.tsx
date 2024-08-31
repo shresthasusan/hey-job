@@ -2,8 +2,10 @@
 import { ChangeEvent, FormEvent, useState } from "react";
 import { Button } from "../../button";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const FreelancerForms = () => {
+  const router = useRouter();
   const [step, setStep] = useState(0);
   const nextStep = () => setStep(step + 1);
   const prevStep = () => setStep(step - 1);
@@ -60,7 +62,8 @@ const FreelancerForms = () => {
 
       if (response.ok) {
         console.log("Form submitted successfully");
-        // setFormData(initialFormData); // Reset form data to initial state
+        setFormData(initialFormData); // Reset form data to initial state
+        router.push("/");
       } else {
         console.error("Form submission failed");
       }
