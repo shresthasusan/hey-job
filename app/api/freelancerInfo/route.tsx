@@ -5,6 +5,7 @@ import FreelancerInfo from "@/models/freelancerInfo";
 
 interface UserRequestBody {
   userId: string;
+  fullName: string;
   professionalEmail: string;
   location: string;
   phone: string;
@@ -22,6 +23,7 @@ export async function POST(req: NextRequest) {
   try {
     const {
       userId,
+      fullName,
       professionalEmail,
       location,
       phone,
@@ -39,6 +41,7 @@ export async function POST(req: NextRequest) {
     // Save the data in the database
     await FreelancerInfo.create({
       userId,
+      fullName,
       professionalEmail,
       location,
       phone,
@@ -53,6 +56,7 @@ export async function POST(req: NextRequest) {
     });
     const responseData = {
       userId,
+      fullName,
       professionalEmail,
       location,
       phone,

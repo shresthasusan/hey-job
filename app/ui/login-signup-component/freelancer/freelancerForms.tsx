@@ -9,8 +9,10 @@ const FreelancerForms = () => {
   const prevStep = () => setStep(step - 1);
   const { data: session } = useSession();
   const id = session?.user.id;
+  const fullName = session?.user.name + " " + session?.user.lastName;
   const initialFormData = {
     userId: id,
+    fullName: fullName,
     professionalEmail: "",
     location: "",
     phone: "",

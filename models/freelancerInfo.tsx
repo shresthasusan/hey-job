@@ -3,6 +3,7 @@ import mongoose, { Document, Schema, Model } from "mongoose";
 // Define an interface representing the FreelancerInfo document
 interface IFreelancerInfo extends Document {
   userId: mongoose.Schema.Types.ObjectId; // Reference to User's _id
+  fullName: string;
   professionalEmail: string;
   location: string;
   phone: string;
@@ -24,6 +25,10 @@ const freelancerInfoSchema = new Schema<IFreelancerInfo>(
       ref: "User",
       required: true,
       unique: true, // Ensure each user has only one FreelancerInfo document
+    },
+    fullName: {
+      type: String,
+      required: true,
     },
     professionalEmail: {
       type: String,
