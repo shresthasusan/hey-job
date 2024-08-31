@@ -14,9 +14,11 @@ declare module "next-auth" {
       name: string;
       email: string;
       lastName: string;
+      id: string;
     };
   }
   interface User extends DefaultUser {
+    id: string;
     name: string;
     email: string;
     lastName: string;
@@ -53,7 +55,7 @@ export const authOptions: NextAuthOptions = {
             return null;
           }
 
-          // Transform the Mongoose document into a plain JavaScript object
+          // Transform the Mongoose document into a plain JSON object
           const plainUser = {
             name: user.name,
             email: user.email,
@@ -80,6 +82,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
+        token.id = user.id;
         token.name = user.name;
         token.email = user.email;
         token.lastName = user.lastName;
@@ -90,6 +93,7 @@ export const authOptions: NextAuthOptions = {
       if (token) {
         session.user = {
           ...session.user,
+          id: token.id as string,
           name: token.name as string,
           email: token.email as string,
           lastName: token.lastName as string,
