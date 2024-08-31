@@ -33,6 +33,21 @@ interface Freelancer {
   saved: boolean;
 }
 
+// interface Freelancer {
+//   userId: string;
+//   professionalEmail: string;
+//   location: string;
+//   phone: string;
+//   skills: string[];
+//   experience: string;
+//   education: string;
+//   portfolio: string;
+//   certificate: string;
+//   bio: string;
+//   languages: string[];
+//   rate: string;
+// }
+
 // Assuming FreelancersData, recent, and a way to filter saved Freelancers are available in the scope
 // For saved Freelancers, assuming there's a need to filter FreelancersData or recent based on the saved property
 const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
