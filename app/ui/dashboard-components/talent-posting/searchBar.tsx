@@ -13,9 +13,9 @@ const SearchBar = () => {
     const params = new URLSearchParams(searchParams);
 
     if (term) {
-      params.set("title", term);
+      params.set("talentName", term);
     } else {
-      params.delete("title");
+      params.delete("talentName");
     }
     const newUrl =
       pathname + (params.toString() ? `?${params.toString()}` : "");

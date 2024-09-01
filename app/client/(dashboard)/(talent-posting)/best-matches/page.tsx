@@ -2,7 +2,7 @@ import FreelancerList from "@/app/ui/dashboard-components/talent-posting/talentL
 import { Suspense } from "react";
 
 interface searchParams {
-  title: string;
+  talentName: string;
 }
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
 }
 
 const page = ({ searchParams }: Props) => {
-  const query = searchParams?.title || "";
+  const query = searchParams?.talentName || "";
   console.log(query);
   return (
     <Suspense>
