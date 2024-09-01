@@ -60,7 +60,7 @@ const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const { freelancers } = await response.json();
-        // console.log("Freelancers:", freelancers);
+
         setData(freelancers);
       } catch (error) {
         console.error("Error fetching freelancers:", error);
@@ -101,8 +101,10 @@ const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
           className={`flex flex-col gap-1 p-5 border-t-2 border-gray-200`}
         >
           {/* <p className="text-xs text-gray-400">
-            {freelancer.available ? "available" : "unavailable"} // available status
+          {freelancer.available ? "available" : "unavailable"} 
+          // available status
           </p> */}
+
           <p className="text-xs text-gray-400">available</p>
           <div className="flex items-center justify-between">
             <h1 className="text-2xl text-gray-500 font-medium">
@@ -145,7 +147,7 @@ const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
             <p className="text-sm flex font-medium text-gray-500">
               <MapPinIcon className="w-5 h-5" /> {freelancer.location}
             </p>
-            {/* <StarRating rating={freelancer.rating} /> */} // rating
+            {/* <StarRating rating={freelancer.rating} />  // rating*/}
             <StarRating rating={3.5} />
           </div>
         </div>
