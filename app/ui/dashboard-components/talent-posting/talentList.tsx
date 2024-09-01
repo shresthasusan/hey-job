@@ -70,13 +70,12 @@ const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
   }, []);
 
   // useEffect(() => {
-  /// use query based api for better performance and less data fetching
-
 
   //   let filteredData: Freelancer[] = data;
-  //   // if (savedFreelancers) {
-  //   //   filteredData = data.filter((freelancer) => freelancer.saved); // Filter saved freelancers
-  //   // }
+  //   if (savedFreelancers) {
+  //       filteredData = data.filter((freelancer) => freelancer.saved); // Filter saved freelancers
+  //     }
+  //      use query based api for better performance and less data fetching
 
   //   if (query) {
   //     const queryWords = query.toLowerCase().split(/\s+/);
@@ -110,10 +109,11 @@ const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
               {freelancer.fullName}
             </h1>
             {/* {freelancer.saved ? (
-              <Liked className="w-6 h-6 text-red-600" /> // saved status
+              <Liked className="w-6 h-6 text-red-600" /> 
             ) : (
               <Unliked className="w-6 h-6" />
             )} */}
+            {/* saved status */}
             <Liked className="w-6 h-6 text-red-600" />
           </div>
           <p className="text-xs mt-2 text-gray-400">
