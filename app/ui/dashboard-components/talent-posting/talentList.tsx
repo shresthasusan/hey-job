@@ -50,6 +50,7 @@ const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
     const fetchData = async () => {
       try {
         const response = await fetch("/api/freelancers", {
+          method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
