@@ -51,7 +51,7 @@ const WelcomeText = () => {
   };
 
   return (
-    <div className="flex flex-col items-center top-2/3 mt-[10%] h-screen">
+    <div className="flex flex-col items-center top-2/3 justify-center h-screen">
       <div className="text-4xl">
         Hey <span>{userName}. </span>
         {/* <TextTyper text=" Are you ready for your next big" />{" "}
