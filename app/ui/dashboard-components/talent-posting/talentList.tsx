@@ -43,12 +43,13 @@ interface Freelancer {
 
 const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
   const [data, setData] = useState<Freelancer[]>([]);
+  const controller = new AbortController();
+  const signal = controller.signal;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch("/api/freelancers", {
-          method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
@@ -56,17 +57,16 @@ const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
         const { freelancers } = await response.json();
-
         setData(freelancers);
       } catch (error) {
         console.error("Error fetching freelancers:", error);
       }
     };
     fetchData();
+    return () => {
+      controller.abort();
+    };
   }, []);
 
   // useEffect(() => {
