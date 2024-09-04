@@ -41,17 +41,20 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
         <div className="Clients-Jobs mt-5 w-full col-span-4">
           <div className="flex justify-between">
-            <span className="text-2xl flex w-full flex-wrap items-center">
+            <span className="text-2xl flex w-full flex-wrap items-center hid ">
               {" "}
               Your Jobs
-              <InformationCircleIcon className="h-5 w-5 mx-1 " />
-              <p className="invisible ">
-                {" "}
-                Manage your jobs and contracts efficiently: those needing urgent
-                action and with time sensitivity are displayed first
-              </p>
+              <span className="h-5 w-5 mx-1 info relative">
+                <InformationCircleIcon />
+
+                <p className="hide absolute rounded-xl  p-3 bg-white text-sm  shadow-[0_0px_20px_rgba(228,228,228,1)] before:absolute before:top-10 before:-left-1 before:translateX-1/2 before:rotate-[135deg] before:z-10  before:bg-white before:border-white before:border-8 after:right-0  z-10 -top-9 w-64  h-24  left-7 text-slate-500    ">
+                  {" "}
+                  Manage your jobs and contracts efficiently: those needing
+                  urgent action and with time sensitivity are displayed first
+                </p>
+              </span>
             </span>{" "}
-            <Link href={"#"}>
+            <Link href={"/client/post-job"}>
               <div className="btn btn-primary text-white flex p-3 text-nowrap items-center bg-primary-700 rounded-xl ">
                 <PlusIcon className="h-6 w-6 m-1" />
                 Post a Job

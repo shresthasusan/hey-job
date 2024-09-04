@@ -4,8 +4,8 @@ import OrderCard from "../../ui/dashboard-components/orderCard";
 import RatingCard from "../../ui/dashboard-components/rating-card/ratingCard";
 import FinanceCard from "../../ui/dashboard-components/financeCard";
 import ReviewsCard from "../../ui/dashboard-components/reviews-card/reviewsCard";
-import JobNavBar from "../../ui/dashboard-components/job-posting/jobNavBar";
-import SearchInput from "../../ui/dashboard-components/job-posting/searchBar";
+import JobNavBar from "../../ui/dashboard-components/job-list/jobNavBar";
+import SearchInput from "../../ui/dashboard-components/job-list/searchBar";
 import { ReactNode, Suspense } from "react";
 
 interface Props {

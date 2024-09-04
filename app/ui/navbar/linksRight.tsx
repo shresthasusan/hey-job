@@ -1,19 +1,13 @@
 "use client";
-import Image from "next/image";
 import {
   QuestionMarkCircleIcon,
   RectangleGroupIcon,
   BellIcon,
   UserCircleIcon,
-  Cog6ToothIcon,
-  ArrowLeftCircleIcon,
-  ArrowLeftStartOnRectangleIcon,
 } from "@heroicons/react/24/outline";
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import LinksDropdown from "./linksDropdown";
-import { cursorTo } from "readline";
 
 const LinksRight = () => {
   const [isDropdownVisible, setDropdownVisible] = useState(0);

@@ -1,4 +1,4 @@
-import JobList from "@/app/ui/dashboard-components/job-posting/jobList";
+import JobList from "@/app/ui/dashboard-components/job-list/jobList";
 import { Suspense } from "react";
 
 interface searchParams {

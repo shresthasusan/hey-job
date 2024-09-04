@@ -50,3 +50,12 @@ input[type="search"]:hover {
   width: 25%;
   margin: 5px;
 }
+
+.info:hover .hide {
+  display: block;
+}
+
+.hide {
+  display: none;
+  position: absolute;
+}
