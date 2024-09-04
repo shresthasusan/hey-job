@@ -3,15 +3,15 @@
 import { jobsData, recent } from "@/app/lib/data";
 import { HeartIcon as Unliked, MapPinIcon } from "@heroicons/react/24/outline";
 import { HeartIcon as Liked } from "@heroicons/react/24/solid";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import styles from "./jobListingCss.module.css";
 
-const truncateString = (str: string, num: number) => {
-  if (str.length <= num) {
-    return str;
-  }
-  return str.slice(0, num) + "... ";
-};
+// const truncateString = (str: string, num: number) => {
+//   if (str.length <= num) {
+//     return str;
+//   }
+//   return str.slice(0, num) + "... ";
+// };
 
 interface Props {
   bestMatches?: boolean;
@@ -36,32 +36,56 @@ interface Job {
 // For saved jobs, assuming there's a need to filter jobsData or recent based on the saved property
 const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
   const [data, setData] = useState<Job[]>([]); // Corrected the type to Job[] and initialized as an empty array
-
   useEffect(() => {
-    let filteredData: Job[] = []; // Temporary array to hold filtered data
-    if (bestMatches) {
-      // Assuming bestMatches logic is to show all jobs from jobsData for this example
-      filteredData = jobsData;
-    } else if (mostRecent) {
-      filteredData = recent;
-    } else if (savedJobs) {
-      // Assuming we filter jobsData for saved jobs, similar logic can be applied to 'recent' if needed
-      filteredData = jobsData.filter((job) => job.saved);
-    }
+    const controller = new AbortController();
+    const fetchData = async () => {
+      try {
+        const response = await fetch("/api/fetchJobs", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const { jobs } = await response.json();
+        setData(jobs);
+      } catch (error) {
+        console.error("Error fetching jobs:", error);
+      }
+    };
+    fetchData();
+    return () => {
+      controller.abort();
+    };
+  }, []);
 
-    if (query) {
-      const queryWords = query.toLowerCase().split(/\s+/); // Split query into words or letters, and convert to lowercase for case-insensitive matching
-      filteredData = filteredData.filter(
-        (job) =>
-          queryWords.some((word) => job.title.toLowerCase().includes(word)) ||
-          job.tags.some((tag) =>
-            queryWords.some((word) => tag.toLowerCase().includes(word))
-          )
-      );
-    }
+  // useEffect(() => {
+  //   let filteredData: Job[] = []; // Temporary array to hold filtered data
+  //   if (bestMatches) {
+  //     // Assuming bestMatches logic is to show all jobs from jobsData for this example
+  //     filteredData = jobsData;
+  //   } else if (mostRecent) {
+  //     filteredData = recent;
+  //   } else if (savedJobs) {
+  //     // Assuming we filter jobsData for saved jobs, similar logic can be applied to 'recent' if needed
+  //     filteredData = jobsData.filter((job) => job.saved);
+  //   }
 
-    setData(filteredData); // Update the state with the filtered data
-  }, [bestMatches, mostRecent, savedJobs, query]);
+  //   if (query) {
+  //     const queryWords = query.toLowerCase().split(/\s+/); // Split query into words or letters, and convert to lowercase for case-insensitive matching
+  //     filteredData = filteredData.filter(
+  //       (job) =>
+  //         queryWords.some((word) => job.title.toLowerCase().includes(word)) ||
+  //         job.tags.some((tag) =>
+  //           queryWords.some((word) => tag.toLowerCase().includes(word))
+  //         )
+  //     );
+  //   }
+
+  //   setData(filteredData); // Update the state with the filtered data
+  // }, [bestMatches, mostRecent, savedJobs, query]);
 
   // Render logic or other operations can go here
 
@@ -85,12 +109,13 @@ const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
             {job.type} - {job.experience} - Est. Budget: {job.budget}
           </p>
           <p className="text-black my-5 ">
-            {truncateString(job.description, 400)}
-            {job.description.length > 400 ? (
-              <button className="text-primary-700 hover:text-primary-500">
-                Read More
-              </button>
-            ) : null}
+            {/* {truncateString(job.description, 400)} */}
+            {job.description}
+            {/* {job.description.length > 400 ? (
+                <button className="text-primary-700 hover:text-primary-500">
+                  Read More
+                </button>
+              ) : null} */}
           </p>
 
           <div className="flex justify-start gap-5 flex-wrap items-center">

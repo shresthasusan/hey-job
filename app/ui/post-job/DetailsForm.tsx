@@ -60,7 +60,7 @@ const DetailsForm = () => {
       if (response.ok) {
         console.log("Form submitted successfully");
         setFormData(initialFormData); // Reset form data to initial state
-        router.push("/");
+        router.push("/client/best-matches");
       } else {
         console.error("Form submission failed");
       }
@@ -215,7 +215,11 @@ const DetailsForm = () => {
             <Button onClick={prevStep} className="text-white">
               Back
             </Button>
-            <Button type="submit" className="text-white" success={true}>
+            <Button
+              onClick={() => handleSubmit}
+              className="text-white"
+              success={true}
+            >
               Submit
             </Button>
           </div>
