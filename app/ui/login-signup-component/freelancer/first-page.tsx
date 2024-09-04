@@ -11,6 +11,7 @@ import { Button } from "../../button";
 // import { useRouter } from "next/router";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import TypingAnimation from "../../typingAnimation";
 
 const WelcomeText = () => {
   const router = useRouter();
@@ -22,33 +23,6 @@ const WelcomeText = () => {
   // if (!session) {
   //   router.push("/login");
   // }
-  const TextTyper = ({ text = "", className = "", startDelay = 0 }) => {
-    const interval = 134;
-    const [typedText, setTypedText] = useState<string>("");
-
-    useEffect(() => {
-      let localTypingIndex = 0;
-      let localTyping = "";
-
-      const startTimeout = setTimeout(() => {
-        const printer = setInterval(() => {
-          if (localTypingIndex < text.length) {
-            localTyping += text[localTypingIndex];
-            setTypedText(localTyping);
-            localTypingIndex += 1;
-          } else {
-            clearInterval(printer);
-          }
-        }, interval);
-
-        return () => clearInterval(printer); // Cleanup the interval on component unmount
-      }, startDelay);
-
-      return () => clearInterval(startTimeout); // Cleanup the interval on component unmount
-    }, [text, startDelay]);
-
-    return <span className={`${className}`}>{typedText}</span>;
-  };
 
   return (
     <div className="flex flex-col items-center top-2/3 justify-center h-screen">
@@ -57,10 +31,11 @@ const WelcomeText = () => {
         {/* <TextTyper text=" Are you ready for your next big" />{" "}
          */}
         Are you ready for your next big
-        <TextTyper
+        <TypingAnimation
           text=" Endeavour?"
           startDelay={0}
           className="text-primary-600"
+          interval={134}
         />
       </div>
       <div className="text-2xl mt-10">
