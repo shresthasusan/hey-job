@@ -1,7 +1,8 @@
+import WelcomeText from "@/app/ui/post-job/WelcomeText";
 import React from "react";
 
 const PostJob = () => {
-  return <div>PostJob</div>;
+  return <WelcomeText />;
 };
 
 export default PostJob;
