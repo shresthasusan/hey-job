@@ -43,10 +43,9 @@ interface Freelancer {
 
 const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
   const [data, setData] = useState<Freelancer[]>([]);
-  const controller = new AbortController();
-  const signal = controller.signal;
 
   useEffect(() => {
+    const controller = new AbortController();
     const fetchData = async () => {
       try {
         const response = await fetch("/api/freelancers", {
