@@ -20,7 +20,7 @@ const jobsSchema = new Schema<IJobs>(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      unique: true, // Ensure each user has only one FreelancerInfo document
+      unique: false,
     },
     fullName: {
       type: String,
