@@ -50,6 +50,10 @@ const jobsSchema = new Schema<IJobs>(
       type: String,
       required: true,
     },
+    type: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );
