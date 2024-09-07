@@ -54,6 +54,9 @@ const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
           headers: {
             "Content-Type": "application/json",
           },
+          next: {
+            revalidate: 3600, // 1 hour
+          },
         });
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);

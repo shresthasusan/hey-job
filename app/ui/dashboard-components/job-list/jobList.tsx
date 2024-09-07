@@ -45,6 +45,9 @@ const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
           headers: {
             "Content-Type": "application/json",
           },
+          next: {
+            revalidate: 3600, // 1 hour
+          },
         });
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
