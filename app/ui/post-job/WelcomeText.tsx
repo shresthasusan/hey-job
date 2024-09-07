@@ -12,7 +12,24 @@ const WelcomeText = () => {
   return (
     <div className="flex flex-col items-center justify-center top-1/2 m-52 ">
       <div className="text-4xl">
-        Welcome <DisplaySessionInfo name={true} />! Proceed to Posting your Job.
+        Welcome <DisplaySessionInfo name={true} />! Let’s get started on{" "}
+        <TypingAnimation
+          text={"posting your Job"}
+          className="text-primary-600"
+          interval={153}
+        />
+        <TypingAnimation
+          text={"!"}
+          className="text-primary-600"
+          interval={10}
+          startDelay={3500}
+        />
+        <TypingAnimation
+          text={"🚀"}
+          className="text-primary-600"
+          interval={13}
+          startDelay={3000}
+        />{" "}
       </div>
       <div className="text-2xl mt-10">
         Bring your vision to life with top-tier talent!
