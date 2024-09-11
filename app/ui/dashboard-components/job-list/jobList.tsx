@@ -32,70 +32,59 @@ interface Job {
   saved: boolean;
 }
 
-// Assuming jobsData, recent, and a way to filter saved jobs are available in the scope
-// For saved jobs, assuming there's a need to filter jobsData or recent based on the saved property
+// JobList component definition
 const JobList = async ({
   bestMatches,
   mostRecent,
   savedJobs,
   query,
 }: Props) => {
-  const [data, setData] = useState<Job[]>([]); // Corrected the type to Job[] and initialized as an empty array
+  // State variable to store fetched job data, initialized as an empty array
+  const [data, setData] = useState<Job[]>([]);
+
+  // useEffect hook to fetch job data when the component mounts
   useEffect(() => {
+    // Create an AbortController to allow aborting the fetch request
     const controller = new AbortController();
+
+    // Async function to fetch job data from the API
     const fetchData = async () => {
       try {
+        // Make a GET request to the /api/fetchJobs endpoint
         const response = await fetch("/api/fetchJobs", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
           next: {
-            revalidate: 3600, // 1 hour
+            revalidate: 3600, // Revalidate the data every 1 hour
           },
         });
+
+        // Check if the response is not OK (status code is not in the range 200-299)
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
+
+        // Parse the JSON response to get the jobs data
         const { jobs } = await response.json();
+
+        // Update the state with the fetched jobs data
         setData(jobs);
       } catch (error) {
+        // Log any errors that occur during the fetch
         console.error("Error fetching jobs:", error);
       }
     };
+
+    // Call the fetchData function to fetch job data
     fetchData();
+
+    // Cleanup function to abort the fetch request if the component unmounts
     return () => {
       controller.abort();
     };
-  }, []);
-
-  // useEffect(() => {
-  //   let filteredData: Job[] = []; // Temporary array to hold filtered data
-  //   if (bestMatches) {
-  //     // Assuming bestMatches logic is to show all jobs from jobsData for this example
-  //     filteredData = jobsData;
-  //   } else if (mostRecent) {
-  //     filteredData = recent;
-  //   } else if (savedJobs) {
-  //     // Assuming we filter jobsData for saved jobs, similar logic can be applied to 'recent' if needed
-  //     filteredData = jobsData.filter((job) => job.saved);
-  //   }
-
-  //   if (query) {
-  //     const queryWords = query.toLowerCase().split(/\s+/); // Split query into words or letters, and convert to lowercase for case-insensitive matching
-  //     filteredData = filteredData.filter(
-  //       (job) =>
-  //         queryWords.some((word) => job.title.toLowerCase().includes(word)) ||
-  //         job.tags.some((tag) =>
-  //           queryWords.some((word) => tag.toLowerCase().includes(word))
-  //         )
-  //     );
-  //   }
-
-  //   setData(filteredData); // Update the state with the filtered data
-  // }, [bestMatches, mostRecent, savedJobs, query]);
-
-  // Render logic or other operations can go here
+  }, []); // Empty dependency array means this effect runs once when the component mounts
 
   return (
     <div className="flex boader flex-col mt-8  ">
