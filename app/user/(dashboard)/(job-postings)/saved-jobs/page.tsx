@@ -1,4 +1,5 @@
 import JobList from "@/app/ui/dashboard-components/job-list/jobList";
+import PostingSkeleton from "@/app/ui/dashboard-components/skeletons/postingSkeleton";
 import { Suspense } from "react";
 
 interface searchParams {
@@ -12,7 +13,7 @@ interface Props {
 const page = ({ searchParams }: Props) => {
   const query = searchParams?.title || "";
   return (
-    <Suspense>
+    <Suspense fallback={<PostingSkeleton />}>
       <JobList query={query} savedJobs={true} />
     </Suspense>
   );
