@@ -34,7 +34,12 @@ interface Job {
 
 // Assuming jobsData, recent, and a way to filter saved jobs are available in the scope
 // For saved jobs, assuming there's a need to filter jobsData or recent based on the saved property
-const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
+const JobList = async ({
+  bestMatches,
+  mostRecent,
+  savedJobs,
+  query,
+}: Props) => {
   const [data, setData] = useState<Job[]>([]); // Corrected the type to Job[] and initialized as an empty array
   useEffect(() => {
     const controller = new AbortController();
