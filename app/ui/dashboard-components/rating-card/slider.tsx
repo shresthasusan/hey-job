@@ -1,9 +1,6 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import styled from "styled-components"; // Add this import
+import { useEffect, useState } from "react";
 import clsx from "clsx";
-import exp from "constants";
-import Emoji from "./Emoji";
 
 interface userRating {
   rating: number;

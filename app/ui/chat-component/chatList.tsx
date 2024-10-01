@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { users } from "../../lib/data.js"; // Adjust the path as necessary
+import { users } from "../../lib/data"; // Adjust the path as necessary
 import SearchChat from "./searchChat";
-import Image from "next/image.js";
-import { useSearchParams } from "next/navigation.js";
+import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 
-interface user {
+// Define the interface for the user type
+interface User {
   id: number;
   name: string;
   message: string;
@@ -14,52 +15,52 @@ interface user {
   image: string;
 }
 
-const ChatList = () => {
-  const searchParam = useSearchParams();
-  const query = searchParam.get("name");
-  const [data, setData] = useState<user[]>([]); // Corrected the type to Job[] and initialized as an empty array
+const ChatList: React.FC = () => {
+  const searchParam = useSearchParams(); // Get search parameters from the URL
+  const query = searchParam.get("name"); // Get the "name" query parameter
+  const [data, setData] = useState<User[]>([]); // State to hold filtered user data
 
   useEffect(() => {
-    let filteredData: user[] = []; // Temporary array to hold filtered data
-    filteredData = users; // Initialize with all data
+    let filteredData: User[] = users; // Initialize with all user data
+
+    // Filter the data if a query is present
     if (query) {
-      const queryWords = query.toLowerCase().split(/\s+/); // Split query into words or letters, and convert to lowercase for case-insensitive matching
+      const queryWords = query.toLowerCase().split(/\s+/); // Convert query to lowercase and split into words
       filteredData = filteredData.filter((user) =>
         queryWords.some((word) => user.name.toLowerCase().includes(word))
       );
     }
 
-    setData(filteredData); // Update the state with the filtered data
-  }, [query]);
+    setData(filteredData); // Update state with filtered data
+  }, [query]); // Dependency on 'query' to re-run filter logic when query changes
 
   return (
-    <div className="  h-full relative  overflow-hidden rounded-2xl  shadow-[0_10px_20px_rgba(228,228,228,_0.7)]  border-r-2 ">
-      {/* <!-- search compt --> */}
-
-      <div className="border-b-2  py-4 px-2">
+    <div className="h-full relative overflow-hidden rounded-2xl shadow-[0_10px_20px_rgba(228,228,228,_0.7)] border-r-2">
+      {/* Search component */}
+      <div className="border-b-2 py-4 px-2">
         <SearchChat />
       </div>
-      {/* <!-- end search compt --> */}
 
-      {/* <!-- user list --> */}
-      <div className=" h-full pb-16  overflow-scroll">
-        <div className=" flex flex-col">
+      {/* User list */}
+      <div className="h-full pb-16 overflow-scroll">
+        <div className="flex flex-col">
           {data.map((user) => (
             <div
-              key={user.id}
+              key={user.id} // Key prop for mapping
               className="flex flex-row py-2 px-2 justify-center hover:bg-gray-200 items-center border-b-2"
             >
-              {" "}
-              {/* Moved key prop here */}
+              {/* User avatar */}
               <div className="w-1/4">
                 <Image
                   src={user.image}
                   className="object-cover h-12 w-12 rounded-full"
-                  alt=""
+                  alt={user.name}
                   width={48}
                   height={48}
                 />
               </div>
+
+              {/* User details */}
               <div className="w-[80%] relative">
                 <div className="text-lg font-medium">{user.name}</div>
                 <div className="text-sm w-[80%] overflow-hidden text-gray-500">
@@ -73,8 +74,6 @@ const ChatList = () => {
           ))}
         </div>
       </div>
-
-      {/* <!-- end user list --> */}
     </div>
   );
 };

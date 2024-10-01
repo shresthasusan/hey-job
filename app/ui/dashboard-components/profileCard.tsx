@@ -10,42 +10,48 @@ interface Props {
 }
 
 const ProfileCard = ({ mode }: Props) => {
+  // Use the useSession hook to get session data and status
   const { data: session, status } = useSession();
 
+  // If the session status is loading, return a skeleton component
   if (status === "loading") {
-    return <SkeletonProfileCard />; //return a skeleton component while loading..
+    return <SkeletonProfileCard />;
   }
 
+  // Render the profile card with user data
   return (
-    <div className="flex  min-w-[280px] w-[15%] flex-col relative rounded-3xl h-[250px] overflow-hidden shadow-[0_10px_20px_rgba(228,228,228,_0.7)] ">
-      <div className=" h-[40%] bg-secondary-600  overflow-hidden">
+    <div className="flex min-w-[280px] w-[15%] flex-col relative rounded-3xl h-[250px] overflow-hidden shadow-[0_10px_20px_rgba(228,228,228,_0.7)]">
+      {/* Cover image section */}
+      <div className="h-[40%] bg-secondary-600 overflow-hidden">
         <Image
           src="/images/placeholder-614.webp"
           alt="cover"
           width={100}
-          className="w-full object-cover "
+          className="w-full object-cover"
           height={100}
         />
       </div>
-      <div
-        className="bg-yellow-400  rounded-full
-            absolute translate-y-[50%] overflow-hidden  translate-x-1/2 right-[50%]
-         h-24 w-24"
-      >
+
+      {/* Profile image section */}
+      <div className="bg-yellow-400 rounded-full absolute translate-y-[50%] overflow-hidden translate-x-1/2 right-[50%] h-24 w-24">
         <Image
           src="/images/image1.png"
           alt="profile"
           width={150}
           height={150}
-          className="rounded-full "
+          className="rounded-full"
         />
       </div>
-      <div className=" px-3  items-center justify-center h-2/3  flex flex-col">
-        <div className=" text-center pt-10 ">
-          <h2 className="text-3xl  font-medium ">
+
+      {/* User information section */}
+      <div className="px-3 items-center justify-center h-2/3 flex flex-col">
+        <div className="text-center pt-10">
+          {/* Display user's name and last name */}
+          <h2 className="text-3xl font-medium">
             {session?.user?.name} {session?.user?.lastName}
           </h2>
-          <p className="text-base  text-gray-400">{mode}</p>
+          {/* Display mode */}
+          <p className="text-base text-gray-400">{mode}</p>
         </div>
       </div>
     </div>

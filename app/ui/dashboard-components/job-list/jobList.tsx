@@ -33,12 +33,7 @@ interface Job {
 }
 
 // JobList component definition
-const JobList = async ({
-  bestMatches,
-  mostRecent,
-  savedJobs,
-  query,
-}: Props) => {
+const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
   // State variable to store fetched job data, initialized as an empty array
   const [data, setData] = useState<Job[]>([]);
 
