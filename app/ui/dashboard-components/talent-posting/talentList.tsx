@@ -33,13 +33,6 @@ interface Freelancer {
   bio: string;
   languages: string[];
   rate: string;
-  // available: boolean;
-  // saved: boolean;
-  // title: string;
-  // type: string;
-  // hourlyRate: number;
-  // rating: number;
-  // description: string;
 }
 
 const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
@@ -49,15 +42,20 @@ const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
     const controller = new AbortController();
     const fetchData = async () => {
       try {
-        const response = await fetch("/api/freelancers", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          next: {
-            revalidate: 3600, // 1 hour
-          },
-        });
+        console.log("passed query", query); // query
+        const response = await fetch(
+          `/api/freelancers?query=${encodeURIComponent(query || "")}`,
+          // "/api/freelancers",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            next: {
+              revalidate: 3600, // 1 hour
+            },
+          }
+        );
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }

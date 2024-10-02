@@ -10,7 +10,6 @@ import { Button } from "../../button";
 
 // import { useRouter } from "next/router";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
 import TypingAnimation from "../../typingAnimation";
 
 const WelcomeText = () => {
