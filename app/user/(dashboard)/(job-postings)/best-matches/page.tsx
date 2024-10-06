@@ -17,7 +17,6 @@ interface Props {
 const page = ({ searchParams }: Props) => {
   // Extracting the query parameter from searchParams
   const query = searchParams?.title || "";
-  console.log(query); // Logging the query for debugging purposes
 
   return (
     // Wrapping JobList component with Suspense to show a fallback while loading

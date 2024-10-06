@@ -5,13 +5,14 @@ import { HeartIcon as Unliked, MapPinIcon } from "@heroicons/react/24/outline";
 import { HeartIcon as Liked } from "@heroicons/react/24/solid";
 import { useState, useEffect, use } from "react";
 import styles from "./jobListingCss.module.css";
+import SaveButton from "../../saveButton";
 
-// const truncateString = (str: string, num: number) => {
-//   if (str.length <= num) {
-//     return str;
-//   }
-//   return str.slice(0, num) + "... ";
-// };
+const truncateString = (str: string, num: number) => {
+  if (str.length <= num) {
+    return str;
+  }
+  return str.slice(0, num) + "... ";
+};
 
 interface Props {
   bestMatches?: boolean;
@@ -30,6 +31,7 @@ interface Job {
   tags: string[];
   location: string;
   saved: boolean;
+  jobId: string; // Added jobId field to match the provided data structure
 }
 
 // JobList component definition
@@ -45,8 +47,14 @@ const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
     // Async function to fetch job data from the API
     const fetchData = async () => {
       try {
-        // Make a GET request to the /api/fetchJobs endpoint
-        const response = await fetch("/api/fetchJobs", {
+        // Build the query string based on the passed props
+        const params = new URLSearchParams();
+        if (bestMatches) params.append("bestMatches", "true");
+        if (mostRecent) params.append("mostRecent", "true");
+        if (savedJobs) params.append("savedJobs", "true");
+        if (query) params.append("query", query);
+
+        const response = await fetch(`/api/fetchJobs?${params.toString()}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -79,7 +87,7 @@ const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
     return () => {
       controller.abort();
     };
-  }, []); // Empty dependency array means this effect runs once when the component mounts
+  }, [query]); // Empty dependency array means this effect runs once when the component mounts
 
   return (
     <div className="flex boader flex-col mt-8  ">
@@ -91,23 +99,24 @@ const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
           <p className="text-xs text-gray-400"> Posted {job.time}</p>
           <div className="flex items-center justify-between ">
             <h1 className="text-2xl text-gray-500  font-medium">{job.title}</h1>
-            {job.saved ? (
+            {/* {job.saved ? (
               <Liked className="w-6 h-6 text-red-600 " />
             ) : (
               <Unliked className="w-6 h-6  " />
-            )}
+            )} */}
+            <SaveButton jobId={job.jobId} saved={job.saved} />
           </div>
           <p className="text-xs mt-2 text-gray-400">
             {job.type} - {job.experience} - Est. Budget: {job.budget}
           </p>
           <p className="text-black my-5 ">
-            {/* {truncateString(job.description, 400)} */}
-            {job.description}
-            {/* {job.description.length > 400 ? (
-                <button className="text-primary-700 hover:text-primary-500">
-                  Read More
-                </button>
-              ) : null} */}
+            {truncateString(job.description, 400)}
+
+            {job.description.length > 400 ? (
+              <button className="text-primary-700 hover:text-primary-500">
+                Read More
+              </button>
+            ) : null}
           </p>
 
           <div className="flex justify-start gap-5 flex-wrap items-center">

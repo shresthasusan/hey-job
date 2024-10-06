@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
       freelancers = await FreelancerInfo.find({
         userId: { $ne: userId },
         $or: [
-          { fullName: { $regex: query, $options: "i" } },
+          { title: { $regex: query, $options: "i" } },
           { skills: { $regex: query, $options: "i" } },
           { location: { $regex: query, $options: "i" } },
         ],

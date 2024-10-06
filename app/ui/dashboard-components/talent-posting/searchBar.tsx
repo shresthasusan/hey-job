@@ -8,6 +8,13 @@ const SearchBar = () => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
+  const router = useRouter();
+
+  const handlePush = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const searchUrl = `/search/jobs?query=${searchParams.get("talentName")}`;
+    router.push(`${searchUrl}`);
+  };
 
   const handleSearch = (term: string) => {
     const params = new URLSearchParams(searchParams);
@@ -22,7 +29,7 @@ const SearchBar = () => {
     replace(newUrl);
   };
   return (
-    <form>
+    <form onSubmit={handlePush}>
       <div className="relative ">
         <label htmlFor="search"></label>
         <input
