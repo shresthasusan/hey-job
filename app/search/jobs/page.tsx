@@ -24,7 +24,7 @@ interface Freelancer {
   rate: string;
 }
 
-const page = ({ query }: Props) => {
+const SearchJobs = ({ query }: Props) => {
   const [data, setData] = useState<Freelancer[]>([]);
   const searchParams = useSearchParams();
 
@@ -60,7 +60,7 @@ const page = ({ query }: Props) => {
       controller.abort();
     };
   }, []);
-  return <div>page</div>;
+  return <div>SearchJobs</div>;
 };
 
-export default page;
+export default SearchJobs;
