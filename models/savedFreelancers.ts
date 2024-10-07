@@ -15,7 +15,7 @@ const savedFreelancersSchema = new Schema<ISavedFreelancers>(
         },
         freelancerId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Freelancers",
+            ref: "FreelancerInfo",
             required: true,
         },
     },
