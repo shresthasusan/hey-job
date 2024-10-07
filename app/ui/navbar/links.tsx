@@ -19,7 +19,8 @@ const Links = () => {
             onMouseEnter={() => setDropdownVisible(1)}
             onMouseLeave={() => setDropdownVisible(0)}
           >
-            {currentPath.startsWith("/user") && (
+            {(currentPath.startsWith("/user") ||
+              currentPath.startsWith("/search/jobs")) && (
               <Link
                 href="/user/best-matches"
                 className={clsx("hover:text-primary-600", {
@@ -32,7 +33,8 @@ const Links = () => {
                 Dashboard
               </Link>
             )}
-            {currentPath.startsWith("/client") && (
+            {(currentPath.startsWith("/client") ||
+              currentPath.startsWith("/search/talent")) && (
               <Link
                 href="/client/best-matches"
                 className={clsx("hover:text-primary-600", {
@@ -60,7 +62,8 @@ const Links = () => {
             onMouseEnter={() => setDropdownVisible(2)}
             onMouseLeave={() => setDropdownVisible(0)}
           >
-            {currentPath.startsWith("/user") && (
+            {(currentPath.startsWith("/user") ||
+              currentPath.startsWith("/search/jobs")) && (
               <Link
                 href="/user/business"
                 className={clsx("hover:text-primary-600", {
@@ -71,7 +74,8 @@ const Links = () => {
               </Link>
             )}
 
-            {currentPath.startsWith("/client") && (
+            {(currentPath.startsWith("/client") ||
+              currentPath.startsWith("/search/talent")) && (
               <Link
                 href="/client/talents"
                 className={clsx("hover:text-primary-600", {
@@ -91,7 +95,8 @@ const Links = () => {
           </div>
         </li>
         <li className="flex align-items-center justify-center">
-          {currentPath.startsWith("/user") && (
+          {(currentPath.startsWith("/user") ||
+            currentPath.startsWith("/search/jobs")) && (
             <Link
               href="/user/chatroom"
               className={clsx("hover:text-primary-600", {
@@ -101,7 +106,8 @@ const Links = () => {
               Messages
             </Link>
           )}
-          {currentPath.startsWith("/client") && (
+          {(currentPath.startsWith("/client") ||
+            currentPath.startsWith("/search/talent")) && (
             <Link
               href="/client/chatroom"
               className={clsx("hover:text-primary-600", {

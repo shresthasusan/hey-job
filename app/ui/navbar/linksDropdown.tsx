@@ -23,14 +23,16 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
       {isDropdownVisible === 1 && (
         <div className="absolute text-black left-0 shadow-[0_0px_20px_rgba(228,228,228,1)] rounded-xl before:absolute before:-top-2 before:left-7 before:translateX-1/2 before:rotate-[135deg] before:z-10  before:bg-white before:border-white before:border-8 bg-white top-8 z-10 after:w-full after:h-6 after:absolute after:-top-5">
           <ul className="flex flex-col  py-5 w-72">
-            {currentMode?.startsWith("/user") && (
+            {(currentMode?.startsWith("/user") ||
+              currentMode?.startsWith("/search/jobs")) && (
               <>
                 <li className=" p-3 hover:bg-slate-100">Pending</li>
                 <li className=" p-3 hover:bg-slate-100">Jobs</li>
                 <li className=" p-3 hover:bg-slate-100">Saved Jobs</li>
               </>
             )}
-            {currentMode?.startsWith("/client") && (
+            {(currentMode?.startsWith("/client") ||
+              currentMode?.startsWith("/search/talent")) && (
               <>
                 <li className=" p-3 hover:bg-slate-100">Post Jobs</li>
                 <li className=" p-3 hover:bg-slate-100">All Contracts</li>
@@ -43,7 +45,8 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
       {isDropdownVisible === 2 && (
         <div className="absolute text-black left-0 shadow-[0_0px_20px_rgba(228,228,228,1)] rounded-xl before:absolute before:-top-2 before:left-7 before:translateX-1/2 before:rotate-[135deg] before:z-10  before:bg-white before:border-white before:border-8 bg-white top-8 z-10 after:w-full after:h-6 after:absolute after:-top-5">
           <ul className="flex flex-col gap-3 py-5 w-72">
-            {currentMode?.startsWith("/user") && (
+            {(currentMode?.startsWith("/user") ||
+              currentMode?.startsWith("/search/jobs")) && (
               <>
                 <li className=" p-3 hover:bg-slate-100">Payment History</li>
                 <li className=" p-3 hover:bg-slate-100">Transaction</li>
@@ -51,7 +54,8 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
               </>
             )}
 
-            {currentMode?.startsWith("/client") && (
+            {(currentMode?.startsWith("/client") ||
+              currentMode?.startsWith("/search/talent")) && (
               <>
                 <li className=" p-3 hover:bg-slate-100">Discover</li>
                 <li className=" p-3 hover:bg-slate-100">Your Hires </li>
@@ -100,13 +104,16 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
                 {session?.user?.name} {session?.user?.lastName}
               </h2>
               <p className="text-xs  text-gray-400">
-                {currentMode?.startsWith("/user") && <>Freelancer</>}
-                {currentMode?.startsWith("/client") && <>Client</>}
+                {(currentMode?.startsWith("/user") ||
+                  currentMode?.startsWith("/search/jobs")) && <>Freelancer</>}
+                {(currentMode?.startsWith("/client") ||
+                  currentMode?.startsWith("/search/talent")) && <>Client</>}
               </p>
             </div>
           </div>
           <div className="hover:bg-slate-200 p-1">
-            {currentMode?.startsWith("/user") && (
+            {(currentMode?.startsWith("/user") ||
+              currentMode?.startsWith("/search/jobs")) && (
               <Link href={"/client/best-matches"}>
                 <span className="flex items-center gap-1">
                   <UserCircleIcon className="size-8" />
@@ -117,7 +124,8 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
                 </span>
               </Link>
             )}
-            {currentMode?.startsWith("/client") && (
+            {(currentMode?.startsWith("/client") ||
+              currentMode?.startsWith("/search/talent")) && (
               <Link href={"/user/best-matches"}>
                 <span className="flex items-center gap-1">
                   <UserCircleIcon className="size-8" />
