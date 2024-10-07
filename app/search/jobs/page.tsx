@@ -1,66 +1,24 @@
-"use client";
+import JobList from "@/app/ui/dashboard-components/job-list/jobList";
+import PostingSkeleton from "@/app/ui/dashboard-components/skeletons/postingSkeleton";
 import { useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 
+interface searchParams {
+  title: string;
+}
+
+// Defining the interface for component props
 interface Props {
-  bestMatches?: boolean;
-  savedFreelancers?: boolean;
-  query?: string;
+  searchParams?: searchParams | undefined;
 }
 
-interface Freelancer {
-  userId: string;
-  fullName: string;
-  professionalEmail: string;
-  location: string;
-  phone: string;
-  skills: string[];
-  experience: string;
-  education: string;
-  portfolio: string;
-  certificate: string;
-  bio: string;
-  languages: string[];
-  rate: string;
-}
-
-const SearchJobs = ({ query }: Props) => {
-  const [data, setData] = useState<Freelancer[]>([]);
-  const searchParams = useSearchParams();
-
-  useEffect(() => {
-    const controller = new AbortController();
-    const fetchData = async () => {
-      try {
-        console.log("passed query", query); // query
-        const response = await fetch(
-          `/api/freelancers?query=${searchParams.get("query")}`,
-          // "/api/freelancers",
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            next: {
-              revalidate: 3600, // 1 hour
-            },
-          }
-        );
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const { freelancers } = await response.json();
-        setData(freelancers);
-      } catch (error) {
-        console.error("Error fetching freelancers:", error);
-      }
-    };
-    fetchData();
-    return () => {
-      controller.abort();
-    };
-  }, []);
-  return <div>SearchJobs</div>;
+const page = ({ searchParams }: Props) => {
+  const query = searchParams?.title || "";
+  return (
+    <Suspense fallback={<PostingSkeleton />}>
+      <JobList query={query} bestMatches={true} />
+    </Suspense>
+  );
 };
 
-export default SearchJobs;
+export default page;
