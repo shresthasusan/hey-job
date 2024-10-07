@@ -3,23 +3,26 @@ import { HeartIcon as Liked } from "@heroicons/react/24/solid";
 import { HeartIcon as Unliked } from "@heroicons/react/24/outline";
 
 interface SaveButtonProps {
-  jobId: string;
+  itemId: string;
   saved: boolean;
+  itemType: "job" | "freelancer"; // Add itemType prop to specify the type of item
 }
 
-const SaveButton = ({ jobId, saved }: SaveButtonProps) => {
+const SaveButton = ({ itemId, saved, itemType }: SaveButtonProps) => {
   const [isSaved, setIsSaved] = useState(saved);
 
   const toggleSave = async () => {
     try {
-      const response = await fetch("/api/saveJob", {
+      const endpoint =
+        itemType === "job" ? "/api/saveJob" : "/api/saveFreelancer";
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jobId }),
+        body: JSON.stringify({ [`${itemType}Id`]: itemId }), // Dynamically set the key based on itemType
       });
 
       if (!response.ok) {
-        throw new Error("Error saving/unsaving job");
+        throw new Error(`Error saving/unsaving ${itemType}`);
       }
 
       const result = await response.json();
@@ -29,7 +32,6 @@ const SaveButton = ({ jobId, saved }: SaveButtonProps) => {
     }
   };
 
-  // return <button onClick={toggleSave}>{isSaved ? "Unsave" : "Save"}</button>;
   return (
     <>
       {isSaved ? (

@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import Loading from "../loading";
 
 interface searchParams {
-  search: string;
+  talentName: string;
 }
 
 interface Props {
@@ -11,11 +11,9 @@ interface Props {
 }
 
 const page = ({ searchParams }: Props) => {
-  const query = searchParams?.search || "";
-  console.log("from frontend", query);
   return (
     <Suspense fallback={<Loading />}>
-      <FreelancerList query={query} bestMatches={true} />
+      <FreelancerList bestMatches={true} />
     </Suspense>
   );
 };

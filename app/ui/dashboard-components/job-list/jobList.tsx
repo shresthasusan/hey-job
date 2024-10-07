@@ -104,7 +104,7 @@ const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
             ) : (
               <Unliked className="w-6 h-6  " />
             )} */}
-            <SaveButton jobId={job.jobId} saved={job.saved} />
+            <SaveButton itemId={job.jobId} saved={job.saved} itemType={"job"} />
           </div>
           <p className="text-xs mt-2 text-gray-400">
             {job.type} - {job.experience} - Est. Budget: {job.budget}

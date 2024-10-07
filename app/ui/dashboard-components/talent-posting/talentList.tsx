@@ -5,6 +5,7 @@ import { HeartIcon as Unliked, MapPinIcon } from "@heroicons/react/24/outline";
 import { HeartIcon as Liked } from "@heroicons/react/24/solid";
 import StarRating from "../../starRating";
 import PostingSkeleton from "../skeletons/postingSkeleton";
+import SaveButton from "../../saveButton";
 
 const truncateString = (str: string, num: number) => {
   if (str.length <= num) {
@@ -33,6 +34,8 @@ interface Freelancer {
   bio: string;
   languages: string[];
   rate: string;
+  saved: boolean;
+  freelancerId: string;
 }
 
 const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
@@ -40,11 +43,16 @@ const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
 
   useEffect(() => {
     const controller = new AbortController();
+
     const fetchData = async () => {
       try {
-        console.log("passed query", query); // query
+        const params = new URLSearchParams();
+
+        if (bestMatches) params.append("bestMatches", "true");
+        if (savedFreelancers) params.append("savedFreelancers", "true");
+        if (query) params.append("query", query);
         const response = await fetch(
-          `/api/freelancers?query=${encodeURIComponent(query || "")}`,
+          `/api/freelancers?${params.toString()}`,
           // "/api/freelancers",
           {
             method: "GET",
@@ -94,7 +102,12 @@ const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
                 <Unliked className="w-6 h-6" />
               )} */}
               {/* saved status */}
-              <Liked className="w-6 h-6 text-red-600" />
+              {/* <Liked className="w-6 h-6 text-red-600" /> */}
+              <SaveButton
+                itemId={freelancer.freelancerId}
+                saved={freelancer.saved}
+                itemType={"freelancer"}
+              />
             </div>
             <p className="text-xs mt-2 text-gray-400">
               {/* {freelancer.type}  */}

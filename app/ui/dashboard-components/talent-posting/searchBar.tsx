@@ -12,8 +12,8 @@ const SearchBar = () => {
 
   const handlePush = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const searchUrl = `/search/jobs?query=${searchParams.get("talentName")}`;
-    router.push(`${searchUrl}`);
+    const searchUrl = `/search/talent?talentName=${searchParams.get("talentName")}`;
+    router.push(searchUrl);
   };
 
   const handleSearch = (term: string) => {
