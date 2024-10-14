@@ -52,7 +52,12 @@ const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
         if (bestMatches) params.append("bestMatches", "true");
         if (mostRecent) params.append("mostRecent", "true");
         if (savedJobs) params.append("savedJobs", "true");
-        if (query) params.append("query", query);
+        if (query) {
+          const queryParams = new URLSearchParams(query);
+          queryParams.forEach((value, key) => {
+            params.append(key, value);
+          });
+        }
 
         const response = await fetch(`/api/fetchJobs?${params.toString()}`, {
           method: "GET",

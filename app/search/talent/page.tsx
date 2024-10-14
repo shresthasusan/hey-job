@@ -1,11 +1,15 @@
-import JobList from "@/app/ui/dashboard-components/job-list/jobList";
 import PostingSkeleton from "@/app/ui/dashboard-components/skeletons/postingSkeleton";
+import SearchBar from "@/app/ui/dashboard-components/talent-posting/searchBar";
 import FreelancerList from "@/app/ui/dashboard-components/talent-posting/talentList";
-import { useSearchParams } from "next/navigation";
-import React, { Suspense, useEffect, useState } from "react";
+import ExpertiseFilter from "@/app/ui/filter/experitise-level/expertiseFilter";
+
+import React, { Suspense } from "react";
 
 interface searchParams {
   talentName: string;
+  Entry?: string;
+  Intermediate?: string;
+  Expert?: string;
 }
 
 // Defining the interface for component props
@@ -14,11 +18,22 @@ interface Props {
 }
 
 const page = ({ searchParams }: Props) => {
-  const query = searchParams?.talentName || "";
+  // Convert searchParams to a query string
+  const query = new URLSearchParams(searchParams as any).toString();
+  console.log(query);
+
   return (
-    <Suspense fallback={<PostingSkeleton />}>
-      <FreelancerList query={query} />
-    </Suspense>
+    <div className="flex-col flex w-full gap-10">
+      <SearchBar />
+      <div className="flex">
+        <div className="border-r-2 px-14 w-1/4 relative ">
+          <ExpertiseFilter />
+        </div>
+        <Suspense fallback={<PostingSkeleton />}>
+          <FreelancerList query={query} />
+        </Suspense>
+      </div>
+    </div>
   );
 };
 

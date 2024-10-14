@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const bestMatches = searchParams.get('bestMatches');
   const savedFreelancers = searchParams.get('savedFreelancers');
-  const params = searchParams.get('query');
+  const params = searchParams.get('talentName');
 
   if (!session) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -36,6 +36,7 @@ export async function GET(req: NextRequest) {
       }
     } else {
       // Fetch freelancers where 'fullName' matches the search parameter
+
       freelancers = await FreelancerInfo.find({
         userId: { $ne: userId },
         fullName: { $regex: params, $options: "i" },  // Case-insensitive matching on 'fullName'
@@ -58,7 +59,8 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching Freelancers:", error);
     return NextResponse.json(
       { message: "Error fetching freelancers" },
-      { status: 500 }
+      { status: 500 },
+
     );
   }
 }

@@ -14,10 +14,14 @@ const ModeSelect = () => {
   const [mode, setMode] = useState("");
 
   interface SelectProps {
-    selected: boolean;
+    selected: boolean; //interface for Circle component
   }
 
-  const Circle = ({ selected }: { selected: boolean }) => (
+  const handleModeSelection = (selectedMode: string) => {
+    setMode(selectedMode);
+  };
+
+  const Circle = ({ selected }: SelectProps) => (
     <div
       className={clsx(
         "rounded-full border-2 h-8 w-8 absolute top-3 right-3 flex items-center justify-center",
@@ -27,11 +31,6 @@ const ModeSelect = () => {
       {selected && <div className="rounded-full h-5 w-5 border-2"></div>}
     </div>
   );
-
-  const handleModeSelection = (selectedMode: string) => {
-    setMode(selectedMode);
-  };
-
   const handleContinue = () => {
     if (!mode) {
       console.log("Please select a mode");

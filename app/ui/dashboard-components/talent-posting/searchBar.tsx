@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 
 const SearchBar = () => {
   const searchParams = useSearchParams();
-  const pathname = usePathname();
+  const pathName = usePathname();
   const { replace } = useRouter();
   const router = useRouter();
 
@@ -25,7 +25,7 @@ const SearchBar = () => {
       params.delete("talentName");
     }
     const newUrl =
-      pathname + (params.toString() ? `?${params.toString()}` : "");
+      pathName + (params.toString() ? `?${params.toString()}` : "");
     replace(newUrl);
   };
   return (

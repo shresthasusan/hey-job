@@ -50,20 +50,25 @@ const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
 
         if (bestMatches) params.append("bestMatches", "true");
         if (savedFreelancers) params.append("savedFreelancers", "true");
-        if (query) params.append("query", query);
-        const response = await fetch(
-          `/api/freelancers?${params.toString()}`,
-          // "/api/freelancers",
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            next: {
-              revalidate: 3600, // 1 hour
-            },
-          }
-        );
+        if (query) {
+          const queryParams = new URLSearchParams(query);
+          queryParams.forEach((value, key) => {
+            params.append(key, value);
+          });
+        }
+        // const response = await fetch(`/api/freelancers?${params.toString()}`,
+        const response = await fetch(`/api/freelancers?${params}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          next: {
+            revalidate: 3600, // 1 hour
+          },
+        });
+        if (response.statusText == "500 Interal Server Error") {
+          return <>Error 404 Not found</>;
+        }
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -77,7 +82,7 @@ const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
     return () => {
       controller.abort();
     };
-  }, []);
+  }, [query]);
 
   return (
     <Suspense fallback={<PostingSkeleton />}>
@@ -142,6 +147,7 @@ const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
             </div>
           </div>
         ))}
+        {data == null && <>404 not found</>}
       </div>
     </Suspense>
   );

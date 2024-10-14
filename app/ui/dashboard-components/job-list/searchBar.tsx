@@ -2,11 +2,13 @@
 
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { use } from "react";
 
 const SearchInput = () => {
   const searchParams = useSearchParams(); // Retrieve search parameters from the URL
   const pathname = usePathname(); // Get the current path from the Next.js router
   const { replace } = useRouter(); // Function to replace the current URL
+  const router = useRouter(); // Next.js router instance
 
   // Function to handle search input and update the URL based on the search term
   const handleSearch = (term: string) => {
@@ -21,9 +23,13 @@ const SearchInput = () => {
       pathname + (params.toString() ? `?${params.toString()}` : "");
     replace(newUrl); // Update the URL without refreshing the page
   };
-
+  const handlePush = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const searchUrl = `/search/jobs?title=${searchParams.get("title")}`;
+    router.push(searchUrl);
+  };
   return (
-    <form>
+    <form onSubmit={handlePush}>
       <div className="relative">
         <label htmlFor="search"></label>
         <input

@@ -11,20 +11,22 @@ export async function GET(req: NextRequest) {
   const bestMatches = searchParams.get('bestMatches');
   const mostRecent = searchParams.get('mostRecent');
   const savedJobs = searchParams.get('savedJobs');
-  const params = searchParams.get('query');
+  const title = searchParams.get('title');
+  const experience = searchParams.get('Experience');
+
 
   if (!session) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
-  const userId = session.user.id;  // Get the logged-in user's ID from the session
+  const userId = session?.user.id;  // Get the logged-in user's ID from the session
   let jobs: any[] = [];
 
   try {
     await connectMongoDB();
 
     // Fetch jobs based on query parameters
-    if (!params) {
+    if (!title) {
       if (bestMatches) {
         jobs = await Jobs.find({
           userId: { $ne: userId },
@@ -38,12 +40,23 @@ export async function GET(req: NextRequest) {
         const savedJobsData = await SavedJobs.find({ userId }).populate('jobId');
         jobs = savedJobsData ? savedJobsData.map((savedJob) => savedJob.jobId) : [];
       }
-    } else {
+    } else if (!experience) {
       // Fetch jobs where 'title' matches the search parameter
       jobs = await Jobs.find({
         userId: { $ne: userId },
-        title: { $regex: params, $options: "i" },  // Case-insensitive matching on 'title'
+        title: { $regex: title, $options: "i" },
+
+
       });
+    }
+    else {
+      // Fetch jobs where 'title' and 'experience' match the search parameters
+      jobs = await Jobs.find({
+        userId: { $ne: userId },
+        title: { $regex: title, $options: "i" },
+      })
+        .where('experience').in(experience.split(','));
+      ;
     }
 
     // Fetch saved job ids for the current user
