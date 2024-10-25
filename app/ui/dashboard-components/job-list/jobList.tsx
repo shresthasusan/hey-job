@@ -95,7 +95,7 @@ const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
   }, [query]); // Empty dependency array means this effect runs once when the component mounts
 
   return (
-    <div className="flex boader flex-col mt-8  ">
+    <div className="flex  flex-col mt-8 w-full ">
       {data.map((job, index) => (
         <div
           key={index}

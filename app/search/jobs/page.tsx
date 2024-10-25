@@ -21,7 +21,7 @@ interface Props {
 const page = ({ searchParams }: Props) => {
   const query = new URLSearchParams(searchParams as any).toString();
   return (
-    <div className="flex-col flex w-full gap-10">
+    <div className="flex-col flex w-full gap-10 mt-5">
       <SearchBar />
       <div className="flex">
         <div className="border-r-2 px-14 w-1/4 relative ">
