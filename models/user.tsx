@@ -7,6 +7,10 @@ interface IUser extends Document {
   lastName: string;
   email: string;
   password: string;
+  roles: {
+    client?: boolean;
+    freelancer?: boolean;
+  };
 }
 
 // Define the schema corresponding to the document interface.
@@ -27,6 +31,10 @@ const userSchema = new Schema<IUser>(
     password: {
       type: String,
       required: true,
+    },
+    roles: {
+      client: { type: Boolean, default: false },
+      freelancer: { type: Boolean, default: false },
     },
   },
   { timestamps: true }

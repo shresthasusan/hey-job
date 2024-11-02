@@ -10,7 +10,11 @@ const FreelancerForms = () => {
   const nextStep = () => setStep(step + 1);
   const prevStep = () => setStep(step - 1);
   const { data: session } = useSession();
+  if (session?.user.roles.freelancer) {
+    router.push("/");
+  }
   const id = session?.user.id;
+
   const fullName = session?.user.name + " " + session?.user.lastName;
   const initialFormData = {
     userId: id,

@@ -15,6 +15,10 @@ declare module "next-auth" {
       email: string;
       lastName: string;
       id: string;
+      roles: {
+        client?: boolean;
+        freelancer?: boolean;
+      };
     };
   }
   interface User extends DefaultUser {
@@ -22,6 +26,10 @@ declare module "next-auth" {
     name: string;
     email: string;
     lastName: string;
+    roles: {
+      client?: boolean;
+      freelancer?: boolean;
+    };
   }
 }
 
@@ -61,6 +69,7 @@ export const authOptions: NextAuthOptions = {
             email: user.email,
             lastName: user.lastName,
             id: user.id,
+            roles: user.roles,
           };
 
           console.log("User authorized:", plainUser);
@@ -86,6 +95,7 @@ export const authOptions: NextAuthOptions = {
         token.name = user.name;
         token.email = user.email;
         token.lastName = user.lastName;
+        token.roles = user.roles;
       }
       return token;
     },
@@ -97,6 +107,7 @@ export const authOptions: NextAuthOptions = {
           name: token.name as string,
           email: token.email as string,
           lastName: token.lastName as string,
+          roles: token.roles as { client?: boolean; freelancer?: boolean },
         };
       }
       return session;

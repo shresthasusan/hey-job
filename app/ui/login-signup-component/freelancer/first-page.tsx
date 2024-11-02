@@ -22,7 +22,9 @@ const WelcomeText = () => {
   // if (!session) {
   //   router.push("/login");
   // }
-
+  if (session?.user.roles.freelancer) {
+    router.push("/");
+  }
   return (
     <div className="flex flex-col items-center top-2/3 justify-center h-screen">
       <div className="text-4xl">

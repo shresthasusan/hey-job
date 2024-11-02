@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { connectMongoDB } from "../../lib/mongodb";
 import { NextRequest } from "next/server";
 import FreelancerInfo from "@/models/freelancerInfo";
+import User from "@/models/user";
 
 interface UserRequestBody {
   userId: string;
@@ -54,6 +55,7 @@ export async function POST(req: NextRequest) {
       languages,
       rate,
     });
+    await User.updateOne({ _id: userId }, { $set: { "roles.freelancer": true } });
     const responseData = {
       userId,
       fullName,
