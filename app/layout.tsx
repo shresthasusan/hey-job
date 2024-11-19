@@ -9,6 +9,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth subpixel-antialiased ">
+      <head>
+        <meta charSet="utf-8" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"
+        />
+        <link rel="icon" href="/favicon.ico" />
+        <title>HeyJob</title>
+      </head>
       <body>
         <div className={`min-h-screen ${poppins.className}`}>
           <AuthProvider>{children}</AuthProvider>
