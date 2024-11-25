@@ -1,14 +1,7 @@
 import React from "react";
 
-const TRANSCATION = () => {
-  return (
-    <div
-      className="
-    text-lg"
-    >
-      TRANSCATION
-    </div>
-  );
+const page = () => {
+  return <div className="text-lg">transcation</div>;
 };
 
-export default TRANSCATION;
+export default page;
