@@ -1,37 +1,59 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
+import { connectMongoDB } from "../../lib/mongodb";
+import { authOptions } from "@/app/lib/auth";
+import { getServerSession } from "next-auth/next";
+import Portfolio from "@/models/portfolio";
+
+
+
 
 const f = createUploadthing();
 
-const auth = (req: Request) => ({ id: "Id1" }); // Fake auth function
+const auth = async (req: Request) => {
+    const session = await getServerSession(authOptions);
+    return session?.user.id;
+};
 
 // FileRouter for your app, can contain multiple FileRoutes
 export const ourFileRouter = {
-    // Define as many FileRoutes as you like, each with a unique routeSlug
-    imageUploader: f({ image: { maxFileSize: "512MB" } })
-        // Set permissions and file types for this FileRoute
+
+    portfolioUploader: f({
+        image: {
+            maxFileSize: "512MB", // 512MB max file size
+            maxFileCount: 15, // 1 file max
+
+        }
+
+    })
         .middleware(async ({ req }) => {
-            // This code runs on your server before upload
             const user = await auth(req);
-
-            // If you throw, the user will not be able to upload
             if (!user) throw new UploadThingError("Unauthorized");
-
-            // Whatever is returned here is accessible in onUploadComplete as `metadata`
             return {
-                userId: user.id
-
+                userId: user
             };
         })
         .onUploadComplete(async ({ metadata, file }) => {
-            // This code RUNS ON YOUR SERVER after upload
             console.log("Upload complete for userId:", metadata.userId);
-
             console.log("file url", file.url);
 
-            // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
-            return { uploadedBy: metadata.userId };
-        }),
+            try {
+
+                return metadata;
+            } catch (error) {
+                console.error("Error saving portfolio entry:", {
+                    userId: metadata.userId,
+                    fileUrl: file.url,
+                    error: error,
+                });
+                throw new UploadThingError("Error saving portfolio entry");
+            }
+
+        }
+        )
+
+
+
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;

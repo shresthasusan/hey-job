@@ -49,7 +49,9 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
               currentMode?.startsWith("/search/jobs")) && (
               <>
                 <li className=" p-3 hover:bg-slate-100">Payment History</li>
-                <li className=" p-3 hover:bg-slate-100">Transaction</li>
+                <li className=" p-3 hover:bg-slate-100">
+                  <Link href={"/transcation"}>Transaction</Link>
+                </li>
                 <li className=" p-3 hover:bg-slate-100">Saved Jobs</li>
               </>
             )}
