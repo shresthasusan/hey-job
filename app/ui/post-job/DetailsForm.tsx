@@ -1,12 +1,27 @@
 "use client";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "../button";
-import { title } from "process";
-
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "../../firebase"; // Import Firebase storage
+import email from "next-auth/providers/email";
+import Image from "next/image";
 const DetailsForm = () => {
+  type formData = {
+    userId?: string;
+    fullName?: string;
+    title: string;
+    type: string;
+    experience: string;
+    budget: string;
+    description: string;
+    tags: string[];
+    location: string;
+    fileUrls: string[];
+  };
+
   const router = useRouter();
   const [step, setStep] = useState(0);
   const nextStep = () => setStep(step + 1);
@@ -14,7 +29,8 @@ const DetailsForm = () => {
   const { data: session } = useSession();
   const id = session?.user.id;
   const fullName = session?.user.name + " " + session?.user.lastName;
-  const initialFormData = {
+
+  const initialFormData: formData = {
     userId: id,
     fullName: fullName,
     title: "",
@@ -24,9 +40,30 @@ const DetailsForm = () => {
     description: "",
     tags: [],
     location: "",
+    fileUrls: [],
   };
 
-  const [formData, setFormData] = useState(initialFormData);
+  const [formData, setFormData] = useState<formData>(initialFormData);
+  useEffect(() => {
+    setFormData({
+      ...formData,
+      userId: id,
+      fullName: fullName,
+    });
+  }, [id, fullName, formData]);
+  const [files, setFiles] = useState<File[]>([]); // Store file data
+  const [uploading, setUploading] = useState<boolean>(false); // State for file upload
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const selectedFiles = Array.from(e.target.files); // Convert FileList to an array
+      setFiles((prevFiles) => [...prevFiles, ...selectedFiles]);
+    }
+  };
+
+  const handleRemoveFile = (index: number) => {
+    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+  };
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -50,6 +87,20 @@ const DetailsForm = () => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
+      setUploading(true);
+
+      // Upload the files to Firebase Storage
+      const fileUrls: string[] = [];
+      for (const file of files) {
+        const fileRef = ref(storage, `jobs-images/${file.name}`);
+        await uploadBytes(fileRef, file);
+        const fileUrl = await getDownloadURL(fileRef);
+        fileUrls.push(fileUrl);
+      }
+
+      // Add the file URLs and other portfolio data to the form data
+      formData.fileUrls = fileUrls;
+
       const response = await fetch("/api/post-job", {
         method: "POST",
         headers: {
@@ -215,13 +266,66 @@ const DetailsForm = () => {
             <Button onClick={prevStep} className="text-white">
               Back
             </Button>
-            <Button
-              onClick={() => handleSubmit}
-              className="text-white"
-              success={true}
-            >
-              Submit
+            <Button onClick={nextStep} className="text-white">
+              Next
             </Button>
+          </div>
+        </>
+      )}
+      {step === 3 && (
+        <>
+          <div>
+            <label
+              htmlFor="file"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Upload Files
+            </label>
+            <input
+              type="file"
+              name="file"
+              id="file"
+              onChange={handleFileChange}
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm"
+            />
+            {/* Preview selected files */}
+            <div className="mt-4">
+              <h3 className="text-sm font-medium text-gray-700">
+                Selected Files
+              </h3>
+              <div className="flex gap-2 mt-2">
+                {files.map((file, index) => (
+                  <div key={index} className="relative">
+                    <Image
+                      src={URL.createObjectURL(file)} // Preview image using Object URL
+                      alt={file.name}
+                      className="h-20 w-20 object-cover rounded-md"
+                      width={80}
+                      height={80}
+                    />
+                    <Button
+                      type="button"
+                      onClick={() => handleRemoveFile(index)}
+                      className="absolute top-0 right-0 p-1"
+                    >
+                      X
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="flex justify-between">
+              <Button onClick={prevStep} className="text-white">
+                Back
+              </Button>
+              <Button
+                onClick={() => handleSubmit}
+                className="text-white"
+                success={true}
+              >
+                Submit
+              </Button>
+            </div>
           </div>
         </>
       )}

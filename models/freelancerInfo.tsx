@@ -1,17 +1,22 @@
+import {
+  institution,
+  project,
+  work,
+} from "@/app/ui/login-signup-component/freelancer/freelancerForms";
 import mongoose, { Document, Schema, Model } from "mongoose";
 
 // Define an interface representing the FreelancerInfo document
 interface IFreelancerInfo extends Document {
   userId: mongoose.Schema.Types.ObjectId; // Reference to User's _id
   fullName: string;
-  professionalEmail: string;
+  email: string;
   location: string;
   phone: string;
   skills: string[];
-  experience: string;
-  education: string;
-  portfolio: string;
-  certificate: string;
+  workExperience: work[];
+  projectPortfolio: project[];
+  education: institution[];
+  // certificate: string;
   bio: string;
   languages: string[];
   rate: string;
@@ -30,10 +35,11 @@ const freelancerInfoSchema = new Schema<IFreelancerInfo>(
       type: String,
       required: true,
     },
-    professionalEmail: {
+    email: {
       type: String,
       required: true,
     },
+
     location: {
       type: String,
       required: true,
@@ -43,31 +49,40 @@ const freelancerInfoSchema = new Schema<IFreelancerInfo>(
       required: true,
     },
     skills: {
-      type: [String], // Array of strings
+      type: [String],
       required: true,
     },
-    experience: {
-      type: String,
-      required: true,
-    },
-    education: {
-      type: String,
-      required: true,
-    },
-    portfolio: {
-      type: String,
-      required: false,
-    },
-    certificate: {
-      type: String,
-      required: false,
-    },
+    workExperience: [
+      {
+        jobTitle: { type: String, required: true },
+        company: { type: String, required: true },
+        startDate: { type: String, required: false }, // e.g., "Jan 2020 - Dec 2021"
+        endDate: { type: String, required: false },
+      },
+    ],
+    projectPortfolio: [
+      {
+        projectTitle: { type: String, required: true },
+        projectDescription: { type: String, required: false },
+        technologies: { type: [String], required: false },
+        portfolioFiles: { type: [String], required: false }, // URL to the project
+      },
+    ],
+
+    education: [
+      {
+        degree: { type: String, required: false },
+        institution: { type: String, required: true },
+        startDate: { type: String, required: false },
+        endDate: { type: String, required: false },
+      },
+    ],
     bio: {
       type: String,
       required: true,
     },
     languages: {
-      type: [String], // Array of strings
+      type: [String],
       required: true,
     },
     rate: {

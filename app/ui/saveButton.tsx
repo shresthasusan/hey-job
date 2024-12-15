@@ -3,7 +3,7 @@ import { HeartIcon as Liked } from "@heroicons/react/24/solid";
 import { HeartIcon as Unliked } from "@heroicons/react/24/outline";
 
 interface SaveButtonProps {
-  itemId: string;
+  itemId?: string;
   saved: boolean;
   itemType: "job" | "freelancer"; // Add itemType prop to specify the type of item
 }

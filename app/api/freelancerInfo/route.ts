@@ -3,18 +3,18 @@ import { connectMongoDB } from "../../lib/mongodb";
 import { NextRequest } from "next/server";
 import FreelancerInfo from "@/models/freelancerInfo";
 import User from "@/models/user";
+import { institution, project, work } from "@/app/ui/login-signup-component/freelancer/freelancerForms";
 
 interface UserRequestBody {
   userId: string;
   fullName: string;
-  professionalEmail: string;
+  email: string;
   location: string;
   phone: string;
   skills: string[];
-  experience: string;
-  education: string;
-  portfolio: string;
-  certificate: string;
+  workExperience: work[];
+  projectPortfolio: project[];
+  education: institution[];
   bio: string;
   languages: string[];
   rate: string;
@@ -25,14 +25,13 @@ export async function POST(req: NextRequest) {
     const {
       userId,
       fullName,
-      professionalEmail,
+      email,
       location,
       phone,
       skills,
-      experience,
+      workExperience,
+      projectPortfolio,
       education,
-      portfolio,
-      certificate,
       bio,
       languages,
       rate,
@@ -43,14 +42,13 @@ export async function POST(req: NextRequest) {
     await FreelancerInfo.create({
       userId,
       fullName,
-      professionalEmail,
+      email,
       location,
       phone,
       skills,
-      experience,
+      workExperience,
+      projectPortfolio,
       education,
-      portfolio,
-      certificate,
       bio,
       languages,
       rate,
@@ -59,14 +57,13 @@ export async function POST(req: NextRequest) {
     const responseData = {
       userId,
       fullName,
-      professionalEmail,
+      email,
       location,
       phone,
       skills,
-      experience,
+      workExperience,
+      projectPortfolio,
       education,
-      portfolio,
-      certificate,
       bio,
       languages,
       rate,
@@ -77,6 +74,6 @@ export async function POST(req: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    return NextResponse.json({ message: "Error" }, { status: 500 });
+    return NextResponse.json({ error }, { status: 500 });
   }
 }

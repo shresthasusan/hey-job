@@ -4,15 +4,23 @@ import Image from "next/image";
 import React from "react";
 import { useSession } from "next-auth/react";
 import SkeletonProfileCard from "./skeletons/skeletonProfileCard";
+import useFetch from "@/app/hooks/useFetch";
 
 interface Props {
   mode: string;
+}
+interface User {
+  profilePicture: string;
 }
 
 const ProfileCard = ({ mode }: Props) => {
   // Use the useSession hook to get session data and status
   const { data: session, status } = useSession();
-
+  const {
+    data: user,
+    loading,
+    error,
+  } = useFetch<User>(`user/${session?.user.id}`);
   // If the session status is loading, return a skeleton component
   if (status === "loading") {
     return <SkeletonProfileCard />;
@@ -24,7 +32,7 @@ const ProfileCard = ({ mode }: Props) => {
       {/* Cover image section */}
       <div className="h-[40%] bg-secondary-600 overflow-hidden">
         <Image
-          src="/images/placeholder-614.webp"
+          src={"/images/placeholder-614.webp"}
           alt="cover"
           width={100}
           className="w-full object-cover"
@@ -35,11 +43,11 @@ const ProfileCard = ({ mode }: Props) => {
       {/* Profile image section */}
       <div className="bg-yellow-400 rounded-full absolute translate-y-[50%] overflow-hidden translate-x-1/2 right-[50%] h-24 w-24">
         <Image
-          src="/images/image1.png"
+          src={user?.profilePicture || "/image1.png"}
           alt="profile"
           width={150}
           height={150}
-          className="rounded-full"
+          className=""
         />
       </div>
 

@@ -11,6 +11,14 @@ interface IUser extends Document {
     client?: boolean;
     freelancer?: boolean;
   };
+  dob: string;
+  country: string;
+  streetAddress: string;
+  city: string;
+  state: string;
+  zipPostalCode: string;
+  phone: string;
+  profilePicture: string;
 }
 
 // Define the schema corresponding to the document interface.
@@ -36,7 +44,40 @@ const userSchema = new Schema<IUser>(
       client: { type: Boolean, default: false },
       freelancer: { type: Boolean, default: false },
     },
+    country: {
+      type: String,
+      required: false,
+    },
+    state: {
+      type: String,
+      required: false,
+    },
+    streetAddress: {
+      type: String,
+      required: false,
+    },
+    city: {
+      type: String,
+      required: false,
+    },
+    zipPostalCode: {
+      type: String,
+      required: false,
+    },
+    phone: {
+      type: String,
+      required: false,
+    },
+    dob: {
+      type: String,
+      required: false,
+    },
+    profilePicture: {
+      type: String,
+      required: false,
+    },
   },
+
   { timestamps: true }
 );
 
