@@ -3,7 +3,7 @@ import { connectMongoDB } from "../../lib/mongodb";
 import { NextRequest } from "next/server";
 import FreelancerInfo from "@/models/freelancerInfo";
 import User from "@/models/user";
-import { institution, project, work } from "@/app/firebase-test/form2/page";
+import { institution, project, work } from "@/app/ui/login-signup-component/freelancer/freelancerForms";
 
 interface UserRequestBody {
   userId: string;
