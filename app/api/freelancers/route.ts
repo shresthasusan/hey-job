@@ -8,50 +8,51 @@ import SavedFreelancers from "@/models/savedFreelancers";
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
   const { searchParams } = new URL(req.url);
-  const bestMatches = searchParams.get('bestMatches');
-  const savedFreelancers = searchParams.get('savedFreelancers');
-  const params = searchParams.get('talentName');
+  const bestMatches = searchParams.get("bestMatches");
+  const savedFreelancers = searchParams.get("savedFreelancers");
+  const params = searchParams.get("talentName");
 
   if (!session) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
-  const userId = session.user.id;  // Get the logged-in user's ID from the session
+  const userId = session.user.id; // Get the logged-in user's ID
   let freelancers: any[] = [];
 
   try {
     await connectMongoDB();
 
-    // Fetch freelancers based on query parameters
     if (!params) {
       if (bestMatches) {
-        freelancers = await FreelancerInfo.find({
-          userId: { $ne: userId },
-        });
-
+        // Fetch best match freelancers excluding current user
+        freelancers = await FreelancerInfo.find({ userId: { $ne: userId } });
       } else if (savedFreelancers) {
-        // Fetch freelancers saved by the user from SavedFreelancers collection
-        const savedFreelancersData = await SavedFreelancers.find({ userId }).populate('freelancerId');
-        freelancers = savedFreelancersData ? savedFreelancersData.map((savedFreelancer) => savedFreelancer.freelancerId) : [];
+        // Fetch saved freelancer IDs from SavedFreelancers collection
+        const savedFreelancersData = await SavedFreelancers.find({ userId });
+
+        // Extract freelancer IDs and fetch their details from FreelancerInfo
+        const savedFreelancerIds = savedFreelancersData.map((record) => record.freelancerId);
+        freelancers = await FreelancerInfo.find({ userId: { $in: savedFreelancerIds } });
+
       }
     } else {
-      // Fetch freelancers where 'fullName' matches the search parameter
-
+      // Fetch freelancers matching the search parameter
       freelancers = await FreelancerInfo.find({
         userId: { $ne: userId },
-        fullName: { $regex: params, $options: "i" },  // Case-insensitive matching on 'fullName'
+        fullName: { $regex: params, $options: "i" }, // Case-insensitive search
       });
     }
 
-    // Fetch saved freelancer ids for the current user
+    // Fetch saved freelancer IDs for the current user
     const savedFreelancerRecords = await SavedFreelancers.find({ userId });
     const savedFreelancerIds = savedFreelancerRecords.map((record) => record.freelancerId.toString());
 
-    // Add 'saved' field and include freelancerId for each freelancer
-    const freelancersWithSavedFlag = freelancers.map(freelancer => ({
-      freelancerId: freelancer._id,  // Include the freelancer ID in the response
-      ...freelancer._doc,     // Spread other freelancer details
-      saved: savedFreelancerIds.includes(freelancer._id.toString()), // Check if the freelancer is saved
+    // Add 'saved' field to each freelancer and include freelancerId
+    const freelancersWithSavedFlag = freelancers.map((freelancer) => ({
+      freelancerId: freelancer._id, // Include freelancer ID
+      ...freelancer._doc,          // Include freelancer details
+      saved: savedFreelancerIds.includes(freelancer.userId.toString()), // Check if saved
+
     }));
 
     return NextResponse.json({ freelancers: freelancersWithSavedFlag });
@@ -59,8 +60,7 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching Freelancers:", error);
     return NextResponse.json(
       { message: "Error fetching freelancers" },
-      { status: 500 },
-
+      { status: 500 }
     );
   }
 }

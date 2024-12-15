@@ -13,6 +13,7 @@ interface RequestBody {
   description: string;
   tags: string[];
   location: string;
+  fileUrls: string[];
 }
 
 export async function POST(req: NextRequest) {
@@ -27,6 +28,7 @@ export async function POST(req: NextRequest) {
       description,
       tags,
       location,
+      fileUrls,
     }: RequestBody = await req.json();
 
     await connectMongoDB();
@@ -41,6 +43,8 @@ export async function POST(req: NextRequest) {
       description,
       tags,
       location,
+      fileUrls,
+
     });
     const responseData = {
       userId,
@@ -52,6 +56,7 @@ export async function POST(req: NextRequest) {
       description,
       tags,
       location,
+      fileUrls,
     };
 
     return NextResponse.json(
@@ -59,6 +64,6 @@ export async function POST(req: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    return NextResponse.json({ message: "Error" }, { status: 500 });
+    return NextResponse.json({ message: "Error", error }, { status: 500 });
   }
 }
