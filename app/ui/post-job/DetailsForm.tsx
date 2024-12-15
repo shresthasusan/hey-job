@@ -49,7 +49,7 @@ const DetailsForm = () => {
       userId: id,
       fullName: fullName,
     });
-  }, [id, fullName]);
+  }, [id, fullName, formData]);
   const [files, setFiles] = useState<File[]>([]); // Store file data
   const [uploading, setUploading] = useState<boolean>(false); // State for file upload
 

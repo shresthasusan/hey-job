@@ -30,7 +30,7 @@ const TypingAnimation = ({ className, text, startDelay, interval }: Props) => {
     }, startDelay);
 
     return () => clearInterval(startTimeout); // Cleanup the interval on component unmount
-  }, [text, startDelay]);
+  }, [text, startDelay, interval]);
 
   return <span className={`${className}`}>{typedText}</span>;
 };

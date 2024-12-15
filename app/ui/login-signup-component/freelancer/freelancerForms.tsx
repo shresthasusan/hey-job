@@ -125,7 +125,7 @@ const MultiStepForm = () => {
       fullName: fullName,
       email: email,
     });
-  }, [userId, fullName, email]);
+  }, [userId, fullName, email, formData]);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
