@@ -7,7 +7,7 @@ import StarRating from "../../starRating";
 import PostingSkeleton from "../skeletons/postingSkeleton";
 import SaveButton from "../../saveButton";
 
-const truncateString = (str: string, num: number) => {
+const truncateString = (str: any, num: any) => {
   if (str.length <= num) {
     return str;
   }
@@ -20,23 +20,18 @@ interface Props {
   query?: string;
 }
 
-interface Freelancer {
-  userId: string;
-  fullName: string;
-  professionalEmail: string;
+type Freelancer = {
+  userId?: string;
+  fullName?: string;
+  email?: string;
   location: string;
   phone: string;
   skills: string[];
-  experience: string;
-  education: string;
-  portfolio: string;
-  certificate: string;
   bio: string;
-  languages: string[];
+  languages: string;
   rate: string;
   saved: boolean;
-  freelancerId: string;
-}
+};
 
 const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
   const [data, setData] = useState<Freelancer[]>([]);
@@ -56,7 +51,6 @@ const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
             params.append(key, value);
           });
         }
-        // const response = await fetch(`/api/freelancers?${params.toString()}`,
         const response = await fetch(`/api/freelancers?${params}`, {
           method: "GET",
           headers: {
@@ -66,9 +60,6 @@ const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
             revalidate: 3600, // 1 hour
           },
         });
-        if (response.statusText == "500 Interal Server Error") {
-          return <>Error 404 Not found</>;
-        }
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -86,39 +77,26 @@ const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
 
   return (
     <Suspense fallback={<PostingSkeleton />}>
-      <div className="flex boader flex-col mt-8">
+      <div className="flex flex-col mt-8">
         {data.map((freelancer, index) => (
           <div
             key={index}
-            className={`flex flex-col gap-1 p-5 border-t-2 border-gray-200`}
+            className="flex flex-col gap-1 p-5 border-t-2 border-gray-200"
           >
-            {/* <p className="text-xs text-gray-400">
-            {freelancer.available ? "available" : "unavailable"}
-            // available status
-            </p> */}
-            <p className="text-xs text-gray-400">available</p>
+            <p className="text-xs text-gray-400">Available</p>
             <div className="flex items-center justify-between">
               <h1 className="text-2xl text-gray-500 font-medium">
                 {freelancer.fullName}
               </h1>
-              {/* {freelancer.saved ? (
-                <Liked className="w-6 h-6 text-red-600" />
-              ) : (
-                <Unliked className="w-6 h-6" />
-              )} */}
-              {/* saved status */}
-              {/* <Liked className="w-6 h-6 text-red-600" /> */}
               <SaveButton
-                itemId={freelancer.freelancerId}
-                saved={freelancer.saved}
+                itemId={freelancer.userId}
+                saved={freelancer.saved} // Add a saved flag in the API if necessary
                 itemType={"freelancer"}
               />
             </div>
             <p className="text-xs mt-2 text-gray-400">
-              {/* {freelancer.type}  */}
-              Hourly - {freelancer.experience} - Rate: {freelancer.rate} USD/hr
-              - contact: {freelancer.professionalEmail} | {freelancer.phone} -
-              education: {freelancer.education}
+              Hourly Rate: {freelancer.rate} USD/hr - Contact:{" "}
+              {freelancer.email} | {freelancer.phone}
             </p>
             <p className="text-black my-5">
               {truncateString(freelancer.bio, 400)}
@@ -129,12 +107,12 @@ const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
               ) : null}
             </p>
             <div className="flex justify-start gap-5 flex-wrap items-center">
-              {freelancer.skills.map((tag, index) => (
+              {freelancer.skills.map((skill, index) => (
                 <div
                   key={index}
-                  className="bg-slate-200 text-slate-500 p-3 flex flex-wrap justify-center items-center rounded-2xl"
+                  className="bg-slate-200 text-slate-500 p-3 rounded-2xl"
                 >
-                  {tag}
+                  {skill}
                 </div>
               ))}
             </div>
@@ -142,12 +120,11 @@ const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
               <p className="text-sm flex font-medium text-gray-500">
                 <MapPinIcon className="w-5 h-5" /> {freelancer.location}
               </p>
-              {/* <StarRating rating={freelancer.rating} />  // rating*/}
               <StarRating rating={3.5} />
             </div>
           </div>
         ))}
-        {data == null && <>404 not found</>}
+        {data.length === 0 && <>404 not found</>}
       </div>
     </Suspense>
   );

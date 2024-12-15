@@ -50,7 +50,7 @@ const ProjectCarousel = () => {
     <div className="my-5 overflow-hidden  w-full relative">
       <div
         className={clsx(
-          `flex gap-11 ease-in-out transition-transform duration-500  `
+          `flex gap-11 ease-in-out transition-transform duration-500 max-w-screen-xl `
         )}
         style={{ transform: `translateX(-${slide}px) ` }}
       >
