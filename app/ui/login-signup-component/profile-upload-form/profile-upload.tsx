@@ -41,7 +41,7 @@ const ProfileUploadForm = () => {
       ...formData,
       userId: userId,
     });
-  }, [session]);
+  }, [userId, formData]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>

@@ -1,4 +1,8 @@
-import { institution, project, work } from "@/app/firebase-test/form2/page";
+import {
+  institution,
+  project,
+  work,
+} from "@/app/ui/login-signup-component/freelancer/freelancerForms";
 import mongoose, { Document, Schema, Model } from "mongoose";
 
 // Define an interface representing the FreelancerInfo document
