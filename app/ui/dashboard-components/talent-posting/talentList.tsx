@@ -73,7 +73,7 @@ const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
     return () => {
       controller.abort();
     };
-  }, [query]);
+  }, [query, bestMatches, savedFreelancers]);
 
   return (
     <Suspense fallback={<PostingSkeleton />}>

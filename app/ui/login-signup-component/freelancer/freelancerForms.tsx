@@ -125,7 +125,7 @@ const MultiStepForm = () => {
       fullName: fullName,
       email: email,
     });
-  }, [session]);
+  }, [userId, fullName, email]);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -233,7 +233,6 @@ const MultiStepForm = () => {
       });
 
       if (response.ok) {
-        alert("Portfolio submitted successfully!");
         setFormData(initialFormData);
         setFiles({});
         router.push("/signup/profile-upload");
@@ -242,10 +241,7 @@ const MultiStepForm = () => {
       }
     } catch (error) {
       console.error("An error occurred while submitting the form", error);
-      alert("Error submitting portfolio.");
-    } finally {
     }
-    console.log("form submitted by ", step);
   };
   const stepTitles = [
     "Personal Information",

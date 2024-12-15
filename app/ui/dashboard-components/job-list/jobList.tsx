@@ -90,7 +90,7 @@ const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
     return () => {
       controller.abort();
     };
-  }, [query]); // Empty dependency array means this effect runs once when the component mounts
+  }, [query, bestMatches, mostRecent, savedJobs]); // Empty dependency array means this effect runs once when the component mounts
   const getTimeAgo = (dateString: string) => {
     const units = [
       { label: "year", seconds: 31536000 },
