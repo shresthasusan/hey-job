@@ -7,6 +7,7 @@ import { Button } from "../button";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../firebase"; // Import Firebase storage
 import email from "next-auth/providers/email";
+import Image from "next/image";
 const DetailsForm = () => {
   type formData = {
     userId?: string;
@@ -295,10 +296,12 @@ const DetailsForm = () => {
               <div className="flex gap-2 mt-2">
                 {files.map((file, index) => (
                   <div key={index} className="relative">
-                    <img
+                    <Image
                       src={URL.createObjectURL(file)} // Preview image using Object URL
                       alt={file.name}
                       className="h-20 w-20 object-cover rounded-md"
+                      width={80}
+                      height={80}
                     />
                     <Button
                       type="button"

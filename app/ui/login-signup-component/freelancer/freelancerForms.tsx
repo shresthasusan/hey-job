@@ -5,6 +5,7 @@ import { Button } from "@/app/ui/button";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../../firebase"; // Import Firebase storage
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export type project = {
   projectTitle: string;
@@ -396,10 +397,12 @@ const MultiStepForm = () => {
               <div className="flex gap-2 mt-2 flex-wrap">
                 {files[index]?.map((file, fileIndex) => (
                   <div key={fileIndex} className="relative">
-                    <img
+                    <Image
                       src={URL.createObjectURL(file)}
                       alt={file.name}
                       className="h-20 w-20 object-cover rounded-md"
+                      width={80}
+                      height={80}
                     />
                     <Button
                       type="button"

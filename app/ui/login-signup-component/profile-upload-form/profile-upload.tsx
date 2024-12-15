@@ -125,8 +125,8 @@ const ProfileUploadForm = () => {
         </div>
         <p className="text-gray-600 md:text-lg text-base my-6">
           A professional photo helps you build trust with your clients. To keep
-          things safe and simple, they'll pay you through us—which is why we
-          need your personal information.
+          things safe and simple, they&apos;ll pay you through us—which is why
+          we need your personal information.
         </p>
       </div>
       <form className="space-y-6 ml-14" onSubmit={handleSubmit}>
