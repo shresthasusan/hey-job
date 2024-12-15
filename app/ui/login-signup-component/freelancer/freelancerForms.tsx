@@ -1,38 +1,131 @@
 "use client";
-import { ChangeEvent, FormEvent, useState } from "react";
-import { Button } from "../../button";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import { Button } from "@/app/ui/button";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "../../../firebase"; // Import Firebase storage
 import { useRouter } from "next/navigation";
 
-const FreelancerForms = () => {
+export type project = {
+  projectTitle: string;
+  projectDescription: string;
+  technologies: string;
+  portfolioFiles: string[];
+};
+
+export type work = {
+  jobTitle: string;
+  company: string;
+  startDate: string;
+  endDate: string;
+};
+
+export type institution = {
+  degree: string;
+  institution: string;
+  startDate: string;
+  endDate: string;
+};
+
+type FormData = {
+  userId?: string;
+  fullName?: string;
+  email?: string;
+  location: string;
+  phone: string;
+  skills: string[];
+  workExperience: work[];
+  projectPortfolio: project[];
+  education: institution[];
+  bio: string;
+  languages: string[];
+  rate: string;
+};
+const defaultPortfolioItem = {
+  projectTitle: "",
+  projectDescription: "",
+  technologies: "",
+  portfolioFiles: [],
+};
+
+const defaultWorkExperienceItem = {
+  jobTitle: "",
+  company: "",
+  startDate: new Date().toISOString().slice(0, 10), // Format as YYYY-MM-DD
+  endDate: new Date().toISOString().slice(0, 10),
+};
+
+const defaultEducationItem = {
+  degree: "",
+  institution: "",
+  startDate: new Date().toISOString().slice(0, 10), // Format as YYYY-MM-DD
+  endDate: new Date().toISOString().slice(0, 10),
+};
+
+const MultiStepForm = () => {
   const router = useRouter();
   const [step, setStep] = useState(0);
-  const nextStep = () => setStep(step + 1);
-  const prevStep = () => setStep(step - 1);
   const { data: session } = useSession();
-  if (session?.user.roles.freelancer) {
-    router.push("/");
-  }
-  const id = session?.user.id;
+  const [uploading, setUploading] = useState<boolean>(false);
+  const [files, setFiles] = useState<{ [key: number]: File[] }>([]); // Store file data
 
+  const userId = session?.user.id;
+  const email = session?.user.email;
   const fullName = session?.user.name + " " + session?.user.lastName;
-  const initialFormData = {
-    userId: id,
-    fullName: fullName,
-    professionalEmail: "",
+
+  const handleAddItem = (field: ArrayFieldKey, defaultItem: any) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      [field]: [...(prevState[field] || []), defaultItem],
+    }));
+  };
+
+  // Define initial form data using the FormData type
+  const initialFormData: FormData = {
+    userId: "",
+    fullName: "",
+    email: "",
     location: "",
     phone: "",
     skills: [],
-    experience: "",
-    education: "",
-    portfolio: "",
-    certificate: "",
+    workExperience: [
+      {
+        jobTitle: "",
+        company: "",
+        startDate: "",
+        endDate: "",
+      },
+    ],
+    projectPortfolio: [
+      {
+        projectTitle: "",
+        projectDescription: "",
+        technologies: "",
+        portfolioFiles: [],
+      },
+    ],
+    education: [
+      {
+        degree: "",
+        institution: "",
+        startDate: "",
+        endDate: "",
+      },
+    ],
     bio: "",
     languages: [],
     rate: "",
   };
+  const [formData, setFormData] = useState<FormData>(initialFormData);
 
-  const [formData, setFormData] = useState(initialFormData);
+  useEffect(() => {
+    setFormData({
+      ...formData,
+      userId: userId,
+      fullName: fullName,
+      email: email,
+    });
+  }, [session]);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -44,268 +137,491 @@ const FreelancerForms = () => {
     });
   };
 
-  const handleChangeArray = (e: ChangeEvent<HTMLInputElement>) => {
+  // Handle file selection for a specific project
+  const handleFileChange = (
+    index: number,
+    e: ChangeEvent<HTMLInputElement>
+  ) => {
+    if (e.target.files) {
+      const selectedFiles = Array.from(e.target.files);
+      setFiles((prev) => ({
+        ...prev,
+        [index]: [...(prev[index] || []), ...selectedFiles],
+      }));
+    }
+  };
+
+  // Remove a file from a specific project
+  const handleRemoveFile = (projectIndex: number, fileIndex: number) => {
+    setFiles((prev) => ({
+      ...prev,
+      [projectIndex]: prev[projectIndex].filter((_, i) => i !== fileIndex),
+    }));
+  };
+
+  type ArrayFieldKey = "projectPortfolio" | "workExperience" | "education";
+
+  const handleObjectArrayChange = (
+    field: ArrayFieldKey, // e.g., "projectPortfolio", "workExperience"
+    index: number,
+    name: string,
+    value: string
+  ) => {
+    setFormData((prevState) => {
+      const updatedArray = [...prevState[field]] as any; // Type assertion for dynamic access
+      updatedArray[index] = {
+        ...updatedArray[index],
+        [name]: value,
+      };
+      return {
+        ...prevState,
+        [field]: updatedArray,
+      };
+    });
+  };
+  const handleArrayChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    const array = value.split(",").map((element) => element.trim());
+    const Array = value
+      .split(",")
+      .map((item: any) => item.trim())
+      .filter((item: any) => item);
     setFormData({
       ...formData,
-      [name]: array,
+      [name]: Array,
     });
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
+      // console.log("Submitting form data:", formData);
+      setUploading(true);
+
+      // Upload files for each project
+      const updatedProjects = await Promise.all(
+        formData.projectPortfolio.map(async (project, index) => {
+          const projectFiles = files[index] || [];
+          const fileUrls = await Promise.all(
+            projectFiles.map(async (file) => {
+              const fileRef = ref(storage, `portfolios/${file.name}`);
+              await uploadBytes(fileRef, file);
+              return getDownloadURL(fileRef);
+            })
+          );
+          return {
+            ...project,
+            portfolioFiles: fileUrls,
+          };
+        })
+      );
+
+      console.log("Updated projects:", updatedProjects);
+      const finalFormData = {
+        ...formData,
+        projectPortfolio: updatedProjects,
+      };
+
+      console.log("Final form data:", finalFormData);
       const response = await fetch("/api/freelancerInfo", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(finalFormData),
       });
 
       if (response.ok) {
-        console.log("Form submitted successfully");
-        setFormData(initialFormData); // Reset form data to initial state
-        router.push("/");
+        alert("Portfolio submitted successfully!");
+        setFormData(initialFormData);
+        setFiles({});
+        router.push("/signup/profile-upload");
       } else {
-        console.error("Form submission failed");
+        alert("Error submitting portfolio.");
       }
     } catch (error) {
       console.error("An error occurred while submitting the form", error);
+      alert("Error submitting portfolio.");
+    } finally {
     }
+    console.log("form submitted by ", step);
   };
+  const stepTitles = [
+    "Personal Information",
+    "Project Portfolio",
+    "Work Experience",
+    "Education",
+  ];
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-5 flex-col w-1/2">
+    <form onSubmit={handleSubmit} className="w-full max-w-lg mx-auto">
+      <h2 className="text-lg font-semibold mb-4">{stepTitles[step]}</h2>
+
+      {/* Step 1: Personal Information */}
       {step === 0 && (
         <>
           <div>
-            <label
-              htmlFor="professionalEmail"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Professional Email
-            </label>
-            <input
-              type="email"
-              name="professionalEmail"
-              id="professionalEmail"
-              value={formData.professionalEmail}
-              onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="location"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Location
-            </label>
+            <label className="block">Phone</label>
             <input
               type="text"
-              name="location"
-              id="location"
-              value={formData.location}
-              onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="phone"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Phone
-            </label>
-            <input
-              type="text"
-              name="phone"
-              id="phone"
               value={formData.phone}
               onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm"
-            />
-          </div>
-          <div className="flex justify-between">
-            <Button
-              className="text-white disabled cursor-not-allowed opacity-50"
-              disabled
-            >
-              Back
-            </Button>
-            <Button onClick={nextStep} className="text-white">
-              Next
-            </Button>
-          </div>
-        </>
-      )}
-      {step === 1 && (
-        <>
-          <div>
-            <label
-              htmlFor="skills"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Skill
-            </label>
-            <input
-              type="text"
-              name="skills"
-              id="skills"
-              value={formData.skills.join(", ")}
-              onChange={handleChangeArray}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm"
+              className="w-full border rounded-md p-2"
+              name="phone"
             />
           </div>
           <div>
-            <label
-              htmlFor="experience"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Experience
-            </label>
-            <input
-              type="text"
-              name="experience"
-              id="experience"
-              value={formData.experience}
-              onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="education"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Education
-            </label>
-            <input
-              type="text"
-              name="education"
-              id="education"
-              value={formData.education}
-              onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm"
-            />
-          </div>
-          <div className="flex justify-between">
-            <Button onClick={prevStep} className="text-white">
-              Back
-            </Button>
-            <Button onClick={nextStep} className="text-white">
-              Next
-            </Button>
-          </div>
-        </>
-      )}
-      {step === 2 && (
-        <>
-          <div>
-            <label
-              htmlFor="portfolio"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Portfolio
-            </label>
-            <input
-              type="text"
-              name="portfolio"
-              id="portfolio"
-              value={formData.portfolio}
-              onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="certificate"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Certificate
-            </label>
-            <input
-              type="text"
-              name="certificate"
-              id="certificate"
-              value={formData.certificate}
-              onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm"
-            />
-          </div>
-          <div className="flex justify-between">
-            <Button onClick={prevStep} className="text-white">
-              Back
-            </Button>
-            <Button onClick={nextStep} className="text-white">
-              Next
-            </Button>
-          </div>
-        </>
-      )}
-      {step === 3 && (
-        <>
-          <div>
-            <label
-              htmlFor="bio"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Bio
-            </label>
+            <label className="block">Bio</label>
             <textarea
-              name="bio"
-              id="bio"
               value={formData.bio}
               onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm"
+              className="w-full border rounded-md p-2"
+              name="bio"
+              rows={3}
             />
           </div>
           <div>
-            <label
-              htmlFor="languages"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Language
-            </label>
+            <label className="block">Location</label>
             <input
               type="text"
-              name="languages"
-              id="languages"
-              value={formData.languages.join(", ")}
-              onChange={handleChangeArray}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="rate"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Rate
-            </label>
-            <input
-              type="text"
-              name="rate"
-              id="rate"
-              value={formData.rate}
+              value={formData.location}
               onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm"
+              className="w-full border rounded-md p-2"
+              name="location"
             />
           </div>
-          <div className="flex justify-between">
-            <Button onClick={prevStep} className="text-white">
-              Back
-            </Button>
-            <Button type="submit" className="text-white" success={true}>
-              Submit
-            </Button>
+          <div>
+            <label className="block">Skills</label>
+            <input
+              type="text"
+              onChange={handleArrayChange}
+              className="w-full border rounded-md p-2"
+              name="skills"
+              placeholder="Enter skills separated by commas"
+            />
+          </div>
+          <div>
+            <label className="block">Languages</label>
+            <input
+              type="text"
+              onChange={handleArrayChange}
+              className="w-full border rounded-md p-2"
+              name="languages"
+              placeholder="Enter skills separated by commas"
+            />
+          </div>
+          <div>
+            <label className="block">Rate</label>
+            <input
+              type="text"
+              onChange={handleChange}
+              className="w-full border rounded-md p-2"
+              name="rate"
+            />
           </div>
         </>
       )}
+
+      {/* Step 2: Project Portfolio */}
+
+      {step === 1 &&
+        formData.projectPortfolio.map((portfolio, index) => (
+          <div key={index} className="border p-4 rounded-md mb-2">
+            <div>
+              <label className="block">Project Title</label>
+              <input
+                type="text"
+                value={portfolio.projectTitle}
+                name="projectTitle"
+                onChange={(e) =>
+                  handleObjectArrayChange(
+                    "projectPortfolio",
+                    index,
+                    e.target.name,
+                    e.target.value
+                  )
+                }
+                className="w-full border rounded-md p-2"
+              />
+            </div>
+            <div>
+              <label className="block">Project Description</label>
+              <input
+                type="text"
+                value={portfolio.projectDescription}
+                name="projectDescription"
+                onChange={(e) =>
+                  handleObjectArrayChange(
+                    "projectPortfolio",
+                    index,
+                    e.target.name,
+                    e.target.value
+                  )
+                }
+                className="w-full border rounded-md p-2"
+              />
+            </div>
+            <div>
+              <label className="block">Technology</label>
+              <input
+                type="text"
+                value={portfolio.technologies}
+                name="technologies"
+                onChange={(e) =>
+                  handleObjectArrayChange(
+                    "projectPortfolio",
+                    index,
+                    e.target.name,
+                    e.target.value
+                  )
+                }
+                className="w-full border rounded-md p-2"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Project Files
+              </label>
+              <input
+                type="file"
+                multiple
+                onChange={(e) => handleFileChange(index, e)}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm"
+              />
+            </div>
+
+            {/* File Preview */}
+            <div className="mt-4">
+              <h3 className="text-sm font-medium text-gray-700">
+                Selected Files
+              </h3>
+              <div className="flex gap-2 mt-2 flex-wrap">
+                {files[index]?.map((file, fileIndex) => (
+                  <div key={fileIndex} className="relative">
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt={file.name}
+                      className="h-20 w-20 object-cover rounded-md"
+                    />
+                    <Button
+                      type="button"
+                      onClick={() => handleRemoveFile(index, fileIndex)}
+                      className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
+                    >
+                      X
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <Button
+              type="button"
+              onClick={() =>
+                handleAddItem("projectPortfolio", defaultPortfolioItem)
+              }
+              className=" px-4 py-2 mt-4"
+            >
+              Add Project
+            </Button>
+          </div>
+        ))}
+
+      {/* Similar structure for Work Experience and Education */}
+
+      {step === 2 &&
+        formData.workExperience.map((work, index) => (
+          <div key={index} className="border p-4 rounded-md mb-2">
+            <div>
+              <label className="block">Company</label>
+              <input
+                type="text"
+                value={work.company}
+                name="company"
+                onChange={(e) => {
+                  handleObjectArrayChange(
+                    "workExperience",
+                    index,
+                    e.target.name,
+                    e.target.value
+                  );
+                }}
+                className="w-full border rounded-md p-2"
+              />
+            </div>
+
+            <div>
+              <label className="block">jobTitle</label>
+              <input
+                type="text"
+                value={work.jobTitle}
+                name="jobTitle"
+                onChange={(e) => {
+                  handleObjectArrayChange(
+                    "workExperience",
+                    index,
+                    e.target.name,
+                    e.target.value
+                  );
+                }}
+                className="w-full border rounded-md p-2"
+              />
+            </div>
+
+            <div>
+              <label className="block">Start Date</label>
+              <input
+                type="date"
+                value={work.startDate}
+                name="startDate"
+                onChange={(e) => {
+                  handleObjectArrayChange(
+                    "workExperience",
+                    index,
+                    e.target.name,
+                    e.target.value
+                  );
+                }}
+                className="w-full border rounded-md p-2"
+              />
+            </div>
+            <div>
+              <label className="block">End Date</label>
+              <input
+                type="date"
+                value={work.endDate}
+                name="endDate"
+                onChange={(e) => {
+                  handleObjectArrayChange(
+                    "workExperience",
+                    index,
+                    e.target.name,
+                    e.target.value
+                  );
+                }}
+                className="w-full border rounded-md p-2"
+              />
+            </div>
+
+            <Button
+              type="button"
+              onClick={() =>
+                handleAddItem("workExperience", defaultWorkExperienceItem)
+              }
+              className=" px-4 py-2 mt-4"
+            >
+              Add Work
+            </Button>
+          </div>
+        ))}
+
+      {/* Similar structure for  Education */}
+
+      {step === 3 &&
+        formData.education.map((edu, index) => (
+          <div key={index} className="border p-4 rounded-md mb-2">
+            <div>
+              <label className="block">Instituition</label>
+              <input
+                type="text"
+                value={edu.institution}
+                name="institution"
+                onChange={(e) => {
+                  handleObjectArrayChange(
+                    "education",
+                    index,
+                    e.target.name,
+                    e.target.value
+                  );
+                }}
+                className="w-full border rounded-md p-2"
+              />
+            </div>
+
+            <div>
+              <label className="block">Degree</label>
+              <input
+                type="text"
+                value={edu.degree}
+                name="degree"
+                onChange={(e) => {
+                  handleObjectArrayChange(
+                    "education",
+                    index,
+                    e.target.name,
+                    e.target.value
+                  );
+                }}
+                className="w-full border rounded-md p-2"
+              />
+            </div>
+
+            <div>
+              <label className="block">Start Date</label>
+              <input
+                type="date"
+                value={edu.startDate}
+                name="startDate"
+                onChange={(e) => {
+                  handleObjectArrayChange(
+                    "education",
+                    index,
+                    e.target.name,
+                    e.target.value
+                  );
+                }}
+                className="w-full border rounded-md p-2"
+              />
+            </div>
+
+            <div>
+              <label className="block">End Date</label>
+              <input
+                type="date"
+                value={edu.endDate}
+                name="endDate"
+                onChange={(e) => {
+                  handleObjectArrayChange(
+                    "education",
+                    index,
+                    e.target.name,
+                    e.target.value
+                  );
+                }}
+                className="w-full border rounded-md p-2"
+              />
+            </div>
+            <Button
+              type="button"
+              onClick={() => handleAddItem("education", defaultEducationItem)}
+              className=" px-4 py-2 mt-4"
+            >
+              Add Education
+            </Button>
+          </div>
+        ))}
+
+      <div className="flex justify-between mt-4">
+        {step > 0 && (
+          <Button type="button" onClick={() => setStep((prev) => prev - 1)}>
+            Previous
+          </Button>
+        )}
+        {step < stepTitles.length - 1 && (
+          <Button type="button" onClick={() => setStep((prev) => prev + 1)}>
+            Next
+          </Button>
+        )}
+        {step === stepTitles.length - 1 && (
+          <Button type="submit" className="bg-blue-500 text-white">
+            Submit
+          </Button>
+        )}
+      </div>
     </form>
   );
 };
 
-export default FreelancerForms;
+export default MultiStepForm;
