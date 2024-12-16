@@ -8,7 +8,12 @@ import { storage } from "../../../firebase"; // Import Firebase storage
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 
-const ProfileUploadForm = () => {
+interface Props {
+  params: {
+    id: string;
+  };
+}
+const ProfileUploadForm = ({ params }: Props) => {
   interface formData {
     userId?: string;
     dob: string;
@@ -22,9 +27,9 @@ const ProfileUploadForm = () => {
   }
 
   const { data: session } = useSession();
-  const userId = session?.user?.id;
+
   const [formData, setFormData] = useState<formData>({
-    userId: "",
+    userId: params.id,
     dob: "",
     country: "",
     streetAddress: "",
@@ -36,12 +41,12 @@ const ProfileUploadForm = () => {
   });
   const router = useRouter();
 
-  useEffect(() => {
-    setFormData({
-      ...formData,
-      userId: userId,
-    });
-  }, [userId, formData]);
+  // useEffect(() => {
+  //   setFormData({
+  //     ...formData,
+  //     userId: userId,
+  //   });
+  // }, [userId, formData]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>

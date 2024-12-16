@@ -1,5 +1,5 @@
 "use client";
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, use, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Button } from "@/app/ui/button";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -83,9 +83,9 @@ const MultiStepForm = () => {
 
   // Define initial form data using the FormData type
   const initialFormData: FormData = {
-    userId: "",
-    fullName: "",
-    email: "",
+    userId: userId,
+    fullName: fullName,
+    email: email,
     location: "",
     phone: "",
     skills: [],
@@ -119,14 +119,14 @@ const MultiStepForm = () => {
   };
   const [formData, setFormData] = useState<FormData>(initialFormData);
 
-  useEffect(() => {
-    setFormData({
-      ...formData,
-      userId: userId,
-      fullName: fullName,
-      email: email,
-    });
-  }, [userId, fullName, email, formData]);
+  // useEffect(() => {
+  //   setFormData({
+  //     ...formData,
+  //     userId: userId,
+  //     fullName: fullName,
+  //     email: email,
+  //   });
+  // }, [session]);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -236,7 +236,7 @@ const MultiStepForm = () => {
       if (response.ok) {
         setFormData(initialFormData);
         setFiles({});
-        router.push("/signup/profile-upload");
+        router.push(`/signup/profile-upload/${userId}`);
       } else {
         alert("Error submitting portfolio.");
       }
