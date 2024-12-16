@@ -4,15 +4,8 @@ const nextConfig = {
     return [
       {
         source: "/",
-        has: [
-          {
-            type: "header",
-            key: "accept",
-            value: "(?!image|application|text).*", // Skip if the request is for static files
-          },
-        ],
         destination: "/user/best-matches",
-        permanent: false,
+        permanent: true,
       },
     ];
   },
