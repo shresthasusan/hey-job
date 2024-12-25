@@ -1,59 +1,53 @@
-"use client"; // Indicates that this file should be treated as a client-side component
+"use client";
 
-// Importing necessary icons and components
 import { AtSymbolIcon, KeyIcon } from "@heroicons/react/24/outline";
 import { Button } from "../button";
-import { LifebuoyIcon, ShieldCheckIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import clsx from "clsx";
 
-// LoginForm component definition
 const LoginForm = () => {
-  // State variables for email, password, and error message
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false); // Add this state
 
-  // useRouter hook to programmatically navigate
   const router = useRouter();
 
-  // Handle form submission
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); // Prevent default form submission
-    setError(""); // Clear any previous error messages
+    e.preventDefault();
+    setError("");
 
-    // Validate form fields
     if (email === "" || password === "") {
       setError("Please fill in all fields");
       return;
     }
 
+    setIsSubmitting(true); // Disable the button when form submission starts
+
     try {
-      // Attempt to sign in using next-auth
       const res = await signIn("credentials", {
         email,
         password,
         redirect: false,
       });
 
-      // Check for authentication errors
       if (res?.error) {
         setError("Invalid Credentials");
+        setIsSubmitting(false); // Re-enable the button if there's an error
         return;
       }
 
-      // If successful, redirect to the home page
       router.push("/");
     } catch (err) {
-      // Handle any unexpected errors
       setError("An unexpected error occurred");
+      setIsSubmitting(false); // Re-enable the button if there's an error
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Email input field */}
       <div className="relative">
         <AtSymbolIcon className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
         <input
@@ -65,7 +59,6 @@ const LoginForm = () => {
         />
       </div>
 
-      {/* Password input field */}
       <div className="relative">
         <KeyIcon className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
         <input
@@ -77,16 +70,20 @@ const LoginForm = () => {
         />
       </div>
 
-      {/* Error message display */}
       {error && <p className="text-red-500 text-sm">{error}</p>}
 
-      {/* Submit button */}
-      <Button type="submit" className="w-full">
-        Sign In
+      <Button
+        type="submit"
+        className={clsx("w-full", {
+          "bg-slate-100 border-2 border-primary-600 cursor-not-allowed":
+            isSubmitting == true,
+        })}
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? "Signing in..." : "Sign In"}
       </Button>
     </form>
   );
 };
 
-// Exporting the LoginForm component as the default export
 export default LoginForm;

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Button } from "../button";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import clsx from "clsx";
 
 const SignupForm = () => {
   const [name, setName] = useState("");
@@ -13,6 +14,7 @@ const SignupForm = () => {
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const router = useRouter();
 
@@ -40,6 +42,7 @@ const SignupForm = () => {
 
       if (user) {
         setError("User already exists");
+        setIsSubmitting(false);
         return;
       }
       const res = await fetch("/api/register", {
@@ -56,6 +59,7 @@ const SignupForm = () => {
       });
       if (res.ok) {
         const form = e.target as HTMLFormElement;
+        setIsSubmitting(true);
         const response = await signIn("credentials", {
           email,
           password,
@@ -63,6 +67,7 @@ const SignupForm = () => {
         });
         if (response?.error) {
           setError("Invalid Credentials");
+          setIsSubmitting(false);
           return;
         }
 
@@ -156,11 +161,14 @@ const SignupForm = () => {
       </div>
 
       <Button
-        className="mt-5 w-full
-                  justify-center text-white "
         type="submit"
+        className={clsx("w-full", {
+          "bg-slate-100 border-2 border-primary-600 cursor-not-allowed":
+            isSubmitting == true,
+        })}
+        disabled={isSubmitting}
       >
-        Create my account
+        {isSubmitting ? "please wait..." : "Sign In"}
       </Button>
 
       {error && (
