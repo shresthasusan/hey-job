@@ -74,8 +74,8 @@ const LoginForm = () => {
 
       <Button
         type="submit"
-        className={clsx("w-full", {
-          "bg-slate-100 border-2 border-primary-600 cursor-not-allowed":
+        className={clsx("w-full text-white", {
+          "bg-slate-100  border-2 border-primary-600 cursor-not-allowed":
             isSubmitting == true,
         })}
         disabled={isSubmitting}

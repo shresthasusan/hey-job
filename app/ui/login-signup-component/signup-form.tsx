@@ -162,13 +162,13 @@ const SignupForm = () => {
 
       <Button
         type="submit"
-        className={clsx("w-full", {
+        className={clsx("w-full text-white mt-5", {
           "bg-slate-100 border-2 border-primary-600 cursor-not-allowed":
             isSubmitting == true,
         })}
         disabled={isSubmitting}
       >
-        {isSubmitting ? "please wait..." : "Sign In"}
+        {isSubmitting ? "please wait..." : "Sign up"}
       </Button>
 
       {error && (
