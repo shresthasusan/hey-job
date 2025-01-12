@@ -599,8 +599,6 @@ const MultiStepForm = () => {
             >
               Add Education
             </Button>{" "}
-            npx eslint
-            /c:/Users/shres/Desktop/hey-job/app/ui/login-signup-component/freelancer/freelancerForms.tsx
           </div>
         ))}
 
