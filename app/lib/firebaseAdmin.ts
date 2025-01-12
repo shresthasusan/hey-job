@@ -1,4 +1,4 @@
-import { initializeApp, cert, ServiceAccount, getApp, getApps } from "firebase-admin/app";
+import { initializeApp, cert, ServiceAccount } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 
 // Construct the ServiceAccount object
@@ -8,16 +8,10 @@ const serviceAccount: ServiceAccount = {
     privateKey: (process.env.FIREBASE_PRIVATE_KEY || "").replace(/\\n/g, "\n"),
 };
 
+// Initialize Firebase Admin SDK
+const firebaseAdminApp = initializeApp({
+    credential: cert(serviceAccount),
+});
 
-// Check if any Firebase apps have been initialized
-let firebaseAdminApp;
-if (!getApps().length) {
-    firebaseAdminApp = initializeApp({
-        credential: cert(serviceAccount),
-    });
-} else {
-    firebaseAdminApp = getApp(); // Reuse the already initialized app
-}
-
-// Export Firebase Admin services
+// Export the admin authentication instance
 export const adminAuth = getAuth(firebaseAdminApp);
