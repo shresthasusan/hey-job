@@ -38,7 +38,6 @@ const LoginForm = () => {
         setIsSubmitting(false); // Re-enable the button if there's an error
         return;
       }
-
       router.push("/");
     } catch (err) {
       setError("An unexpected error occurred");

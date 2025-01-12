@@ -60,6 +60,7 @@ const SignupForm = () => {
       if (res.ok) {
         const form = e.target as HTMLFormElement;
         setIsSubmitting(true);
+
         const response = await signIn("credentials", {
           email,
           password,
