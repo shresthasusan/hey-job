@@ -92,7 +92,7 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
                      h-24 w-24"
             >
               <Image
-                src="/images/image1.png"
+                src="/image1.png"
                 alt="profile"
                 width={150}
                 height={150}

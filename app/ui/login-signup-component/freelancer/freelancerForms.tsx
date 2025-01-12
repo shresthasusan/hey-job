@@ -3,9 +3,10 @@ import { ChangeEvent, FormEvent, use, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Button } from "@/app/ui/button";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { storage } from "../../../firebase"; // Import Firebase storage
+import { storage } from "../../../lib/firebase"; // Import Firebase storage
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import clsx from "clsx";
 
 export type project = {
   projectTitle: string;
@@ -538,7 +539,6 @@ const MultiStepForm = () => {
                 className="w-full border rounded-md p-2"
               />
             </div>
-
             <div>
               <label className="block">Degree</label>
               <input
@@ -556,7 +556,6 @@ const MultiStepForm = () => {
                 className="w-full border rounded-md p-2"
               />
             </div>
-
             <div>
               <label className="block">Start Date</label>
               <input
@@ -574,7 +573,6 @@ const MultiStepForm = () => {
                 className="w-full border rounded-md p-2"
               />
             </div>
-
             <div>
               <label className="block">End Date</label>
               <input
@@ -595,10 +593,12 @@ const MultiStepForm = () => {
             <Button
               type="button"
               onClick={() => handleAddItem("education", defaultEducationItem)}
-              className=" px-4 py-2 mt-4"
+              className={clsx("px-4 py-2 mt-4", {
+                "cursor-not-allowed opacity-50 disabled": uploading,
+              })}
             >
               Add Education
-            </Button>
+            </Button>{" "}
           </div>
         ))}
 

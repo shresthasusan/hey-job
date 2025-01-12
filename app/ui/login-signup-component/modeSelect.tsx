@@ -4,12 +4,15 @@ import {
   BriefcaseIcon,
   ComputerDesktopIcon,
 } from "@heroicons/react/24/outline";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "../button";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
+import useFirebaseAuth from "@/app/hooks/useFirebaseAuth";
 
 const ModeSelect = () => {
+  useFirebaseAuth();
+
   const router = useRouter();
   const [mode, setMode] = useState("");
 

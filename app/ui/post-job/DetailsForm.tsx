@@ -5,9 +5,9 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "../button";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { storage } from "../../firebase"; // Import Firebase storage
-import email from "next-auth/providers/email";
+import { storage } from "../../lib/firebase"; // Import Firebase storage
 import Image from "next/image";
+
 const DetailsForm = () => {
   type formData = {
     userId?: string;

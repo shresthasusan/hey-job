@@ -1,12 +1,13 @@
 "use client";
 
 import { countries } from "@/app/lib/data";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { storage } from "../../../firebase"; // Import Firebase storage
+import { storage } from "../../../lib/firebase"; // Import Firebase storage
 import Image from "next/image";
-import { useSession } from "next-auth/react";
+
+import useFirebaseAuth from "@/app/hooks/useFirebaseAuth";
 
 interface Props {
   params: {
@@ -26,7 +27,7 @@ const ProfileUploadForm = ({ params }: Props) => {
     profilePicture: string;
   }
 
-  const { data: session } = useSession();
+  // const { data: session } = useSession();
 
   const [formData, setFormData] = useState<formData>({
     userId: params.id,
@@ -41,6 +42,7 @@ const ProfileUploadForm = ({ params }: Props) => {
   });
   const router = useRouter();
 
+  // const userId = session?.user?.id;
   // useEffect(() => {
   //   setFormData({
   //     ...formData,
@@ -59,7 +61,7 @@ const ProfileUploadForm = ({ params }: Props) => {
   };
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>("/image1.png");
-
+  // useFirebaseAuth();
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -88,7 +90,7 @@ const ProfileUploadForm = ({ params }: Props) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // console.log("Submitting form data:", formData);
+      console.log("Submitting form data:", formData);
 
       if (file) {
         const fileRef = ref(storage, `profile-pictures/${file.name}`);
