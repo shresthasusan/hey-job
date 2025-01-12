@@ -61,7 +61,7 @@ const ProfileUploadForm = ({ params }: Props) => {
   };
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>("/image1.png");
-  useFirebaseAuth();
+  // useFirebaseAuth();
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
