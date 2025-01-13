@@ -613,11 +613,14 @@ const MultiStepForm = () => {
             Next
           </Button>
         )}
-        {step === stepTitles.length - 1 && (
-          <Button type="submit" className="bg-blue-500 text-white">
-            Submit
-          </Button>
-        )}
+        <Button
+          type="submit"
+          className={clsx("bg-blue-500 text-white", {
+            "bg-neutral-400": uploading,
+          })}
+        >
+          Submit
+        </Button>
       </div>
     </form>
   );

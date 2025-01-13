@@ -7,6 +7,8 @@ import { Button } from "../button";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../lib/firebase"; // Import Firebase storage
 import Image from "next/image";
+import useFirebaseAuth from "@/app/hooks/useFirebaseAuth";
+import clsx from "clsx";
 
 const DetailsForm = () => {
   type formData = {
@@ -83,6 +85,8 @@ const DetailsForm = () => {
       [name]: array,
     });
   };
+
+  useFirebaseAuth();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -320,8 +324,11 @@ const DetailsForm = () => {
               </Button>
               <Button
                 onClick={() => handleSubmit}
-                className="text-white"
+                className={clsx("text-white", {
+                  "bg-neutral-400": uploading,
+                })}
                 success={true}
+                disabled={uploading}
               >
                 Submit
               </Button>
