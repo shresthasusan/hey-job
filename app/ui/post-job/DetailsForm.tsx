@@ -7,6 +7,8 @@ import { Button } from "../button";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../lib/firebase"; // Import Firebase storage
 import Image from "next/image";
+import useFirebaseAuth from "@/app/hooks/useFirebaseAuth";
+import clsx from "clsx";
 
 const DetailsForm = () => {
   type formData = {
@@ -44,13 +46,13 @@ const DetailsForm = () => {
   };
 
   const [formData, setFormData] = useState<formData>(initialFormData);
-  useEffect(() => {
-    setFormData({
-      ...formData,
-      userId: id,
-      fullName: fullName,
-    });
-  }, [id, fullName, formData]);
+  // useEffect(() => {
+  //   setFormData({
+  //     ...formData,
+  //     userId: id,
+  //     fullName: fullName,
+  //   });
+  // }, [id, fullName, formData]);
   const [files, setFiles] = useState<File[]>([]); // Store file data
   const [uploading, setUploading] = useState<boolean>(false); // State for file upload
 
@@ -83,6 +85,8 @@ const DetailsForm = () => {
       [name]: array,
     });
   };
+
+  useFirebaseAuth();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -320,8 +324,11 @@ const DetailsForm = () => {
               </Button>
               <Button
                 onClick={() => handleSubmit}
-                className="text-white"
+                className={clsx("text-white", {
+                  "bg-neutral-400": uploading,
+                })}
                 success={true}
+                disabled={uploading}
               >
                 Submit
               </Button>

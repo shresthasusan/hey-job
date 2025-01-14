@@ -12,7 +12,7 @@ export type project = {
   projectTitle: string;
   projectDescription: string;
   technologies: string;
-  portfolioFiles: string[];
+  portfolioFiles?: string[];
 };
 
 export type work = {
@@ -36,9 +36,9 @@ type FormData = {
   location: string;
   phone: string;
   skills: string[];
-  workExperience: work[];
-  projectPortfolio: project[];
-  education: institution[];
+  workExperience?: work[];
+  projectPortfolio?: project[];
+  education?: institution[];
   bio: string;
   languages: string[];
   rate: string;
@@ -53,8 +53,8 @@ const defaultPortfolioItem = {
 const defaultWorkExperienceItem = {
   jobTitle: "",
   company: "",
-  startDate: new Date().toISOString().slice(0, 10), // Format as YYYY-MM-DD
-  endDate: new Date().toISOString().slice(0, 10),
+  startDate: "", // Format as YYYY-MM-DD
+  endDate: "",
 };
 
 const defaultEducationItem = {
@@ -91,28 +91,28 @@ const MultiStepForm = () => {
     phone: "",
     skills: [],
     workExperience: [
-      {
-        jobTitle: "",
-        company: "",
-        startDate: "",
-        endDate: "",
-      },
+      // {
+      //   jobTitle: "",
+      //   company: "",
+      //   startDate: "",
+      //   endDate: "",
+      // },
     ],
     projectPortfolio: [
-      {
-        projectTitle: "",
-        projectDescription: "",
-        technologies: "",
-        portfolioFiles: [],
-      },
+      // {
+      //   projectTitle: "",
+      //   projectDescription: "",
+      //   technologies: "",
+      //   portfolioFiles: [],
+      // },
     ],
     education: [
-      {
-        degree: "",
-        institution: "",
-        startDate: "",
-        endDate: "",
-      },
+      // {
+      //   degree: "",
+      //   institution: "",
+      //   startDate: "",
+      //   endDate: "",
+      // },
     ],
     bio: "",
     languages: [],
@@ -170,7 +170,7 @@ const MultiStepForm = () => {
     value: string
   ) => {
     setFormData((prevState) => {
-      const updatedArray = [...prevState[field]] as any; // Type assertion for dynamic access
+      const updatedArray = [...(prevState[field] || [])] as any; // Type assertion for dynamic access
       updatedArray[index] = {
         ...updatedArray[index],
         [name]: value,
@@ -202,22 +202,24 @@ const MultiStepForm = () => {
       setUploading(true);
 
       // Upload files for each project
-      const updatedProjects = await Promise.all(
-        formData.projectPortfolio.map(async (project, index) => {
-          const projectFiles = files[index] || [];
-          const fileUrls = await Promise.all(
-            projectFiles.map(async (file) => {
-              const fileRef = ref(storage, `portfolios/${file.name}`);
-              await uploadBytes(fileRef, file);
-              return getDownloadURL(fileRef);
+      const updatedProjects = formData.projectPortfolio
+        ? await Promise.all(
+            formData.projectPortfolio.map(async (project, index) => {
+              const projectFiles = files[index] || [];
+              const fileUrls = await Promise.all(
+                projectFiles.map(async (file) => {
+                  const fileRef = ref(storage, `portfolios/${file.name}`);
+                  await uploadBytes(fileRef, file);
+                  return getDownloadURL(fileRef);
+                })
+              );
+              return {
+                ...project,
+                portfolioFiles: fileUrls,
+              };
             })
-          );
-          return {
-            ...project,
-            portfolioFiles: fileUrls,
-          };
-        })
-      );
+          )
+        : [];
 
       console.log("Updated projects:", updatedProjects);
       const finalFormData = {
@@ -253,24 +255,16 @@ const MultiStepForm = () => {
   ];
 
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-lg mx-auto">
+    <form onSubmit={handleSubmit} className="w-full max-w-lg mx-auto ">
       <h2 className="text-lg font-semibold mb-4">{stepTitles[step]}</h2>
 
       {/* Step 1: Personal Information */}
       {step === 0 && (
         <>
           <div>
-            <label className="block">Phone</label>
-            <input
-              type="text"
-              value={formData.phone}
-              onChange={handleChange}
-              className="w-full border rounded-md p-2"
-              name="phone"
-            />
-          </div>
-          <div>
-            <label className="block">Bio</label>
+            <label className="block">
+              Bio <span className="text-red-500">*</span>
+            </label>
             <textarea
               value={formData.bio}
               onChange={handleChange}
@@ -280,7 +274,10 @@ const MultiStepForm = () => {
             />
           </div>
           <div>
-            <label className="block">Location</label>
+            <label className="block">
+              Location
+              <span className="text-red-500">*</span>
+            </label>
             <input
               type="text"
               value={formData.location}
@@ -290,7 +287,10 @@ const MultiStepForm = () => {
             />
           </div>
           <div>
-            <label className="block">Skills</label>
+            <label className="block">
+              Skills
+              <span className="text-red-500">*</span>
+            </label>
             <input
               type="text"
               onChange={handleArrayChange}
@@ -300,7 +300,10 @@ const MultiStepForm = () => {
             />
           </div>
           <div>
-            <label className="block">Languages</label>
+            <label className="block">
+              Languages
+              <span className="text-red-500">*</span>
+            </label>
             <input
               type="text"
               onChange={handleArrayChange}
@@ -310,7 +313,10 @@ const MultiStepForm = () => {
             />
           </div>
           <div>
-            <label className="block">Rate</label>
+            <label className="block">
+              Rate
+              <span className="text-red-500">*</span>
+            </label>
             <input
               type="text"
               onChange={handleChange}
@@ -324,10 +330,13 @@ const MultiStepForm = () => {
       {/* Step 2: Project Portfolio */}
 
       {step === 1 &&
-        formData.projectPortfolio.map((portfolio, index) => (
+        formData.projectPortfolio?.map((portfolio, index) => (
           <div key={index} className="border p-4 rounded-md mb-2">
             <div>
-              <label className="block">Project Title</label>
+              <label className="block">
+                Project Title
+                <span className="text-red-500">*</span>
+              </label>
               <input
                 type="text"
                 value={portfolio.projectTitle}
@@ -344,7 +353,10 @@ const MultiStepForm = () => {
               />
             </div>
             <div>
-              <label className="block">Project Description</label>
+              <label className="block">
+                Project Description
+                <span className="text-red-500">*</span>
+              </label>
               <input
                 type="text"
                 value={portfolio.projectDescription}
@@ -361,7 +373,10 @@ const MultiStepForm = () => {
               />
             </div>
             <div>
-              <label className="block">Technology</label>
+              <label className="block">
+                Technology
+                <span className="text-red-500">*</span>
+              </label>
               <input
                 type="text"
                 value={portfolio.technologies}
@@ -416,26 +431,30 @@ const MultiStepForm = () => {
                 ))}
               </div>
             </div>
-
-            <Button
-              type="button"
-              onClick={() =>
-                handleAddItem("projectPortfolio", defaultPortfolioItem)
-              }
-              className=" px-4 py-2 mt-4"
-            >
-              Add Project
-            </Button>
           </div>
         ))}
+      {step === 1 && (
+        <Button
+          type="button"
+          onClick={() =>
+            handleAddItem("projectPortfolio", defaultPortfolioItem)
+          }
+          className=" px-4 py-2 mt-4"
+        >
+          Add Project
+        </Button>
+      )}
 
       {/* Similar structure for Work Experience and Education */}
 
       {step === 2 &&
-        formData.workExperience.map((work, index) => (
+        formData.workExperience?.map((work, index) => (
           <div key={index} className="border p-4 rounded-md mb-2">
             <div>
-              <label className="block">Company</label>
+              <label className="block">
+                Company
+                <span className="text-red-500">*</span>
+              </label>
               <input
                 type="text"
                 value={work.company}
@@ -453,7 +472,10 @@ const MultiStepForm = () => {
             </div>
 
             <div>
-              <label className="block">jobTitle</label>
+              <label className="block">
+                jobTitle
+                <span className="text-red-500">*</span>
+              </label>
               <input
                 type="text"
                 value={work.jobTitle}
@@ -471,7 +493,10 @@ const MultiStepForm = () => {
             </div>
 
             <div>
-              <label className="block">Start Date</label>
+              <label className="block">
+                Start Date
+                <span className="text-red-500">*</span>
+              </label>
               <input
                 type="date"
                 value={work.startDate}
@@ -504,26 +529,30 @@ const MultiStepForm = () => {
                 className="w-full border rounded-md p-2"
               />
             </div>
-
-            <Button
-              type="button"
-              onClick={() =>
-                handleAddItem("workExperience", defaultWorkExperienceItem)
-              }
-              className=" px-4 py-2 mt-4"
-            >
-              Add Work
-            </Button>
           </div>
         ))}
 
+      {step === 2 && (
+        <Button
+          type="button"
+          onClick={() =>
+            handleAddItem("workExperience", defaultWorkExperienceItem)
+          }
+          className=" px-4 py-2 mt-4"
+        >
+          Add Work
+        </Button>
+      )}
       {/* Similar structure for  Education */}
 
       {step === 3 &&
-        formData.education.map((edu, index) => (
+        formData.education?.map((edu, index) => (
           <div key={index} className="border p-4 rounded-md mb-2">
             <div>
-              <label className="block">Instituition</label>
+              <label className="block">
+                Instituition
+                <span className="text-red-500">*</span>
+              </label>
               <input
                 type="text"
                 value={edu.institution}
@@ -540,7 +569,10 @@ const MultiStepForm = () => {
               />
             </div>
             <div>
-              <label className="block">Degree</label>
+              <label className="block">
+                Degree
+                <span className="text-red-500">*</span>
+              </label>
               <input
                 type="text"
                 value={edu.degree}
@@ -557,7 +589,10 @@ const MultiStepForm = () => {
               />
             </div>
             <div>
-              <label className="block">Start Date</label>
+              <label className="block">
+                Start Date
+                <span className="text-red-500">*</span>
+              </label>
               <input
                 type="date"
                 value={edu.startDate}
@@ -589,18 +624,18 @@ const MultiStepForm = () => {
                 }}
                 className="w-full border rounded-md p-2"
               />
-            </div>
-            <Button
-              type="button"
-              onClick={() => handleAddItem("education", defaultEducationItem)}
-              className={clsx("px-4 py-2 mt-4", {
-                "cursor-not-allowed opacity-50 disabled": uploading,
-              })}
-            >
-              Add Education
-            </Button>{" "}
+            </div>{" "}
           </div>
         ))}
+      {step === 3 && (
+        <Button
+          type="button"
+          onClick={() => handleAddItem("education", defaultEducationItem)}
+          className={clsx("px-4 py-2 mt-4")}
+        >
+          Add Education
+        </Button>
+      )}
 
       <div className="flex justify-between mt-4">
         {step > 0 && (
@@ -613,8 +648,13 @@ const MultiStepForm = () => {
             Next
           </Button>
         )}
-        {step === stepTitles.length - 1 && (
-          <Button type="submit" className="bg-blue-500 text-white">
+        {step === 3 && (
+          <Button
+            type="submit"
+            className={clsx("bg-blue-500 text-white", {
+              "cursor-not-allowed opacity-50 disabled": uploading,
+            })}
+          >
             Submit
           </Button>
         )}
