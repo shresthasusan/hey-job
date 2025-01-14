@@ -10,11 +10,10 @@ interface UserRequestBody {
   fullName: string;
   email: string;
   location: string;
-  phone: string;
   skills: string[];
-  workExperience: work[];
-  projectPortfolio: project[];
-  education: institution[];
+  workExperience?: work[];
+  projectPortfolio?: project[];
+  education?: institution[];
   bio: string;
   languages: string[];
   rate: string;
@@ -27,7 +26,6 @@ export async function POST(req: NextRequest) {
       fullName,
       email,
       location,
-      phone,
       skills,
       workExperience,
       projectPortfolio,
@@ -44,7 +42,6 @@ export async function POST(req: NextRequest) {
       fullName,
       email,
       location,
-      phone,
       skills,
       workExperience,
       projectPortfolio,
@@ -59,7 +56,6 @@ export async function POST(req: NextRequest) {
       fullName,
       email,
       location,
-      phone,
       skills,
       workExperience,
       projectPortfolio,

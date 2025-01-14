@@ -1,8 +1,3 @@
-import {
-  institution,
-  project,
-  work,
-} from "@/app/ui/login-signup-component/freelancer/freelancerForms";
 import mongoose, { Document, Schema, Model } from "mongoose";
 
 // Define an interface representing the FreelancerInfo document
@@ -11,12 +6,25 @@ interface IFreelancerInfo extends Document {
   fullName: string;
   email: string;
   location: string;
-  phone: string;
   skills: string[];
-  workExperience: work[];
-  projectPortfolio: project[];
-  education: institution[];
-  // certificate: string;
+  workExperience?: {
+    jobTitle: string;
+    company: string;
+    startDate: string;
+    endDate?: string;
+  }[];
+  projectPortfolio?: {
+    projectTitle?: string;
+    projectDescription?: string;
+    technologies?: string[];
+    portfolioFiles?: string[];
+  }[];
+  education?: {
+    degree?: string;
+    institution?: string;
+    startDate?: string;
+    endDate?: string;
+  }[];
   bio: string;
   languages: string[];
   rate: string;
@@ -39,12 +47,7 @@ const freelancerInfoSchema = new Schema<IFreelancerInfo>(
       type: String,
       required: true,
     },
-
     location: {
-      type: String,
-      required: true,
-    },
-    phone: {
       type: String,
       required: true,
     },
@@ -56,24 +59,23 @@ const freelancerInfoSchema = new Schema<IFreelancerInfo>(
       {
         jobTitle: { type: String, required: true },
         company: { type: String, required: true },
-        startDate: { type: String, required: false }, // e.g., "Jan 2020 - Dec 2021"
+        startDate: { type: String, required: true },
         endDate: { type: String, required: false },
       },
     ],
     projectPortfolio: [
       {
         projectTitle: { type: String, required: true },
-        projectDescription: { type: String, required: false },
-        technologies: { type: [String], required: false },
-        portfolioFiles: { type: [String], required: false }, // URL to the project
+        projectDescription: { type: String, required: true },
+        technologies: { type: [String], required: true },
+        portfolioFiles: { type: [String], required: false },
       },
     ],
-
     education: [
       {
-        degree: { type: String, required: false },
+        degree: { type: String, required: true },
         institution: { type: String, required: true },
-        startDate: { type: String, required: false },
+        startDate: { type: String, required: true },
         endDate: { type: String, required: false },
       },
     ],
