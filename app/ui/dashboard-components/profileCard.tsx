@@ -1,10 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import SkeletonProfileCard from "./skeletons/skeletonProfileCard";
 import useFetch from "@/app/hooks/useFetch";
+import { Appcontext } from "@/app/context/appContext";
+import { auth } from "@/app/lib/firebase";
 
 interface Props {
   mode: string;
@@ -21,6 +23,9 @@ const ProfileCard = ({ mode }: Props) => {
     loading,
     error,
   } = useFetch<User>(`user/${session?.user.id}`);
+
+
+
   // If the session status is loading, return a skeleton component
   if (status === "loading") {
     return <SkeletonProfileCard />;

@@ -11,6 +11,7 @@ import SearchBar from "@/app/ui/dashboard-components/talent-posting/searchBar";
 import { InformationCircleIcon, PlusIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import TalentNavBar from "@/app/ui/dashboard-components/talent-posting/navBar";
+import UserProfileLoader from "@/app/lib/userProfileLoader";
 
 // root layout for client dashboard pages
 
@@ -18,6 +19,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     // body of the page
     <div className="grid px-5 py-10 md:px-10 gap-16  dashboard:grid-rows-2  ">
+
+   <UserProfileLoader/>
       {/* profile card, order card, rating card, finance card, reviews card components */}
       <div className="   hidden xl:flex xl:justify-between   sm:gap-x-5 gap-y-10  w-full ">
         <ProfileCard mode={"Client"} />
