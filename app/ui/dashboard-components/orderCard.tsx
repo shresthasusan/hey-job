@@ -17,11 +17,11 @@ const OrderCard = ({ mode }: Props) => {
       </h1>
       <div className="w-full flex gap-3  flex-col ">
         <div className="bg-primary-400 text-primary-700 relative rounded-3xl p-[3px] pl-10">
-          <p>2 Pending</p>
+          <p>0 Pending</p>
           <ClockIcon className="h-4 w-5 absolute   -translate-y-[50%] left-3 top-1/2 " />
         </div>
         <div className="bg-sucess-400 text-sucess-600 relative rounded-3xl p-[3px] pl-10">
-          <p>2 Completed</p>
+          <p>0 Completed</p>
           <CheckBadgeIcon className="h-4 w-5 absolute -translate-y-[50%]  left-3 top-1/2 " />
         </div>
       </div>
