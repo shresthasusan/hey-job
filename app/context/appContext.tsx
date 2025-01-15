@@ -50,7 +50,7 @@ const defaultValue: AppContextValue = {
 };
 
 // Create the context
-export const Appcontext = createContext<AppContextValue | null>(defaultValue);
+export const Appcontext = createContext<AppContextValue >(defaultValue);
 
 interface Props {
   children: ReactNode;
@@ -83,7 +83,7 @@ const Appcontextprovider: React.FC<Props> = ({ children }) => {
           });
         }
       }, 6000);
-
+      console.log("loadUserData function callled");
       // Clear the interval when the component unmounts
       clearInterval(intervalId);
     } catch (error) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Image from "next/image";
 import {
   arrayUnion,
@@ -14,16 +14,21 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { db } from "@/app/lib/firebase";
+import { auth, db } from "@/app/lib/firebase";
 import { Appcontext } from "@/app/context/appContext";
+import { onAuthStateChanged } from "firebase/auth";
+import UserProfileLoader from "@/app/lib/userProfileLoader";
+
 
 const ChatList: React.FC = () => {
+  
   //hereeee
   type UserData = {
     id: string;
     avatar: string;
     name: string;
     username: string;
+    messageId: string;
   };
 
   type ChatDataItem = {
@@ -33,6 +38,7 @@ const ChatList: React.FC = () => {
     updateDoc: number;
     messageSeen: boolean;
     userData: UserData;
+    user: UserData;
   };
 
   interface AppContextValue {
@@ -61,9 +67,13 @@ const ChatList: React.FC = () => {
     messagesId,
     chatVisual,
     setChatVisual,
+    loadUserData
   } = context;
 
   const [user, setUser] = useState<UserData | null>(null);
+<UserProfileLoader/>
+  
+
   const [showSearch, setShowSearch] = useState(false);
 
   const inputHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -99,10 +109,20 @@ const ChatList: React.FC = () => {
   };
 
   const addChat = async () => {
-    if (!user) return;
+    if (!user) {
+      console.error("No user selected");
+      return;
+    }
+    console.log("user", user);
+    console.log("userData", userData);
+    if (!userData?.id) {
+      console.error(" userData ID is undefined");
+      return;
+    }
 
     const messagesRef = collection(db, "messages");
     const chatsRef = collection(db, "chats");
+
     try {
       const newMessageRef = doc(messagesRef);
       await setDoc(newMessageRef, {
@@ -110,23 +130,26 @@ const ChatList: React.FC = () => {
         messages: [],
       });
 
-      const chatData = {
-        messageId: newMessageRef.id,
-        lastMessage: "",
-        rId: userData?.id,
-        updateDoc: Date.now(),
-        messageSeen: true,
-      };
-
       await updateDoc(doc(chatsRef, user.id), {
-        chatsData: arrayUnion(chatData),
+        chatsData: arrayUnion({
+          messageId: newMessageRef.id,
+          lastMessage: "",
+          rId: userData.id,
+          updateDoc: Date.now(),
+          messageSeen: true,
+        }),
       });
-      await updateDoc(doc(chatsRef, userData?.id), {
-        chatsData: arrayUnion({ ...chatData, rId: user.id }),
+      await updateDoc(doc(chatsRef, userData.id), {
+        chatsData: arrayUnion({
+          messageId: newMessageRef.id,
+          lastMessage: "",
+          rId: user.id,
+          updateDoc: Date.now(),
+          messageSeen: true,
+        }),
       });
     } catch (error: any) {
-      console.error(error);
-      console.error(error);
+      console.error("Error adding chat:", error);
     }
   };
 
@@ -134,7 +157,7 @@ const ChatList: React.FC = () => {
     try {
       setMessagesId(item.messageId);
       setChatUser(item.userData);
-
+      console.log('setChatUser', chatUser)
       if (!userData?.id) {
         throw new Error("User ID is undefined");
       }
@@ -198,33 +221,33 @@ const ChatList: React.FC = () => {
             // <div className="text-center text-gray-500 mt-4">
             //   No chats available
             // </div>
-            chatData?.map((user: ChatDataItem, index: number) => (
-              <div
-                key={index}
-                className="flex flex-row py-2 px-2 justify-center hover:bg-gray-200 items-center border-b-2"
-                onClick={() => setChat(user)}
-              >
-                {/* User avatar */}
-                <div className="w-1/4">
-                  <Image
-                    src={user.userData.avatar}
-                    className="object-cover h-12 w-12 rounded-full"
-                    alt={user.userData.username}
-                    width={48}
-                    height={48}
-                  />
-                </div>
-                {/* User details */}
-                <div className="w-[80%] relative">
-                  <div className="text-lg font-medium">
-                    {user.userData.username}
-                  </div>
-                  <div className="text-sm w-[80%] overflow-hidden text-gray-500">
-                    {user.lastMessage}
-                  </div>
-                </div>
-              </div>
-            ))
+            chatData?.map((item: ChatDataItem, index: number) => (
+                          <div
+                            key={index}
+                            className="flex flex-row py-2 px-2 justify-center hover:bg-gray-200 items-center border-b-2"
+                            onClick={() => setChat(item)}
+                          >
+                            {/* User avatar */}
+                            <div className="w-1/4">
+                              <Image
+                                src={item.userData.avatar}
+                                className="object-cover h-12 w-12 rounded-full"
+                                alt={item.userData.username}
+                                width={48}
+                                height={48}
+                              />
+                            </div>
+                            {/* User details */}
+                            <div className="w-[80%] relative">
+                              <div className="text-lg font-medium">
+                                {item.userData.username}
+                              </div>
+                              <div className="text-sm w-[80%] overflow-hidden text-gray-500">
+                                {item.lastMessage}
+                              </div>
+                            </div>
+                          </div>
+                        ))
           )}
         </div>
       </div>

@@ -7,6 +7,7 @@ import ReviewsCard from "../../ui/dashboard-components/reviews-card/reviewsCard"
 import JobNavBar from "../../ui/dashboard-components/job-list/jobNavBar";
 import SearchInput from "../../ui/dashboard-components/job-list/searchBar";
 import { ReactNode, Suspense } from "react";
+import UserProfileLoader from "@/app/lib/userProfileLoader";
 
 interface Props {
   children: ReactNode;
@@ -15,6 +16,7 @@ interface Props {
 export default function Layout({ children }: Props) {
   return (
     <div className="grid px-5 py-10 md:px-10 gap-16  dashboard:grid-rows-2  ">
+      <UserProfileLoader/>
       <div className="   hidden xl:flex xl:justify-between   sm:gap-x-5 gap-y-10  w-full ">
         <ProfileCard mode={"Freelancer"} />
         <OrderCard mode="Freelancer" />
