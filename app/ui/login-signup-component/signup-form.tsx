@@ -171,6 +171,16 @@ const SignupForm = () => {
       >
         {isSubmitting ? "please wait..." : "Sign up"}
       </Button>
+      
+
+      <button onClick={()=> signIn("google")} className="w-full / bg-white  justify-center border-2 border-primary-600 text-primary-600 rounded-xl hover:bg-gray-50 mt-5 text-center p-2"
+        >
+         Sign in with Google
+        </button> <br/>
+        <button onClick={()=> signIn("github")} className="w-full / bg-white  justify-center border-2 border-primary-600 text-primary-600 rounded-xl hover:bg-gray-50 mt-5 text-center p-2"
+        >
+       Sign in with Github
+        </button>
 
       {error && (
         <div className="bg-red-500 p-5 my-5 rounded-md">

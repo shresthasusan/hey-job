@@ -4,6 +4,8 @@ import path from "path";
 import { connectMongoDB } from "./mongodb";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
+import GoogleProvider from "next-auth/providers/google"
+import GithubProvider from "next-auth/providers/github"
 
 import { type DefaultSession, type DefaultUser } from "next-auth";
 
@@ -36,6 +38,20 @@ declare module "next-auth" {
 // Define the authOptions with proper TypeScript types
 export const authOptions: NextAuthOptions = {
   providers: [
+    // Google Authentication
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
+
+    GithubProvider({
+      clientId: process.env.AUTH_GITHUB_ID!,
+      clientSecret: process.env.AUTH_GITHUB_SECRET!,
+    }),
+
+
+
+ 
     CredentialsProvider({
       name: "credentials",
       credentials: {

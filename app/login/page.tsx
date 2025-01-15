@@ -30,6 +30,7 @@ export default async function LoginPage() {
           </p>
           <div className="after-line"></div>
         </div>
+        
         <Link
           href="/signup"
           className="w-2/3 bg-white  justify-center border-2 border-primary-600 text-primary-600 rounded-xl hover:bg-gray-50 mt-5 text-center p-2"
