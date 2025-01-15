@@ -9,12 +9,20 @@ import { Button } from "../button";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import useFirebaseAuth from "@/app/hooks/useFirebaseAuth";
+import { createFirebaseUser } from "@/app/lib/firebase";
+import { useSession } from "next-auth/react";
 
 const ModeSelect = () => {
-  useFirebaseAuth();
-
   const router = useRouter();
   const [mode, setMode] = useState("");
+  const { data: session } = useSession();
+
+  useFirebaseAuth();
+  createFirebaseUser(
+    session?.user.name || "",
+    session?.user.email || "",
+    session?.user.id || ""
+  );
 
   interface SelectProps {
     selected: boolean; //interface for Circle component
