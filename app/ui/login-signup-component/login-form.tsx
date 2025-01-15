@@ -68,6 +68,7 @@ const LoginForm = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
       </div>
+      
 
       {error && <p className="text-red-500 text-sm">{error}</p>}
 
@@ -81,6 +82,14 @@ const LoginForm = () => {
       >
         {isSubmitting ? "Signing in..." : "Sign In"}
       </Button>
+      <button onClick={()=> signIn("google")} className="w-full / bg-white  justify-center border-2 border-primary-600 text-primary-600 rounded-xl hover:bg-gray-50 mt-5 text-center p-2"
+        >
+          Log in with Google
+        </button> <br/>
+        <button onClick={()=> signIn("github")} className="w-full / bg-white  justify-center border-2 border-primary-600 text-primary-600 rounded-xl hover:bg-gray-50 mt-5 text-center p-2"
+        >
+          Log in with Github
+        </button>
     </form>
   );
 };
