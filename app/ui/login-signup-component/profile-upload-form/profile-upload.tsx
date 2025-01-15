@@ -4,10 +4,11 @@ import { countries } from "@/app/lib/data";
 import { ChangeEvent, use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { storage } from "../../../lib/firebase"; // Import Firebase storage
+import { db, storage } from "../../../lib/firebase"; // Import Firebase storage
 import Image from "next/image";
 
 import useFirebaseAuth from "@/app/hooks/useFirebaseAuth";
+import { doc, updateDoc } from "firebase/firestore";
 
 interface Props {
   params: {
@@ -105,6 +106,11 @@ const ProfileUploadForm = ({ params }: Props) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
+      });
+      // update profilePicture url in firebase db for chat
+      const docRef = doc(db, "users", params.id);
+      await updateDoc(docRef, {
+        avatar: formData.profilePicture,
       });
 
       if (response.ok) {

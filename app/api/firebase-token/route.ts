@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
         }
 
         // Create a Firebase custom token using the user's email or unique ID
-        const customToken = await adminAuth.createCustomToken(user.email);
+        const customToken = await adminAuth.createCustomToken(user.id);
 
         return NextResponse.json({ token: customToken }, { status: 200 });
     } catch (error) {
