@@ -190,6 +190,9 @@ const ChatList: React.FC = () => {
                   height={48}
                 />
               </div>
+              <div className="w-[80%] relative">
+                <div className="text-lg font-medium">{user.username}</div>
+              </div>
             </div>
           ) : (
             // <div className="text-center text-gray-500 mt-4">
