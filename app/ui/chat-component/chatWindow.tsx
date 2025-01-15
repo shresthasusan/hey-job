@@ -17,10 +17,14 @@ import {
   PhotoIcon,
   ShareIcon,
 } from "@heroicons/react/24/outline";
+import UserProfileLoader from "@/app/lib/userProfileLoader";
 
 const ChatWindow: React.FC = () => {
-  const { userData, messagesId, chatUser, messages, setMessages, chatVisual } =
-    useContext(Appcontext) || {};
+  const { userData, messagesId, chatUser, messages, chatData, setMessages, chatVisual } =
+    useContext(Appcontext) ;
+
+  // console.log('data',userData);
+  
   const [input, setInput] = useState("");
 
   const sendMessage = async () => {
@@ -130,8 +134,13 @@ const ChatWindow: React.FC = () => {
     }
   }, [messagesId]);
 
-  return (
-    <>
+  
+    console.log("userData", userData);
+    
+    console.log("chatData", chatData);
+    console.log("CHATuSE", chatUser);
+      return (
+    <><UserProfileLoader/>
       {/* Container for the entire chat window layout */}
       <div className="w-full p-5">
         <div className="flex flex-row gap-5 justify-between bg-white">
@@ -148,7 +157,7 @@ const ChatWindow: React.FC = () => {
             <>
               <div className="w-full rounded-3xl shadow-[0_10px_20px_rgba(228,228,228,_0.7)] px-5 flex flex-col justify-between">
                 {/* Messages section */}
-                <div className="flex flex-col mt-5">
+                <div className="flex flex-col flex-col-reverse mt-5">
                   {messages?.map(
                     (
                       msg: {
@@ -159,7 +168,11 @@ const ChatWindow: React.FC = () => {
                       },
                       index: number
                     ) => (
-                      <div key={index} className="flex justify-end mb-4">
+                      <div key={index} className={`flex  mb-4  ${
+                            msg.sId === userData?.id
+                              ? `justify-end`
+                              : `justify-start`
+                          } `}>
                         <div
                           className={`py-3 px-4 rounded-tl-3xl rounded-tr-xl text-white rounded-bl-3xl ${
                             msg.sId === userData?.id
@@ -178,22 +191,24 @@ const ChatWindow: React.FC = () => {
                             <p className="msg">{msg.text}</p>
                           )}
                         </div>
-                        <Image
+                        {/* <Image
                           src={
                             msg.sId === userData?.id
                               ? userData.avatar
-                              : chatUser?.userData.avatar
+                              : chatUser?.userData.avatar 
                           }
                           className="object-cover h-8 w-8 rounded-full"
                           alt="User avatar"
                           width={32}
                           height={32}
-                        />
+                        /> */}
                         <p>{convertTimestamp(msg.createdAt)}</p>
                       </div>
                     )
                   )}
                 </div>
+
+
                 {/* Input field for typing new messages */}
                 <div className="py-5 relative flex items-center">
                   <input
@@ -219,6 +234,8 @@ const ChatWindow: React.FC = () => {
                   {/* hereee */}
                 </div>
               </div>
+
+
               {/* Group info section */}
               <div className="w-2/5 border-l-2 px-5">
                 <div className="flex flex-col">

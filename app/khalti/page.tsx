@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect } from "react";
-import Script from "react-load-script";
+import Script from 'next/script';
 
 function App() {
   const [amount, setAmount] = useState("");
@@ -29,7 +29,7 @@ function App() {
   }, []);
 
   // Handle payment submission
-  const handlePayment = async (e) => {
+  const handlePayment = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
 
@@ -71,7 +71,7 @@ function App() {
     <div>
       {/* Load Khalti SDK */}
       <Script
-        url="https://khalti.s3.ap-south-1.amazonaws.com/KPG/dist/2020.12.22.0.0.0/khalti-checkout.iffe.js"
+        src="https://khalti.s3.ap-south-1.amazonaws.com/KPG/dist/2020.12.22.0.0.0/khalti-checkout.iffe.js"
         onLoad={() => console.log("Khalti script loaded")}
       />
       
