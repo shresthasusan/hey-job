@@ -1,4 +1,3 @@
-'use client';
 import "./ui/globals.css";
 import { poppins } from "./ui/fonts";
 import AuthProvider from "./providers";
@@ -22,7 +21,9 @@ export default function RootLayout({
       </head>
       <body>
         <div className={`min-h-screen ${poppins.className}`}>
-          <AuthProvider><Appcontextprovider>{children}</Appcontextprovider></AuthProvider>
+          <AuthProvider>
+            <Appcontextprovider>{children}</Appcontextprovider>
+          </AuthProvider>
         </div>
       </body>
     </html>

@@ -1,3 +1,4 @@
+"use client";
 import { createContext, useEffect, useState, ReactNode } from "react";
 import { db, auth } from "../lib/firebase";
 import { doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
@@ -9,6 +10,11 @@ interface UserData {
   avatar?: string;
   [key: string]: any; // Additional properties for user data
 }
+
+const defaultChatUser: UserData = {
+  id: "0",
+  key: 0,
+};
 
 interface ChatItem {
   rId: string;
@@ -27,8 +33,8 @@ interface AppContextValue {
   setMessages: React.Dispatch<React.SetStateAction<any>>;
   messagesId: string | null;
   setMessagesId: React.Dispatch<React.SetStateAction<string | null>>;
-  chatUser: UserData | null;
-  setChatUser: React.Dispatch<React.SetStateAction<UserData | null>>;
+  chatUser: UserData;
+  setChatUser: React.Dispatch<React.SetStateAction<UserData>>;
   chatVisual: boolean;
   setChatVisual: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -43,14 +49,14 @@ const defaultValue: AppContextValue = {
   setMessages: () => {},
   messagesId: null,
   setMessagesId: () => {},
-  chatUser: null,
+  chatUser: defaultChatUser,
   setChatUser: () => {},
   chatVisual: false,
   setChatVisual: () => {},
 };
 
 // Create the context
-export const Appcontext = createContext<AppContextValue >(defaultValue);
+export const Appcontext = createContext<AppContextValue>(defaultValue);
 
 interface Props {
   children: ReactNode;
@@ -61,7 +67,7 @@ const Appcontextprovider: React.FC<Props> = ({ children }) => {
   const [chatData, setChatData] = useState<ChatItem[] | null>(null);
   const [messagesId, setMessagesId] = useState<string | null>(null);
   const [messages, setMessages] = useState<any>(null); // Replace `any` with the appropriate type
-  const [chatUser, setChatUser] = useState<UserData | null>(null);
+  const [chatUser, setChatUser] = useState<UserData>(defaultChatUser);
   const [chatVisual, setChatVisual] = useState<boolean>(false);
 
   const loadUserData = async (uid: string): Promise<void> => {
