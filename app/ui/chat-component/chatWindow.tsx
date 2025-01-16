@@ -20,11 +20,18 @@ import {
 import UserProfileLoader from "@/app/lib/userProfileLoader";
 
 const ChatWindow: React.FC = () => {
-  const { userData, messagesId, chatUser, messages, chatData, setMessages, chatVisual } =
-    useContext(Appcontext) ;
+  const {
+    userData,
+    messagesId,
+    chatUser,
+    messages,
+    chatData,
+    setMessages,
+    chatVisual,
+  } = useContext(Appcontext);
 
   // console.log('data',userData);
-  
+
   const [input, setInput] = useState("");
 
   const sendMessage = async () => {
@@ -108,7 +115,17 @@ const ChatWindow: React.FC = () => {
     }
   };
   const convertTimestamp = (timestamp: any) => {
-    let date = timestamp.toDate();
+    let date;
+    if (timestamp instanceof Date) {
+      date = timestamp;
+    } else if (typeof timestamp === "number") {
+      date = new Date(timestamp);
+    } else if (timestamp.toDate) {
+      date = timestamp.toDate();
+    } else {
+      throw new Error("Invalid timestamp");
+    }
+
     const hour = date.getHours();
     const minute = date.getMinutes();
 
@@ -134,13 +151,13 @@ const ChatWindow: React.FC = () => {
     }
   }, [messagesId]);
 
-  
-    console.log("userData", userData);
-    
-    console.log("chatData", chatData);
-    console.log("CHATuSE", chatUser);
-      return (
-    <><UserProfileLoader/>
+  console.log("userData", userData);
+
+  console.log("chatData", chatData);
+  console.log("CHATuSE", chatUser);
+  return (
+    <>
+      <UserProfileLoader />
       {/* Container for the entire chat window layout */}
       <div className="w-full p-5">
         <div className="flex flex-row gap-5 justify-between bg-white">
@@ -157,7 +174,7 @@ const ChatWindow: React.FC = () => {
             <>
               <div className="w-full rounded-3xl shadow-[0_10px_20px_rgba(228,228,228,_0.7)] px-5 flex flex-col justify-between">
                 {/* Messages section */}
-                <div className="flex flex-col flex-col-reverse mt-5">
+                <div className="flex  flex-col-reverse mt-5">
                   {messages?.map(
                     (
                       msg: {
@@ -168,11 +185,14 @@ const ChatWindow: React.FC = () => {
                       },
                       index: number
                     ) => (
-                      <div key={index} className={`flex  mb-4  ${
-                            msg.sId === userData?.id
-                              ? `justify-end`
-                              : `justify-start`
-                          } `}>
+                      <div
+                        key={index}
+                        className={`flex  mb-4  ${
+                          msg.sId === userData?.id
+                            ? `justify-end`
+                            : `justify-start`
+                        } `}
+                      >
                         <div
                           className={`py-3 px-4 rounded-tl-3xl rounded-tr-xl text-white rounded-bl-3xl ${
                             msg.sId === userData?.id
@@ -208,7 +228,6 @@ const ChatWindow: React.FC = () => {
                   )}
                 </div>
 
-
                 {/* Input field for typing new messages */}
                 <div className="py-5 relative flex items-center">
                   <input
@@ -235,25 +254,26 @@ const ChatWindow: React.FC = () => {
                 </div>
               </div>
 
-
               {/* Group info section */}
               <div className="w-2/5 border-l-2 px-5">
                 <div className="flex flex-col">
                   {/* Group title */}
-                  <div className="font-semibold text-xl py-4">
-                    MERN Stack Group
+                  <div className="font-semibold text-xl py-4 ">
+                    {chatUser.username}
                   </div>
                   <Image
-                    src="/"
-                    className="object-cover rounded-xl h-64"
+                    src={chatUser.avatar || "/default-avatar.png"}
+                    className="object-cover rounded-full"
                     alt="Group image"
-                    width={32}
-                    height={32}
+                    width={200}
+                    height={200}
                   />
-                  <div className="font-semibold py-4">Created 22 Sep 2021</div>
+                  <div className="font-semibold py-4  text-neutral-400">
+                    Last seen {convertTimestamp(chatUser.lastseen)}
+                  </div>
                   <div className="font-light">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Deserunt, perspiciatis!
+                    {/* Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                    Deserunt, perspiciatis! */}
                   </div>
                 </div>
               </div>
