@@ -74,10 +74,7 @@ const ChatList: React.FC = () => {
     chatUser,
     setChatUser,
     setMessagesId,
-    messagesId,
-    chatVisual,
     setChatVisual,
-    loadUserData,
   } = context;
 
   const [user, setUser] = useState<UserData | null>(null);
@@ -102,7 +99,7 @@ const ChatList: React.FC = () => {
               userExist = true;
             }
           });
-
+          setUser(querySnap.docs[0].data() as UserData);
           if (!userExist) {
             setUser(querySnap.docs[0].data() as UserData);
           }
@@ -118,41 +115,57 @@ const ChatList: React.FC = () => {
   };
 
   const addChat = async () => {
-    if (!user) {
-      console.error("No user selected");
-      return;
-    }
     console.log("user", user);
     console.log("userData", userData);
-    if (!userData?.id) {
-      console.error(" userData ID is undefined");
-      return;
-    }
 
     const messagesRef = collection(db, "messages");
     const chatsRef = collection(db, "chats");
 
     try {
+      // Check if user.id exists in chatData.rId
+      const conversationExists = chatData?.some(
+        (chat) => chat.rId === user?.id
+      );
+      if (conversationExists) {
+        // alert("You already have a conversation with this user.");
+        if (user) {
+          const chatDataItem: ChatDataItem = {
+            messageId: "", // You can set this to an appropriate value if available
+            lastMessage: "",
+            rId: user.id,
+            updateDoc: Date.now(),
+            messageSeen: false,
+            userData: user,
+            user: user,
+          };
+          setChat(chatDataItem);
+          console.log("send", userData);
+          setChatUser(user);
+        }
+        return;
+      }
+
       const newMessageRef = doc(messagesRef);
       await setDoc(newMessageRef, {
         createAt: serverTimestamp(),
         messages: [],
       });
 
-      await updateDoc(doc(chatsRef, user.id), {
+      await updateDoc(doc(chatsRef, user?.id), {
         chatsData: arrayUnion({
           messageId: newMessageRef.id,
           lastMessage: "",
-          rId: userData.id,
+          rId: userData?.id,
           updateDoc: Date.now(),
           messageSeen: true,
         }),
       });
-      await updateDoc(doc(chatsRef, userData.id), {
+
+      await updateDoc(doc(chatsRef, userData?.id), {
         chatsData: arrayUnion({
           messageId: newMessageRef.id,
           lastMessage: "",
-          rId: user.id,
+          rId: user?.id,
           updateDoc: Date.now(),
           messageSeen: true,
         }),
@@ -167,6 +180,7 @@ const ChatList: React.FC = () => {
       setMessagesId(item.messageId);
       setChatUser(item.userData);
       console.log("setChatUser", chatUser);
+      // console.log("setUser", item);
       if (!userData?.id) {
         throw new Error("User ID is undefined");
       }
