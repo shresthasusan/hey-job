@@ -157,7 +157,7 @@ const ChatWindow: React.FC = () => {
             <>
               <div className="w-full rounded-3xl shadow-[0_10px_20px_rgba(228,228,228,_0.7)] px-5 flex flex-col justify-between">
                 {/* Messages section */}
-                <div className="flex flex-col flex-col-reverse mt-5">
+                <div className="flex  flex-col-reverse mt-5">
                   {messages?.map(
                     (
                       msg: {
