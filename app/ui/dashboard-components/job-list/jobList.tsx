@@ -1,8 +1,9 @@
 "use client";
 
 import { HeartIcon as Unliked, MapPinIcon } from "@heroicons/react/24/outline";
-import { useState, useEffect, use } from "react";
+import { useState, useEffect, use, useContext } from "react";
 import SaveButton from "../../saveButton";
+import { Appcontext } from "@/app/context/appContext";
 
 const truncateString = (str: string, num: number) => {
   if (str.length <= num) {
@@ -18,7 +19,7 @@ interface Props {
   query?: string;
 }
 
-interface Job {
+export interface Job {
   title: string;
   time: string;
   type: string;
@@ -30,12 +31,20 @@ interface Job {
   saved: boolean;
   jobId: string; // Added jobId field to match the provided data structure
   createdAt: string;
+  fullName: string;
+  fileUrls: string[];
 }
 
 // JobList component definition
 const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
   // State variable to store fetched job data, initialized as an empty array
   const [data, setData] = useState<Job[]>([]);
+  const {
+    setJobData,
+    setJobDetailsVisible,
+    // jobData,
+    // jobDetailsVisible,
+  } = useContext(Appcontext);
 
   // useEffect hook to fetch job data when the component mounts
   useEffect(() => {
@@ -114,25 +123,33 @@ const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
     return "just now";
   };
 
+  const loadJobDetails = (job: Job) => {
+    setJobData(job);
+    setJobDetailsVisible(true);
+    console.log("Job details loaded:", job);
+  };
+
   return (
     <div className="flex  flex-col mt-8 w-full ">
       {data.map((job, index) => (
         <div
           key={index}
-          className={`flex flex-col gap-1  p-5 border-t-2  border-gray-200 `}
+          className={`flex flex-col gap-1  p-5 border-t-2  border-gray-200 group`}
+          onClick={() => loadJobDetails(job)}
         >
           <p className="text-xs text-gray-400">
             {" "}
             Posted {getTimeAgo(job.createdAt)}
           </p>
           <div className="flex items-center justify-between ">
-            <h1 className="text-2xl text-gray-500  font-medium">{job.title}</h1>
+            <h1 className="text-2xl text-gray-500  font-medium group-hover:text-primary-500 transition-all duration-250">
+              {job.title}
+            </h1>
             {/* {job.saved ? (
               <Liked className="w-6 h-6 text-red-600 " />
             ) : (
               <Unliked className="w-6 h-6  " />
             )} */}
-            <SaveButton itemId={job.jobId} saved={job.saved} itemType={"job"} />
           </div>
           <p className="text-xs mt-2 text-gray-400">
             {job.type} - {job.experience} - Est. Budget: {job.budget}
