@@ -4,7 +4,7 @@ import { HeartIcon as Unliked } from "@heroicons/react/24/outline";
 
 interface SaveButtonProps {
   itemId?: string;
-  saved: boolean;
+  saved?: boolean;
   itemType: "job" | "freelancer"; // Add itemType prop to specify the type of item
 }
 
@@ -25,7 +25,6 @@ const SaveButton = ({ itemId, saved, itemType }: SaveButtonProps) => {
         throw new Error(`Error saving/unsaving ${itemType}`);
       }
 
-      const result = await response.json();
       setIsSaved(!isSaved);
     } catch (error) {
       console.error("Error:", error);
