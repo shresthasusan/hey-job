@@ -127,7 +127,7 @@ const ChatList: React.FC = () => {
         (chat) => chat.rId === user?.id
       );
       if (conversationExists) {
-        // alert("You already have a conversation with this user.");
+        alert("You already have a conversation with this user.");
         if (user) {
           const chatDataItem: ChatDataItem = {
             messageId: "", // You can set this to an appropriate value if available

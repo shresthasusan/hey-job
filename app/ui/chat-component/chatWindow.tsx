@@ -20,15 +20,8 @@ import {
 import UserProfileLoader from "@/app/lib/userProfileLoader";
 
 const ChatWindow: React.FC = () => {
-  const {
-    userData,
-    messagesId,
-    chatUser,
-    messages,
-    chatData,
-    setMessages,
-    chatVisual,
-  } = useContext(Appcontext);
+  const { userData, messagesId, chatUser, messages, setMessages, chatVisual } =
+    useContext(Appcontext);
 
   // console.log('data',userData);
 

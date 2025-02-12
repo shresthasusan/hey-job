@@ -17,6 +17,7 @@ interface RequestBody {
 }
 
 export async function POST(req: NextRequest) {
+  const status = "active";
   try {
     const {
       userId,
@@ -44,6 +45,7 @@ export async function POST(req: NextRequest) {
       tags,
       location,
       fileUrls,
+      status,
 
     });
     const responseData = {
