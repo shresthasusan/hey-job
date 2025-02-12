@@ -33,7 +33,7 @@ const Comp = () => {
   };
 
   return (
-    <div className="flex flex-col max-w-[600px] w-[40%] min-w-[250px] gap-2 relative rounded-3xl h-[300px] px-5 py-2 overflow-hidden shadow-lg">
+    <div className="flex flex-col max-w-[600px] w-[40%] min-w-[250px] gap-2 relative rounded-3xl h-[150px] px-5 py-2 overflow-hidden shadow-lg">
       <h1 className="text-2xl font-medium"> Active users</h1>
 
       {/* User Stats */}

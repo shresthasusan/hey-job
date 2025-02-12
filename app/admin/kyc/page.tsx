@@ -16,27 +16,13 @@ const KYCPage = () => {
     setUploadedDocs(data);
   };
 
-  const handleUpload = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!file) return alert("Please select a file!");
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("userId", "123"); // Replace with actual user ID
 
-    const res = await fetch("/api/upload", {
-      method: "POST",
-      body: formData,
-    });
-
-    if (res.ok) {
-      fetchDocuments(); // Refresh uploaded files
-    }
-  };
+  
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">KYC Verification</h1>
+    <div className="p-2 max-w-2xl mx-auto">
+        <h1 className="text-5xl  align-middle text-center font-bold">KYC verification</h1>
 
 
       {/* Display Uploaded Documents */}

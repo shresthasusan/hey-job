@@ -40,8 +40,10 @@ const TransactionsPage = () => {
   );
 
   return (
-    <div className="max-w-5xl mx-auto p-6 bg-white shadow-md rounded-lg">
-      <h1 className="text-2xl font-bold mb-4">Transactions</h1>
+    <div className="">
+        <h1 className="text-5xl  align-middle text-center font-bold">Transaction</h1>
+        <div className="max-w-5xl mx-auto p-6 bg-white shadow-md rounded-lg">
+
 
       {/* Filters */}
       <div className="flex gap-4 mb-4">
@@ -95,6 +97,8 @@ const TransactionsPage = () => {
         </tbody>
       </table>
     </div>
+    </div>
+
   );
 };
 

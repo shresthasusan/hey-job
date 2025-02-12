@@ -63,9 +63,10 @@ const AdminSettingsPage = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white shadow-md rounded-lg">
-      <h1 className="text-2xl font-bold mb-4">Admin Settings</h1>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <div className="">
+        <h1 className="text-5xl  align-middle text-center font-bold">Admin Settings</h1>
+        <div className="max-w-5xl mx-auto p-6 bg-white shadow-md rounded-lg">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         {/* Maintenance Mode */}
         <div className="flex items-center">
           <input
@@ -127,6 +128,7 @@ const AdminSettingsPage = () => {
           Save Changes
         </button>
       </form>
+      </div>
     </div>
   );
 };

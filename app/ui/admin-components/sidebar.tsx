@@ -35,9 +35,12 @@ const Sidebar: React.FC = () => {
 
   return (
     <div className="absolute text-black left-0  bg-white  ">
+
       <ul className="flex flex-col  py-5 w-72"></ul>
       <nav className="flex flex-col h-full">
         <ul>
+        <img  src="/logo/login-logo.png" alt="logo" className="w-10 ml-8 h-10 " />
+
           <NavItem
             href="/admin"
             icon={<HomeIcon />}

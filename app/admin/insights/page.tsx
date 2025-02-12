@@ -18,7 +18,7 @@ const InsightsPage = () => {
 
   const fetchInsights = async () => {
     try {
-      const res = await fetch("/api/insights");
+      const res = await fetch("/api/stats");
       const data = await res.json();
       setInsights(data);
     } catch (error) {
@@ -27,10 +27,10 @@ const InsightsPage = () => {
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-3xl align-middle font-bold mb-6">Insights</h1>
+    <div className="p-4 mx-auto">
+        <h1 className="text-5xl  align-middle text-center font-bold">Insights</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid mt-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Total Users */}
         <div className="bg-white shadow-md p-4 rounded-lg">
           <h2 className="text-xl font-semibold">Total Users</h2>

@@ -6,9 +6,7 @@ const RightCard = () => {
   return (
     <div className=" sticky top-[75px] w-full ">
       <div className="flex  flex-col items-center align-middle">
-        <div className="hidden transition-all duration-300">
-          <ProfileCard mode={""} />
-        </div>
+        
         <h1 className="text-3xl font-semibold my-5"> Orders</h1>
         <div className="w-full flex gap-2  flex-col ">
           <div className="bg-primary-400 text-primary-700 relative rounded-3xl p-1 pl-10">
