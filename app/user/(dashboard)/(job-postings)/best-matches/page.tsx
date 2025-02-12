@@ -15,3 +15,4 @@ const page = () => {
 
 // Exporting the page component as the default export
 export default page;
+
