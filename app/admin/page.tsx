@@ -4,7 +4,6 @@ import React from "react";
 import Comp from "../ui/admin-components/cards";
 import "../ui/globals.css";
 import RightCard from "../ui/dashboard-components/rightCard";
-import ProfileCard from "../ui/dashboard-components/profileCard";
 
 const Page = () => {
   return (
@@ -24,7 +23,6 @@ const Page = () => {
 
           {/* Right Column */}
           <div className=" flex flex-col gap-6">
-          
             <RightCard />
           </div>
         </div>
