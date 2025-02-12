@@ -34,9 +34,15 @@ const SaveButton = ({ itemId, saved, itemType }: SaveButtonProps) => {
   return (
     <>
       {isSaved ? (
-        <Liked onClick={toggleSave} className="w-6 h-6 text-red-600 " />
+        <Liked
+          onClick={toggleSave}
+          className="w-6 h-6 text-red-600 absolute top-5 right-0"
+        />
       ) : (
-        <Unliked onClick={toggleSave} className="w-6 h-6  " />
+        <Unliked
+          onClick={toggleSave}
+          className="w-6 h-6 absolute top-5 right-0 "
+        />
       )}
     </>
   );

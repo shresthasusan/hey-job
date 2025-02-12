@@ -30,10 +30,12 @@ export async function GET(req: NextRequest) {
       if (bestMatches) {
         jobs = await Jobs.find({
           userId: { $ne: userId },
+          status: 'active'
         });
       } else if (mostRecent) {
         jobs = await Jobs.find({
           userId: { $ne: userId },
+          status: 'active'
         }).sort({ createdAt: -1 }); // Sort by most recent
       } else if (savedJobs) {
         // Fetch jobs saved by the user from SavedJobs collection

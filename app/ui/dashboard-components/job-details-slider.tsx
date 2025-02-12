@@ -71,7 +71,7 @@ const JobDetailsSlider: React.FC = () => {
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex justify-end transition-opacity duration-1000 ${
+      className={`fixed inset-0 z-50 flex justify-end transition-opacity duration-100 ${
         jobDetailsVisible ? "opacity-100 visible" : "opacity-0 invisible"
       }`}
     >
