@@ -18,13 +18,7 @@ interface User {
 const ProfileCard = ({ mode }: Props) => {
   // Use the useSession hook to get session data and status
   const { data: session, status } = useSession();
-  const {
-    data: user,
-    loading,
-    error,
-  } = useFetch<User>(`user/${session?.user.id}`);
-
-
+  const { data: user } = useFetch<User>(`user/${session?.user.id}`);
 
   // If the session status is loading, return a skeleton component
   if (status === "loading") {

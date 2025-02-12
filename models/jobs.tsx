@@ -12,6 +12,7 @@ interface IJobs extends Document {
   tags: string[];
   location: string;
   fileUrls: string[];
+  status: string;
 }
 
 // Define the FreelancerInfo schema
@@ -57,6 +58,10 @@ const jobsSchema = new Schema<IJobs>(
     },
     fileUrls: {
       type: [String],
+      required: true,
+    },
+    status: {
+      type: String,
       required: true,
     },
   },

@@ -5,7 +5,7 @@ import SliderRating from "./slider"; // Assuming SliderRating is a component tha
 import clsx from "clsx";
 
 const Rating = () => {
-  const rating = 4.6; // Target rating value
+  const rating = 0; // Target rating value
   const initialValue = 0; // Initial rating value
   const [count, setCount] = useState(initialValue); // State to hold the current rating value
   const duration = 100; // Duration of the animation in milliseconds

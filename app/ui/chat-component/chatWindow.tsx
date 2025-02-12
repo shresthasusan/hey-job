@@ -20,11 +20,11 @@ import {
 import UserProfileLoader from "@/app/lib/userProfileLoader";
 
 const ChatWindow: React.FC = () => {
-  const { userData, messagesId, chatUser, messages, chatData, setMessages, chatVisual } =
-    useContext(Appcontext) ;
+  const { userData, messagesId, chatUser, messages, setMessages, chatVisual } =
+    useContext(Appcontext);
 
   // console.log('data',userData);
-  
+
   const [input, setInput] = useState("");
 
   const sendMessage = async () => {
@@ -37,8 +37,8 @@ const ChatWindow: React.FC = () => {
             createdAt: new Date(),
           }),
         });
-        if (!chatUser) return;
-        const userIDs = [chatUser.rid, userData.id];
+
+        const userIDs = [chatUser.id, userData.id];
 
         userIDs.forEach(async (id) => {
           const userChatsRef = doc(db, "chats", id);
@@ -80,7 +80,8 @@ const ChatWindow: React.FC = () => {
             createdAt: new Date(),
           }),
         });
-        const userIDs = [chatUser?.rId, userData.id];
+
+        const userIDs = [chatUser.id, userData.id];
 
         userIDs.forEach(async (id) => {
           const userChatsRef = doc(db, "chats", id);
@@ -108,7 +109,22 @@ const ChatWindow: React.FC = () => {
     }
   };
   const convertTimestamp = (timestamp: any) => {
-    let date = timestamp.toDate();
+    let date;
+    if (!timestamp) {
+      console.log(timestamp);
+      return;
+    }
+    if (timestamp instanceof Date) {
+      date = timestamp;
+    } else if (typeof timestamp === "number") {
+      date = new Date(timestamp);
+    } else if (timestamp && typeof timestamp.toDate === "function") {
+      date = timestamp.toDate();
+    } else {
+      console.log(timestamp);
+      throw new Error("Invalid timestamp", timestamp);
+    }
+
     const hour = date.getHours();
     const minute = date.getMinutes();
 
@@ -118,7 +134,6 @@ const ChatWindow: React.FC = () => {
       return hour + ":" + minute + "AM";
     }
   };
-
   useEffect(() => {
     if (messagesId) {
       const unSub = onSnapshot(doc(db, "messages", messagesId), (res) => {
@@ -132,15 +147,15 @@ const ChatWindow: React.FC = () => {
         unSub();
       };
     }
-  }, [messagesId]);
+  }, [messagesId, chatUser]);
 
-  
-    console.log("userData", userData);
-    
-    console.log("chatData", chatData);
-    console.log("CHATuSE", chatUser);
-      return (
-    <><UserProfileLoader/>
+  console.log("userData", userData);
+
+  // console.log("chatData", chatData);
+  console.log("CHATuSE", chatUser);
+  return (
+    <>
+      <UserProfileLoader />
       {/* Container for the entire chat window layout */}
       <div className="w-full p-5">
         <div className="flex flex-row gap-5 justify-between bg-white">
@@ -153,9 +168,9 @@ const ChatWindow: React.FC = () => {
           </div>
 
           {/* Chat messages container */}
-          {chatUser ? (
+          {chatUser.id !== "0" ? (
             <>
-              <div className="w-full rounded-3xl shadow-[0_10px_20px_rgba(228,228,228,_0.7)] px-5 flex flex-col justify-between">
+              <div className="w-full rounded-3xl overflow-scroll relative h-[calc(100vh-120px)] shadow-[0_10px_20px_rgba(228,228,228,_0.7)] px-5 flex flex-col justify-between">
                 {/* Messages section */}
                 <div className="flex  flex-col-reverse mt-5">
                   {messages?.map(
@@ -168,16 +183,19 @@ const ChatWindow: React.FC = () => {
                       },
                       index: number
                     ) => (
-                      <div key={index} className={`flex  mb-4  ${
-                            msg.sId === userData?.id
-                              ? `justify-end`
-                              : `justify-start`
-                          } `}>
+                      <div
+                        key={index}
+                        className={`flex  mb-4 items-center ${
+                          msg.sId === userData?.id
+                            ? `justify-end `
+                            : `justify-end flex-row-reverse`
+                        } `}
+                      >
                         <div
-                          className={`py-3 px-4 rounded-tl-3xl rounded-tr-xl text-white rounded-bl-3xl ${
+                          className={`py-3 px-4 rounded-tl-3xl rounded-tr-xl  text-white  ${
                             msg.sId === userData?.id
-                              ? `bg-primary-500 mr-2`
-                              : `bg-gray-300 ml-2`
+                              ? `bg-primary-500 mr-2 rounded-bl-3xl`
+                              : `bg-gray-300 ml-2 rounded-br-3xl`
                           }   `}
                         >
                           {msg["image"] ? (
@@ -191,26 +209,27 @@ const ChatWindow: React.FC = () => {
                             <p className="msg">{msg.text}</p>
                           )}
                         </div>
-                        {/* <Image
+                        <Image
                           src={
                             msg.sId === userData?.id
-                              ? userData.avatar
-                              : chatUser?.userData.avatar 
+                              ? userData.avatar || "/default-avatar.png"
+                              : chatUser.avatar || "/default-avatar.png"
                           }
                           className="object-cover h-8 w-8 rounded-full"
                           alt="User avatar"
                           width={32}
                           height={32}
-                        /> */}
-                        <p>{convertTimestamp(msg.createdAt)}</p>
+                        />
+                        <p className="text-sm mx-2">
+                          {convertTimestamp(msg.createdAt)}
+                        </p>
                       </div>
                     )
                   )}
                 </div>
 
-
                 {/* Input field for typing new messages */}
-                <div className="py-5 relative flex items-center">
+                <div className="py-5  flex items-center bottom-0 sticky bg-white w-full">
                   <input
                     className="w-full bg-gray-200 py-5 px-3 rounded-xl"
                     onChange={(e) => setInput(e.target.value)}
@@ -235,25 +254,27 @@ const ChatWindow: React.FC = () => {
                 </div>
               </div>
 
-
               {/* Group info section */}
+
               <div className="w-2/5 border-l-2 px-5">
                 <div className="flex flex-col">
                   {/* Group title */}
-                  <div className="font-semibold text-xl py-4">
-                    MERN Stack Group
+                  <div className="font-semibold text-xl py-4 ">
+                    {chatUser.username}
                   </div>
                   <Image
-                    src="/"
-                    className="object-cover rounded-xl h-64"
+                    src={chatUser.avatar || "/default-avatar.png"}
+                    className="object-cover rounded-full"
                     alt="Group image"
-                    width={32}
-                    height={32}
+                    width={200}
+                    height={200}
                   />
-                  <div className="font-semibold py-4">Created 22 Sep 2021</div>
+                  <div className="font-semibold py-4  text-neutral-400">
+                    Last seen {convertTimestamp(chatUser.lastSeen)}
+                  </div>
                   <div className="font-light">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Deserunt, perspiciatis!
+                    {/* Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                    Deserunt, perspiciatis! */}
                   </div>
                 </div>
               </div>

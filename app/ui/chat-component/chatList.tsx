@@ -19,17 +19,8 @@ import { Appcontext } from "@/app/context/appContext";
 import { onAuthStateChanged } from "firebase/auth";
 import UserProfileLoader from "@/app/lib/userProfileLoader";
 
-
 const ChatList: React.FC = () => {
-  
   //hereeee
-  type UserData = {
-    id: string;
-    avatar: string;
-    name: string;
-    username: string;
-    messageId: string;
-  };
 
   type ChatDataItem = {
     messageId: string;
@@ -40,6 +31,25 @@ const ChatList: React.FC = () => {
     userData: UserData;
     user: UserData;
   };
+
+  interface UserData {
+    id: string;
+    name?: string;
+    avatar?: string;
+    [key: string]: any; // Additional properties for user data
+  }
+
+  const defaultChatUser: UserData = {
+    id: "0",
+    key: 0,
+  };
+
+  interface ChatItem {
+    rId: string;
+    updatedAt: number;
+    userData: UserData;
+    [key: string]: any; // Additional properties for chat items
+  }
 
   interface AppContextValue {
     userData: UserData | null;
@@ -64,15 +74,11 @@ const ChatList: React.FC = () => {
     chatUser,
     setChatUser,
     setMessagesId,
-    messagesId,
-    chatVisual,
     setChatVisual,
-    loadUserData
   } = context;
 
   const [user, setUser] = useState<UserData | null>(null);
-<UserProfileLoader/>
-  
+  <UserProfileLoader />;
 
   const [showSearch, setShowSearch] = useState(false);
 
@@ -93,7 +99,7 @@ const ChatList: React.FC = () => {
               userExist = true;
             }
           });
-
+          setUser(querySnap.docs[0].data() as UserData);
           if (!userExist) {
             setUser(querySnap.docs[0].data() as UserData);
           }
@@ -109,41 +115,57 @@ const ChatList: React.FC = () => {
   };
 
   const addChat = async () => {
-    if (!user) {
-      console.error("No user selected");
-      return;
-    }
     console.log("user", user);
     console.log("userData", userData);
-    if (!userData?.id) {
-      console.error(" userData ID is undefined");
-      return;
-    }
 
     const messagesRef = collection(db, "messages");
     const chatsRef = collection(db, "chats");
 
     try {
+      // Check if user.id exists in chatData.rId
+      const conversationExists = chatData?.some(
+        (chat) => chat.rId === user?.id
+      );
+      if (conversationExists) {
+        alert("You already have a conversation with this user.");
+        if (user) {
+          const chatDataItem: ChatDataItem = {
+            messageId: "", // You can set this to an appropriate value if available
+            lastMessage: "",
+            rId: user.id,
+            updateDoc: Date.now(),
+            messageSeen: false,
+            userData: user,
+            user: user,
+          };
+          setChat(chatDataItem);
+          console.log("send", userData);
+          setChatUser(user);
+        }
+        return;
+      }
+
       const newMessageRef = doc(messagesRef);
       await setDoc(newMessageRef, {
         createAt: serverTimestamp(),
         messages: [],
       });
 
-      await updateDoc(doc(chatsRef, user.id), {
+      await updateDoc(doc(chatsRef, user?.id), {
         chatsData: arrayUnion({
           messageId: newMessageRef.id,
           lastMessage: "",
-          rId: userData.id,
+          rId: userData?.id,
           updateDoc: Date.now(),
           messageSeen: true,
         }),
       });
-      await updateDoc(doc(chatsRef, userData.id), {
+
+      await updateDoc(doc(chatsRef, userData?.id), {
         chatsData: arrayUnion({
           messageId: newMessageRef.id,
           lastMessage: "",
-          rId: user.id,
+          rId: user?.id,
           updateDoc: Date.now(),
           messageSeen: true,
         }),
@@ -157,7 +179,8 @@ const ChatList: React.FC = () => {
     try {
       setMessagesId(item.messageId);
       setChatUser(item.userData);
-      console.log('setChatUser', chatUser)
+      console.log("setChatUser", chatUser);
+      // console.log("setUser", item);
       if (!userData?.id) {
         throw new Error("User ID is undefined");
       }
@@ -206,7 +229,7 @@ const ChatList: React.FC = () => {
             >
               <div className="w-1/4">
                 <Image
-                  src={user.avatar}
+                  src={user.avatar || "/default-avatar.png"}
                   className="object-cover h-12 w-12 rounded-full"
                   alt={user.username}
                   width={48}
@@ -222,32 +245,32 @@ const ChatList: React.FC = () => {
             //   No chats available
             // </div>
             chatData?.map((item: ChatDataItem, index: number) => (
-                          <div
-                            key={index}
-                            className="flex flex-row py-2 px-2 justify-center hover:bg-gray-200 items-center border-b-2"
-                            onClick={() => setChat(item)}
-                          >
-                            {/* User avatar */}
-                            <div className="w-1/4">
-                              <Image
-                                src={item.userData.avatar}
-                                className="object-cover h-12 w-12 rounded-full"
-                                alt={item.userData.username}
-                                width={48}
-                                height={48}
-                              />
-                            </div>
-                            {/* User details */}
-                            <div className="w-[80%] relative">
-                              <div className="text-lg font-medium">
-                                {item.userData.username}
-                              </div>
-                              <div className="text-sm w-[80%] overflow-hidden text-gray-500">
-                                {item.lastMessage}
-                              </div>
-                            </div>
-                          </div>
-                        ))
+              <div
+                key={index}
+                className="flex flex-row py-2 px-2 justify-center hover:bg-gray-200 items-center border-b-2"
+                onClick={() => setChat(item)}
+              >
+                {/* User avatar */}
+                <div className="w-1/4">
+                  <Image
+                    src={item.userData.avatar || "/default-avatar.png"}
+                    className="object-cover h-12 w-12 rounded-full"
+                    alt={item.userData.username}
+                    width={48}
+                    height={48}
+                  />
+                </div>
+                {/* User details */}
+                <div className="w-[80%] relative">
+                  <div className="text-lg font-medium">
+                    {item.userData.username}
+                  </div>
+                  <div className="text-sm w-[80%] overflow-hidden text-gray-500">
+                    {item.lastMessage}
+                  </div>
+                </div>
+              </div>
+            ))
           )}
         </div>
       </div>

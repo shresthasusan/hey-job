@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect } from "react";
 import { HeartIcon as Unliked, MapPinIcon } from "@heroicons/react/24/outline";
 import { HeartIcon as Liked } from "@heroicons/react/24/solid";
 import StarRating from "../../starRating";
 import PostingSkeleton from "../skeletons/postingSkeleton";
 import SaveButton from "../../saveButton";
+import Loading from "@/app/client/(dashboard)/loading";
 
 const truncateString = (str: any, num: any) => {
   if (str.length <= num) {
@@ -35,11 +36,13 @@ type Freelancer = {
 
 const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
   const [data, setData] = useState<Freelancer[]>([]);
+  const [loading, setLoading] = useState(true); // Add loading state
 
   useEffect(() => {
     const controller = new AbortController();
 
     const fetchData = async () => {
+      setLoading(true);
       try {
         const params = new URLSearchParams();
 
@@ -67,8 +70,11 @@ const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
         setData(freelancers);
       } catch (error) {
         console.error("Error fetching freelancers:", error);
+      } finally {
+        setLoading(false);
       }
     };
+
     fetchData();
     return () => {
       controller.abort();
@@ -76,9 +82,13 @@ const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
   }, [query, bestMatches, savedFreelancers]);
 
   return (
-    <Suspense fallback={<PostingSkeleton />}>
-      <div className="flex flex-col mt-8">
-        {data.map((freelancer, index) => (
+    <div className="flex flex-col mt-8">
+      {loading ? (
+        <PostingSkeleton /> // Show the loading component when fetching data
+      ) : data.length === 0 ? (
+        <p className="text-center text-gray-500">No freelancers found.</p>
+      ) : (
+        data.map((freelancer, index) => (
           <div
             key={index}
             className="flex flex-col gap-1 p-5 border-t-2 border-gray-200"
@@ -90,7 +100,7 @@ const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
               </h1>
               <SaveButton
                 itemId={freelancer.userId}
-                saved={freelancer.saved} // Add a saved flag in the API if necessary
+                saved={freelancer.saved}
                 itemType={"freelancer"}
               />
             </div>
@@ -123,10 +133,9 @@ const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
               <StarRating rating={3.5} />
             </div>
           </div>
-        ))}
-        {data.length === 0 && <>404 not found</>}
-      </div>
-    </Suspense>
+        ))
+      )}
+    </div>
   );
 };
 

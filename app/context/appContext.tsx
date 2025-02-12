@@ -1,6 +1,8 @@
+"use client";
 import { createContext, useEffect, useState, ReactNode } from "react";
 import { db, auth } from "../lib/firebase";
 import { doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
+import { Job } from "../ui/dashboard-components/job-list/jobList";
 
 // Define the types for the context value
 interface UserData {
@@ -9,6 +11,11 @@ interface UserData {
   avatar?: string;
   [key: string]: any; // Additional properties for user data
 }
+
+const defaultChatUser: UserData = {
+  id: "0",
+  key: 0,
+};
 
 interface ChatItem {
   rId: string;
@@ -27,10 +34,14 @@ interface AppContextValue {
   setMessages: React.Dispatch<React.SetStateAction<any>>;
   messagesId: string | null;
   setMessagesId: React.Dispatch<React.SetStateAction<string | null>>;
-  chatUser: UserData | null;
-  setChatUser: React.Dispatch<React.SetStateAction<UserData | null>>;
+  chatUser: UserData;
+  setChatUser: React.Dispatch<React.SetStateAction<UserData>>;
   chatVisual: boolean;
   setChatVisual: React.Dispatch<React.SetStateAction<boolean>>;
+  jobData: Job | null;
+  setJobData: React.Dispatch<React.SetStateAction<Job | null>>;
+  jobDetailsVisible: boolean;
+  setJobDetailsVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const defaultValue: AppContextValue = {
@@ -43,14 +54,18 @@ const defaultValue: AppContextValue = {
   setMessages: () => {},
   messagesId: null,
   setMessagesId: () => {},
-  chatUser: null,
+  chatUser: defaultChatUser,
   setChatUser: () => {},
   chatVisual: false,
   setChatVisual: () => {},
+  jobData: null,
+  setJobData: () => {},
+  jobDetailsVisible: false,
+  setJobDetailsVisible: () => {},
 };
 
 // Create the context
-export const Appcontext = createContext<AppContextValue >(defaultValue);
+export const Appcontext = createContext<AppContextValue>(defaultValue);
 
 interface Props {
   children: ReactNode;
@@ -61,8 +76,10 @@ const Appcontextprovider: React.FC<Props> = ({ children }) => {
   const [chatData, setChatData] = useState<ChatItem[] | null>(null);
   const [messagesId, setMessagesId] = useState<string | null>(null);
   const [messages, setMessages] = useState<any>(null); // Replace `any` with the appropriate type
-  const [chatUser, setChatUser] = useState<UserData | null>(null);
+  const [chatUser, setChatUser] = useState<UserData>(defaultChatUser);
   const [chatVisual, setChatVisual] = useState<boolean>(false);
+  const [jobData, setJobData] = useState<Job | null>(null);
+  const [jobDetailsVisible, setJobDetailsVisible] = useState(false);
 
   const loadUserData = async (uid: string): Promise<void> => {
     try {
@@ -126,6 +143,10 @@ const Appcontextprovider: React.FC<Props> = ({ children }) => {
     setChatUser,
     chatVisual,
     setChatVisual,
+    jobData,
+    setJobData,
+    jobDetailsVisible,
+    setJobDetailsVisible,
   };
 
   return <Appcontext.Provider value={value}>{children}</Appcontext.Provider>;
