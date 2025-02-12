@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, { useEffect, useState } from "react";
 
@@ -15,9 +15,9 @@ const TransactionsPage = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [filter, setFilter] = useState({ status: "", type: "" });
 
-  useEffect(() => {
-    fetchTransactions();
-  }, []);
+  // useEffect(() => {
+  //   fetchTransactions();
+  // }, []);
 
   const fetchTransactions = async () => {
     try {
@@ -33,9 +33,10 @@ const TransactionsPage = () => {
     setFilter({ ...filter, [e.target.name]: e.target.value });
   };
 
-  const filteredTransactions = transactions.filter((t) =>
-    (filter.status ? t.status === filter.status : true) &&
-    (filter.type ? t.type === filter.type : true)
+  const filteredTransactions = transactions.filter(
+    (t) =>
+      (filter.status ? t.status === filter.status : true) &&
+      (filter.type ? t.type === filter.type : true)
   );
 
   return (
@@ -44,13 +45,21 @@ const TransactionsPage = () => {
 
       {/* Filters */}
       <div className="flex gap-4 mb-4">
-        <select name="status" onChange={handleFilterChange} className="border p-2 rounded">
+        <select
+          name="status"
+          onChange={handleFilterChange}
+          className="border p-2 rounded"
+        >
           <option value="">All Status</option>
           <option value="pending">Pending</option>
           <option value="completed">Completed</option>
           <option value="failed">Failed</option>
         </select>
-        <select name="type" onChange={handleFilterChange} className="border p-2 rounded">
+        <select
+          name="type"
+          onChange={handleFilterChange}
+          className="border p-2 rounded"
+        >
           <option value="">All Types</option>
           <option value="deposit">Deposit</option>
           <option value="withdrawal">Withdrawal</option>
@@ -78,7 +87,9 @@ const TransactionsPage = () => {
               <td className="p-2">${transaction.amount.toFixed(2)}</td>
               <td className="p-2">{transaction.type}</td>
               <td className="p-2">{transaction.status}</td>
-              <td className="p-2">{new Date(transaction.timestamp).toLocaleDateString()}</td>
+              <td className="p-2">
+                {new Date(transaction.timestamp).toLocaleDateString()}
+              </td>
             </tr>
           ))}
         </tbody>
