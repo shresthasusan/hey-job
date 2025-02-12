@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import React, { useEffect, useState } from "react";
 
 const AdminSettingsPage = () => {
@@ -9,7 +9,9 @@ const AdminSettingsPage = () => {
     selectedRole: "",
   });
 
-  const [users, setUsers] = useState<{ _id: string; name: string; role: string }[]>([]);
+  const [users, setUsers] = useState<
+    { _id: string; name: string; role: string }[]
+  >([]);
 
   useEffect(() => {
     fetchSettings();
@@ -18,9 +20,12 @@ const AdminSettingsPage = () => {
 
   const fetchSettings = async () => {
     try {
-      const res = await fetch("/api/adminSettings");
+      const res = await fetch("/api/settings");
       const data = await res.json();
-      setSettings((prev) => ({ ...prev, maintenanceMode: data.maintenanceMode }));
+      setSettings((prev) => ({
+        ...prev,
+        maintenanceMode: data.maintenanceMode,
+      }));
     } catch (error) {
       console.error("Error fetching settings:", error);
     }
@@ -36,7 +41,9 @@ const AdminSettingsPage = () => {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value, type, checked } = e.target as HTMLInputElement;
     setSettings({ ...settings, [name]: type === "checkbox" ? checked : value });
   };
@@ -59,7 +66,6 @@ const AdminSettingsPage = () => {
     <div className="max-w-3xl mx-auto p-6 bg-white shadow-md rounded-lg">
       <h1 className="text-2xl font-bold mb-4">Admin Settings</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-
         {/* Maintenance Mode */}
         <div className="flex items-center">
           <input
@@ -114,7 +120,10 @@ const AdminSettingsPage = () => {
         </div>
 
         {/* Submit Button */}
-        <button type="submit" className="bg-blue-600 text-white py-2 px-4 rounded">
+        <button
+          type="submit"
+          className="bg-blue-600 text-white py-2 px-4 rounded"
+        >
           Save Changes
         </button>
       </form>
