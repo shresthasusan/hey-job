@@ -2,8 +2,14 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Home, Briefcase,AlignVerticalJustifyCenter, LetterTextIcon, MessageSquare, Settings, Menu } from "lucide-react";
+
 import React from "react";
+import {
+  AdjustmentsHorizontalIcon,
+  HomeIcon,
+  ServerIcon,
+} from "@heroicons/react/24/outline";
+import { BoltIcon, CurrencyRupeeIcon } from "@heroicons/react/24/solid";
 
 interface NavItemProps {
   href: string;
@@ -29,40 +35,38 @@ const Sidebar: React.FC = () => {
 
   return (
     <div className="absolute text-black left-0  bg-white  ">
-
-          <ul className="flex flex-col  py-5 w-72"></ul>
+      <ul className="flex flex-col  py-5 w-72"></ul>
       <nav className="flex flex-col h-full">
-        
         <ul>
-          <NavItem 
-          href="/admin" 
-          icon={<Home />}
-           label="Admin Dashboard"
-            isOpen={isOpen} />
-            
-          
+          <NavItem
+            href="/admin"
+            icon={<HomeIcon />}
+            label="Admin Dashboard"
+            isOpen={isOpen}
+          />
+
           <NavItem
             href="/admin/kyc"
-            icon={<AlignVerticalJustifyCenter />}
+            icon={<AdjustmentsHorizontalIcon />}
             label="Kyc verification"
             isOpen={isOpen}
           />
           <NavItem
             href="/admin/insights"
-            icon={<LetterTextIcon />}
+            icon={<ServerIcon />}
             label="Insights"
             isOpen={isOpen}
           />
           <NavItem
             href="/admin/transaction"
-            icon={<Briefcase />}
+            icon={<CurrencyRupeeIcon />}
             label="Transaction"
             isOpen={isOpen}
           />
-         
+
           <NavItem
             href="/admin/settings"
-            icon={<Settings />}
+            icon={<BoltIcon />}
             label="Settings"
             isOpen={isOpen}
           />
@@ -71,6 +75,5 @@ const Sidebar: React.FC = () => {
     </div>
   );
 };
-
 
 export default Sidebar;

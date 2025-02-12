@@ -1,17 +1,22 @@
-'use client';
+"use client";
 import React, { useEffect, useState } from "react";
 
 const Comp = () => {
   const [stats, setStats] = useState({
-    
-    freelancersinfos: 0,
-    users: 0,
+    freelancers: 0,
+    clients: 0,
   });
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await fetch("/api/stats");
+        const response = await fetch("/api/stats", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
         const data = await response.json();
         setStats(data);
       } catch (error) {
@@ -22,7 +27,6 @@ const Comp = () => {
     fetchStats();
   }, []);
 
-  
   const truncateString = (str: string, num: number) => {
     if (str.length <= num) return str;
     return str.slice(0, num) + "... ";
@@ -34,13 +38,9 @@ const Comp = () => {
 
       {/* User Stats */}
       <div className="flex justify-between flex-col text-gray-700">
-     
-        <p>Freelancers: {stats.freelancersinfos}</p>
-        <p>Clients: {stats.users}</p>
+        <p>Freelancers: {stats.freelancers}</p>
+        <p>Clients: {stats.clients}</p>
       </div>
-
-    
-      
     </div>
   );
 };
