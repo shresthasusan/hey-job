@@ -1,12 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import React, { useContext, useEffect } from "react";
+import React from "react";
 import { useSession } from "next-auth/react";
 import SkeletonProfileCard from "./skeletons/skeletonProfileCard";
 import useFetch from "@/app/hooks/useFetch";
-import { Appcontext } from "@/app/context/appContext";
-import { auth } from "@/app/lib/firebase";
 
 interface Props {
   mode: string;
