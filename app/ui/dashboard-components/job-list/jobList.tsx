@@ -131,7 +131,7 @@ const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
   };
 
   return (
-    <div className="flex  flex-col mt-8 w-full ">
+    <div className="flex z-[-10] flex-col mt-8 w-full ">
       {data.map((job, index) => (
         <div key={index} className="relative">
           <div
