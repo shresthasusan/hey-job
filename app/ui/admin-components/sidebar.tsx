@@ -1,76 +1,69 @@
 "use client";
 
-import { useState } from "react";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { Home, Briefcase,AlignVerticalJustifyCenter, LetterTextIcon, MessageSquare, Settings, Menu } from "lucide-react";
 import React from "react";
+import {
+  AdjustmentsHorizontalIcon,
+  HomeIcon,
+  ServerIcon,
+  BoltIcon,
+  CurrencyRupeeIcon,
+} from "@heroicons/react/24/outline";
 
 interface NavItemProps {
   href: string;
-  icon: JSX.Element;
+  icon: React.ReactNode;
   label: string;
-  isOpen: boolean;
+  isActive: boolean;
 }
 
-const NavItem: React.FC<NavItemProps> = ({ href, icon, label, isOpen }) => (
+const NavItem: React.FC<NavItemProps> = ({ href, icon, label, isActive }) => (
   <li>
     <Link
       href={href}
-      className="flex items-center space-x-4 p-3 hover:text-primary-600 rounded-lg transition"
+      className={`flex items-center space-x-4 p-3 rounded-lg transition ${
+        isActive ? "bg-yellow-400 text-black" : "hover:bg-yellow-400 hover:text-black"
+      }`}
     >
-      <span className="text-xl">{icon}</span>
-      {isOpen && <span>{label}</span>}
+      <span className="w-6 h-6">{icon}</span>
+      <span className="text-sm font-medium">{label}</span>
     </Link>
   </li>
 );
 
 const Sidebar: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(true);
+  const pathname = usePathname(); // Get current route
 
   return (
-    <div className="absolute text-black left-0  bg-white  ">
+    <div className="fixed left-0 top-0 h-full w-64 bg-white shadow-md text-black">
+      <nav className="flex flex-col h-full py-6">
+        {/* Logo */}
+        <div className="flex items-center justify-center px-4 mb-6">
+          <img src="/logo/login-logo.png" alt="logo" className="w-15 h-20 p-1" />
+        </div>
 
-          <ul className="flex flex-col  py-5 w-72"></ul>
-      <nav className="flex flex-col h-full">
-        
-        <ul>
-          <NavItem 
-          href="/admin" 
-          icon={<Home />}
-           label="Admin Dashboard"
-            isOpen={isOpen} />
-            
-          
-          <NavItem
-            href="/admin/kyc"
-            icon={<AlignVerticalJustifyCenter />}
-            label="Kyc verification"
-            isOpen={isOpen}
+        {/* Admin Profile Section */}
+        <div className="flex flex-col items-center px-4 py-4 border-b">
+          <img
+            src="/admin-avatar.jpg" // Change this to the admin's actual avatar URL
+            alt="Admin Avatar"
+            className="w-14 h-14 rounded-full border-2 border-gray-300"
           />
-          <NavItem
-            href="/admin/insights"
-            icon={<LetterTextIcon />}
-            label="Insights"
-            isOpen={isOpen}
-          />
-          <NavItem
-            href="/admin/transaction"
-            icon={<Briefcase />}
-            label="Transaction"
-            isOpen={isOpen}
-          />
-         
-          <NavItem
-            href="/admin/settings"
-            icon={<Settings />}
-            label="Settings"
-            isOpen={isOpen}
-          />
+          <span className="mt-2 font-semibold text-sm">John Doe</span>
+        </div>
+
+        {/* Navigation Menu */}
+        <ul className="mt-8 space-y-3">
+          <NavItem href="/admin" icon={<HomeIcon className="w-6 h-6" />} label="Dashboard" isActive={pathname === "/admin"} />
+          <NavItem href="/admin/kyc" icon={<AdjustmentsHorizontalIcon className="w-6 h-6" />} label="KYC Verification" isActive={pathname === "/admin/kyc"} />
+          <NavItem href="/admin/insights" icon={<ServerIcon className="w-6 h-6" />} label="Insights" isActive={pathname === "/admin/insights"} />
+          <NavItem href="/admin/transaction" icon={<CurrencyRupeeIcon className="w-6 h-6" />} label="Transactions" isActive={pathname === "/admin/transaction"} />
+          <NavItem href="/admin/settings" icon={<BoltIcon className="w-6 h-6" />} label="Settings" isActive={pathname === "/admin/settings"} />
         </ul>
       </nav>
     </div>
   );
 };
-
 
 export default Sidebar;

@@ -3,56 +3,72 @@
 import React, { useState, useEffect } from "react";
 
 const KYCPage = () => {
-  const [file, setFile] = useState<File | null>(null);
-  const [uploadedDocs, setUploadedDocs] = useState([]);
+  const [uploadedDocs, setUploadedDocs] = useState([
+    { _id: "1", documentUrl: "ID_Card_JohnDoe.pdf", status: "pending" },
+    { _id: "2", documentUrl: "Passport_JaneDoe.pdf", status: "verified" },
+    { _id: "3", documentUrl: "License_MarkSmith.pdf", status: "rejected" },
+    { _id: "4", documentUrl: "Aadhar_Card_EmilyBrown.pdf", status: "pending" },
+  ]);
 
-  useEffect(() => {
-    fetchDocuments();
-  }, []);
-
-  const fetchDocuments = async () => {
-    const res = await fetch("/api/getKycDocs");
-    const data = await res.json();
-    setUploadedDocs(data);
-  };
-
-  const handleUpload = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!file) return alert("Please select a file!");
-
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("userId", "123"); // Replace with actual user ID
-
-    const res = await fetch("/api/upload", {
-      method: "POST",
-      body: formData,
-    });
-
-    if (res.ok) {
-      fetchDocuments(); // Refresh uploaded files
-    }
+  // Function to handle approval or rejection of a document
+  const handleAction = (id: string, status: "verified" | "rejected") => {
+    setUploadedDocs((prevDocs) =>
+      prevDocs.map((doc) =>
+        doc._id === id ? { ...doc, status } : doc
+      )
+    );
   };
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">KYC Verification</h1>
+    <div className="flex flex-col flex-1 p-6 md:p-10 bg-white min-h-screen">
+      {/* Heading */}
+      <h1 className="text-4xl text-black-400 text-center md:text-left">
+        KYC Verification
+      </h1>
 
+      {/* Uploaded Documents Section */}
+      <div className="mt-10">
+        <h2 className="text-2xl font-semibold text-gray-700">Uploaded Documents</h2>
 
-      {/* Display Uploaded Documents */}
-      <h2 className="text-xl font-semibold mt-6">Uploaded Documents</h2>
-      <div className="mt-4">
-        {uploadedDocs.map((doc: any) => (
-          <div key={doc._id} className="flex items-center justify-between border p-2">
-            <p>{doc.documentUrl}</p>
-            <span className={`px-2 py-1 text-sm rounded ${
-              doc.status === "pending" ? "bg-yellow-500" :
-              doc.status === "verified" ? "bg-green-500" : "bg-red-500"
-            } text-white`}>
-              {doc.status}
-            </span>
-          </div>
-        ))}
+        <div className="mt-4 space-y-4">
+          {uploadedDocs.map((doc) => (
+            <div key={doc._id} className="flex items-center justify-between bg-gray-50 shadow-md p-4 rounded-lg">
+              <p className="text-gray-800 font-medium">{doc.documentUrl}</p>
+              
+              <div className="flex items-center gap-3">
+                <span
+                  className={`px-3 py-1 text-sm rounded-lg font-semibold ${
+                    doc.status === "pending"
+                      ? "bg-yellow-400 text-black"
+                      : doc.status === "verified"
+                      ? "bg-green-500 text-white"
+                      : "bg-red-500 text-white"
+                  }`}
+                >
+                  {doc.status}
+                </span>
+
+                {/* Approve & Reject Buttons (Visible only for Pending Docs) */}
+                {doc.status === "pending" && (
+                  <div className="flex gap-2">
+                    <button
+                      className="px-4 py-1 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                      onClick={() => handleAction(doc._id, "verified")}
+                    >
+                      Approve
+                    </button>
+                    <button
+                      className="px-4 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                      onClick={() => handleAction(doc._id, "rejected")}
+                    >
+                      Reject
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

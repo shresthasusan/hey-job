@@ -20,31 +20,21 @@ const SignupForm = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError(""); // Clear any previous errors
+    setIsSubmitting(true);
+
     if (!name || !lastName || !email || !password) {
       setError("Please fill in all fields");
+      setIsSubmitting(false);
       return;
     }
     if (password !== passwordConfirm) {
       setError("Passwords do not match");
+      setIsSubmitting(false);
       return;
     }
 
     try {
-      const resUserExists = await fetch("/api/userExists", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
-
-      const { user } = await resUserExists.json();
-
-      if (user) {
-        setError("User already exists");
-        setIsSubmitting(false);
-        return;
-      }
       const res = await fetch("/api/register", {
         method: "POST",
         headers: {
@@ -57,30 +47,36 @@ const SignupForm = () => {
           password,
         }),
       });
-      if (res.ok) {
-        const form = e.target as HTMLFormElement;
-        setIsSubmitting(true);
 
-        const response = await signIn("credentials", {
-          email,
-          password,
-          redirect: false,
-        });
-        if (response?.error) {
-          setError("Invalid Credentials");
-          setIsSubmitting(false);
-          return;
-        }
-
-        form.reset();
-        router.push("/signup/usermode-select");
+      if (!res.ok) {
+        const errorData = await res.json();
+        setError(errorData.message || "Registration failed");
+        setIsSubmitting(false);
+        return;
       }
+
+      const form = e.target as HTMLFormElement;
+
+      const response = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (response?.error) {
+        setError(response.error);
+        setIsSubmitting(false);
+        return;
+      }
+
+      form.reset();
+      router.push("/signup/usermode-select");
       console.log("success");
     } catch (error) {
-      console.error(error);
+      console.error("Error during registration:", error);
+      setError("An unexpected error occurred. Please try again.");
+      setIsSubmitting(false);
     }
-
-    console.log("submitted");
   };
 
   return (
@@ -160,7 +156,6 @@ const SignupForm = () => {
           />
         </div>
       </div>
-
       <Button
         type="submit"
         className={clsx("w-full text-white mt-5", {
@@ -171,17 +166,19 @@ const SignupForm = () => {
       >
         {isSubmitting ? "please wait..." : "Sign up"}
       </Button>
-      
-
-      <button onClick={()=> signIn("google")} className="w-full / bg-white  justify-center border-2 border-primary-600 text-primary-600 rounded-xl hover:bg-gray-50 mt-5 text-center p-2"
-        >
-         Sign in with Google
-        </button> <br/>
-        <button onClick={()=> signIn("github")} className="w-full / bg-white  justify-center border-2 border-primary-600 text-primary-600 rounded-xl hover:bg-gray-50 mt-5 text-center p-2"
-        >
-       Sign in with Github
-        </button>
-
+      <button
+        onClick={() => signIn("google")}
+        className="w-full / bg-white  justify-center border-2 border-primary-600 text-primary-600 rounded-xl hover:bg-gray-50 mt-5 text-center p-2"
+      >
+        Sign in with Google
+      </button>{" "}
+      <br />
+      <button
+        onClick={() => signIn("github")}
+        className="w-full / bg-white  justify-center border-2 border-primary-600 text-primary-600 rounded-xl hover:bg-gray-50 mt-5 text-center p-2"
+      >
+        Sign in with Github
+      </button>
       {error && (
         <div className="bg-red-500 p-5 my-5 rounded-md">
           <p className="text-white text-sm">{error}</p>

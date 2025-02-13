@@ -1,5 +1,4 @@
 import type { Config } from 'tailwindcss';
-import { withUt } from 'uploadthing/tw';
 
 const config: Config = {
   content: [
@@ -10,7 +9,6 @@ const config: Config = {
   theme: {
     extend: {
       gridTemplateRows: {
-
         // Complex site-specific row configuration
         'dashboard': '200px minmax(500px, 1fr) 100px',
       },
@@ -37,7 +35,6 @@ const config: Config = {
           600: '#FF0000',
         },
       },
-
     },
     keyframes: {
       shimmer: {
@@ -52,13 +49,10 @@ const config: Config = {
         '50%': {
           opacity: '0.5',
         },
-        
       },
     },
-
   },
-  plugins: [
-
-  ],
+  plugins: [],
 };
-export default withUt(config);
+
+export default config;

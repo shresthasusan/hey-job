@@ -43,7 +43,7 @@ export default function Layout({ children }: Props) {
             </Suspense>
           </div>
           <div className="w-full col-span-4 ">
-            <div className="sticky top-[75px]  pt-5 z-10  bg-white">
+            <div className="sticky z-[2]  top-[75px] pt-5  bg-white">
               <Suspense>
                 <SearchInput />
               </Suspense>

@@ -55,8 +55,8 @@ const ProjectCarousel = () => {
         style={{ transform: `translateX(-${slide}px) ` }}
       >
         {onGoingProjects.map((project, index) => (
-          <div key={index} className="border-2 rounded-xl min-w-[250px]">
-            <h3>{project.projectName}</h3>
+          <div key={index} className="border-2 p-3 rounded-xl min-w-[250px]">
+            <h3 className="font-bold">{project.projectName}</h3>
             <p>Category: {project.category}</p>
             <p>Description: {project.description}</p>
             <p>Budget: {project.budget}</p>
