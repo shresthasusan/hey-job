@@ -32,7 +32,9 @@ async function sendEmail(email: string, token: string) {
     to: email,
     subject: "Welcome to Hey Job!",
     html: `<p>Click the link below to verify your email:</p>
-           <a href="${process.env.NEXTAUTH_URL}/verify?token=${token}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #ffffff; background-color: #007bff; text-decoration: none; border-radius: 5px;">Verify Email</a>`,
+           <div style="display: flex; justify-content: center; background-color: #f0f0f0; padding: 20px;">
+             <a href="${process.env.NEXTAUTH_URL}/verify?token=${token}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #ffffff; background-color: #007bff; text-decoration: none; border-radius: 5px;">Verify Email</a>
+           </div>`,
   };
 
   await transporter.sendMail(mailOptions);
