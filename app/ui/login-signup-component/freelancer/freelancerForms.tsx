@@ -34,7 +34,6 @@ type FormData = {
   fullName?: string;
   email?: string;
   location: string;
-  phone: string;
   skills: string[];
   workExperience?: work[];
   projectPortfolio?: project[];
@@ -88,7 +87,6 @@ const MultiStepForm = () => {
     fullName: fullName,
     email: email,
     location: "",
-    phone: "",
     skills: [],
     workExperience: [
       // {
