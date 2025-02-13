@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
-const Verify = () => {
+const VerifyEmail = () => {
   const searchParams = useSearchParams();
   const [message, setMessage] = useState("Verifying...");
 
@@ -35,7 +35,14 @@ const Verify = () => {
     verifyEmail();
   }, [searchParams]);
 
-  return <div>{message}</div>;
+  return <div className="text-center p-4">{message}</div>;
 };
+
+// ✅ Wrap in <Suspense> before exporting
+const Verify = () => (
+  <Suspense fallback={<div className="text-center p-4">Loading...</div>}>
+    <VerifyEmail />
+  </Suspense>
+);
 
 export default Verify;
