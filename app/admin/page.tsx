@@ -13,7 +13,7 @@ const Page = () => {
       {/* Main Content */}
       <div className="flex flex-col flex-1 p-6 md:p-10">
         {/* Header */}
-        <h1 className="text-4xl font-extrabold text-yellow-400 text-center md:text-left">
+        <h1 className="text-4xl text-black-400 text-center md:text-left">
           Admin Dashboard
         </h1>
 

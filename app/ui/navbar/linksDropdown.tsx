@@ -9,6 +9,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
+import NotificationsPage from "../dashboard-components/job-list/notification";
 
 interface Props {
   isDropdownVisible?: Number;
@@ -21,14 +22,20 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
   return (
     <>
       {isDropdownVisible === 1 && (
-        <div className="absolute text-black left-0 shadow-[0_0px_20px_rgba(228,228,228,1)] rounded-xl before:absolute before:-top-2 before:left-7 before:translateX-1/2 before:rotate-[135deg] before:z-10  before:bg-white before:border-white before:border-8 bg-white top-8 z-10 after:w-full after:h-6 after:absolute after:-top-5">
+        <div className="absolute text-black  z-20 left-0 shadow-[0_0px_20px_rgba(228,228,228,1)] rounded-xl before:absolute before:-top-2 before:left-7 before:translateX-1/2 before:rotate-[135deg] before:z-10  before:bg-white before:border-white before:border-8 bg-white top-8 after:w-full after:h-6 after:absolute after:-top-5">
           <ul className="flex flex-col  py-5 w-72">
             {(currentMode?.startsWith("/user") ||
               currentMode?.startsWith("/search/jobs")) && (
               <>
-                <li className=" p-3 hover:bg-slate-100">Pending</li>
-                <li className=" p-3 hover:bg-slate-100">Jobs</li>
-                <li className=" p-3 hover:bg-slate-100">Saved Jobs</li>
+                <li className=" p-3 hover:bg-slate-100">
+                <Link href={"/user/best-matches"}>Jobs</Link>
+
+                  </li>
+                
+                <li className=" p-3 hover:bg-slate-100">
+                <Link href={"/user/saved-jobs"}>Saved Jobs</Link>
+
+                </li>
               </>
             )}
             {(currentMode?.startsWith("/client") ||
@@ -43,16 +50,17 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
         </div>
       )}
       {isDropdownVisible === 2 && (
-        <div className="absolute text-black left-0 shadow-[0_0px_20px_rgba(228,228,228,1)] rounded-xl before:absolute before:-top-2 before:left-7 before:translateX-1/2 before:rotate-[135deg] before:z-10  before:bg-white before:border-white before:border-8 bg-white top-8 z-10 after:w-full after:h-6 after:absolute after:-top-5">
+        <div className="absolute text-black  left-0 shadow-[0_0px_20px_rgba(228,228,228,1)] rounded-xl before:absolute before:-top-2 before:left-7 before:translateX-1/2 before:rotate-[135deg] before:z-10  before:bg-white before:border-white before:border-8 bg-white top-8 z-20 after:w-full after:h-6 after:absolute after:-top-5">
           <ul className="flex flex-col gap-3 py-5 w-72">
             {(currentMode?.startsWith("/user") ||
               currentMode?.startsWith("/search/jobs")) && (
               <>
-                <li className=" p-3 hover:bg-slate-100">Payment History</li>
                 <li className=" p-3 hover:bg-slate-100">
-                  <Link href={"/transcation"}>Transaction</Link>
+                <Link href={"/user/business/paymenthistory"}>Payment History</Link>
+                 </li>
+                <li className=" p-3 hover:bg-slate-100">
+                  <Link href={"/user/business/transaction"}>Transaction</Link>
                 </li>
-                <li className=" p-3 hover:bg-slate-100">Saved Jobs</li>
               </>
             )}
 
@@ -69,17 +77,17 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
         </div>
       )}
       {isDropdownVisible === 3 && (
-        <div className="absolute rounded-xl  p-2 bg-white text-xm right-0 top-10 shadow-[0_0px_20px_rgba(228,228,228,1)] before:absolute before:-top-1 before:right-2 before:translateX-1/2 before:rotate-[135deg] before:z-10  before:bg-white before:border-white before:border-8  z-10 after:right-0 after:h-6 after:absolute after:-top-5">
+        <div className="absolute rounded-xl  p-2 bg-white text-xm right-0 top-10 shadow-[0_0px_20px_rgba(228,228,228,1)] before:absolute before:-top-1 before:right-2 before:translateX-1/2 before:rotate-[135deg] before:z-10  before:bg-white before:border-white before:border-8  z-20 after:right-0 after:h-6 after:absolute after:-top-5">
           Help
         </div>
       )}
       {isDropdownVisible === 4 && (
-        <div className="absolute rounded-xl  p-2 bg-white text-xm right-0 top-10 shadow-[0_0px_20px_rgba(228,228,228,1)] before:absolute before:-top-1 before:right-2 before:translateX-1/2 before:rotate-[135deg] before:z-10  before:bg-white before:border-white before:border-8 after:right-0  z-10  after:h-6 after:absolute after:-top-5">
-          Notification
+        <div className="absolute rounded-xl  p-2 bg-white text-xm right-0 top-10 shadow-[0_0px_20px_rgba(228,228,228,1)] before:absolute before:-top-1 before:right-2 before:translateX-1/2 before:rotate-[135deg] before:z-10  before:bg-white before:border-white before:border-8 after:right-0  z-20  after:h-6 after:absolute after:-top-5">
+          <NotificationsPage/>
         </div>
       )}
       {isDropdownVisible === 6 && !isOpen && (
-        <div className="absolute rounded-xl w-[160px] p-2 bg-white text-xm right-0 top-10 shadow-[0_0px_20px_rgba(228,228,228,1)] before:absolute before:-top-1 before:right-2 before:translateX-1/2 before:rotate-[135deg] before:z-10  before:bg-white before:border-white before:border-8  z-10 after:w-full after:h-6 after:absolute after:-top-5">
+        <div className="absolute rounded-xl w-[160px] p-2 bg-white text-xm right-0 top-10 shadow-[0_0px_20px_rgba(228,228,228,1)] before:absolute before:-top-1 before:right-2 before:translateX-1/2 before:rotate-[135deg] before:z-10  before:bg-white before:border-white before:border-8  z-20 after:w-full after:h-6 after:absolute after:-top-5">
           Account Settings
         </div>
       )}
@@ -140,7 +148,7 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
             )}
           </div>
           <div className="hover:bg-slate-200 p-1">
-            <Link href={"/client"}>
+            <Link href={"/user/profile"}>
               <span className="flex items-center gap-1">
                 <UserCircleIcon className="size-8" />
                 <span className="flex flex-col ">
@@ -150,7 +158,7 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
             </Link>
           </div>
           <div className="hover:bg-slate-200 p-1">
-            <Link href={"/client"}>
+            <Link href={"/user/setting"}>
               <span className="flex items-center gap-1">
                 <Cog6ToothIcon className="size-8" />
                 <span className="flex flex-col ">
@@ -159,16 +167,18 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
               </span>
             </Link>
           </div>{" "}
-          <div className="hover:bg-slate-200 p-1">
-            <span className="flex items-center gap-1">
-              <ArrowLeftStartOnRectangleIcon className="size-8" />
-              <span className="flex flex-col ">
-                <button onClick={() => signOut()}>
-                  <p>Log out</p>
-                </button>
-              </span>
-            </span>
-          </div>
+          <button 
+  onClick={() => signOut()} 
+  className="hover:bg-slate-200 p-1 w-full flex items-center gap-1 text-left">
+  <ArrowLeftStartOnRectangleIcon className="size-8" />
+  <span className="flex flex-col">
+    <p>Log out</p>
+  </span>
+</button>
+
+              
+            
+          
         </>
       )}
     </>

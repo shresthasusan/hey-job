@@ -80,7 +80,7 @@ const LoginForm = () => {
         })}
         disabled={isSubmitting}
       >
-        {isSubmitting ? "Signing in..." : "Sign In"}
+        {isSubmitting ? "Loging in..." : "Log In"}
       </Button>
       <button onClick={()=> signIn("google")} className="w-full / bg-white  justify-center border-2 border-primary-600 text-primary-600 rounded-xl hover:bg-gray-50 mt-5 text-center p-2"
         >
