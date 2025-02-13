@@ -9,7 +9,6 @@ import {
   UserIcon,
   TagIcon,
   DocumentTextIcon,
-  UsersIcon,
 } from "@heroicons/react/24/outline";
 import { useContext, useEffect, useState } from "react";
 import SaveButton from "../saveButton";
