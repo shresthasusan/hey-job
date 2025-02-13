@@ -12,6 +12,16 @@ import {
   AcademicCapIcon,
 } from "@heroicons/react/24/outline";
 import { useContext } from "react";
+
+// Define the formatDate function
+const formatDate = (dateString: string) => {
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  };
+  return new Date(dateString).toLocaleDateString(undefined, options);
+};
 import SaveButton from "../saveButton";
 import Image from "next/image";
 
@@ -90,13 +100,13 @@ const TalentDetailsSlider: React.FC = () => {
 
         {/* Bio Section */}
         <div className="mt-4 border-b pb-4">
-          <h3 className="text-lg mb-2">Bio</h3>
-          <p className="text-gray-800">{freelancer?.bio}</p>
+          <h3 className="text-2xl font-semibold my-3">About Me</h3>
+          <p className="text-gray-800 text-md  ">{freelancer?.bio}</p>
         </div>
 
         {/* Skills */}
         <div className="mt-4 border-b pb-4">
-          <h3 className="text-lg mb-2">Skills</h3>
+          <h3 className="text-2xl font-semibold my-3">Skills</h3>
           <div className="flex flex-wrap gap-2">
             {freelancer?.skills.map((skill: string, index: number) => (
               <span
@@ -113,17 +123,16 @@ const TalentDetailsSlider: React.FC = () => {
         {/* Work Experience */}
         {freelancer?.workExperience?.length > 0 && (
           <div className="mt-4 border-b pb-4">
-            <h3 className="text-lg mb-2 flex items-center">
+            <h3 className="text-2xl font-semibold mb-4 flex items-center">
+              Employment History
               <BriefcaseIcon className="w-5 h-5 mr-2 text-gray-600" />
-              Work Experience
             </h3>
-            {freelancer?.workExperience.map((job: any, index: number) => (
-              <div key={index} className="mb-2">
-                <p className="font-medium">
-                  {job.jobTitle} at {job.company}
-                </p>
-                <p className="text-gray-600">
-                  {job.startDate} - {job.endDate}
+            {freelancer?.workExperience.map((job: any) => (
+              <div key={job._id} className="mb-4 flex  flex-col">
+                <h3 className="text-xl font-medium mt-2">{job.jobTitle}</h3>
+                <p className="text-gray-600">{job.company}</p>
+                <p className="text-md mt-3 text-gray-500">
+                  {formatDate(job.startDate)} - {formatDate(job.endDate)}
                 </p>
               </div>
             ))}
@@ -172,7 +181,7 @@ const TalentDetailsSlider: React.FC = () => {
                   {edu.degree} at {edu.institution}
                 </p>
                 <p className="text-gray-600">
-                  {edu.startDate} - {edu.endDate}
+                  {formatDate(edu.startDate)} - {formatDate(edu.endDate)}
                 </p>
               </div>
             ))}
