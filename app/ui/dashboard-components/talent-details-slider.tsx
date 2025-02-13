@@ -125,44 +125,14 @@ const TalentDetailsSlider: React.FC = () => {
           <div className="mt-4 border-b pb-4">
             <h3 className="text-2xl font-semibold mb-4 flex items-center">
               Employment History
-              <BriefcaseIcon className="w-5 h-5 mr-2 text-gray-600" />
             </h3>
             {freelancer?.workExperience.map((job: any) => (
               <div key={job._id} className="mb-4 flex  flex-col">
                 <h3 className="text-xl font-medium mt-2">{job.jobTitle}</h3>
                 <p className="text-gray-600">{job.company}</p>
-                <p className="text-md mt-3 text-gray-500">
+                <p className="text-md  text-gray-500">
                   {formatDate(job.startDate)} - {formatDate(job.endDate)}
                 </p>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Project Portfolio */}
-        {freelancer?.projectPortfolio?.length > 0 && (
-          <div className="mt-4 border-b pb-4">
-            <h3 className="text-lg mb-2 flex items-center">
-              <DocumentTextIcon className="w-5 h-5 mr-2 text-gray-600" />
-              Project Portfolio
-            </h3>
-            {freelancer?.projectPortfolio.map((project: any, index: number) => (
-              <div key={index} className="mb-4">
-                <p className="font-medium">{project.projectTitle}</p>
-                <p className="text-gray-600">{project.projectDescription}</p>
-                <div className="flex flex-wrap mt-2">
-                  {project.portfolioFiles.map((file: string, idx: number) => (
-                    <a
-                      key={idx}
-                      href={file}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline mr-2"
-                    >
-                      View File {idx + 1}
-                    </a>
-                  ))}
-                </div>
               </div>
             ))}
           </div>
@@ -171,18 +141,56 @@ const TalentDetailsSlider: React.FC = () => {
         {/* Education */}
         {freelancer?.education?.length > 0 && (
           <div className="mt-4 border-b pb-4">
-            <h3 className="text-lg mb-2 flex items-center">
-              <AcademicCapIcon className="w-5 h-5 mr-2 text-gray-600" />
+            <h3 className="text-2xl font-semibold mb-4 flex items-center">
               Education
             </h3>
-            {freelancer?.education.map((edu: any, index: number) => (
-              <div key={index} className="mb-2">
-                <p className="font-medium">
-                  {edu.degree} at {edu.institution}
-                </p>
-                <p className="text-gray-600">
-                  {formatDate(edu.startDate)} - {formatDate(edu.endDate)}
-                </p>
+            {freelancer?.education.map((edu: any) => (
+              <div key={edu._id} className="mb-4">
+                <span className="flex justify-between items-center">
+                  <h3 className="text-xl font-medium">{edu.degree}</h3>
+                  <p className="text-md  text-gray-500">
+                    {formatDate(edu.startDate)} - {formatDate(edu.endDate)}
+                  </p>
+                </span>
+                <p className="text-gray-600">{edu.institution}</p>
+              </div>
+            ))}
+          </div>
+        )}
+        {/* Project Portfolio */}
+        {freelancer?.projectPortfolio?.length > 0 && (
+          <div className="mt-4 border-b pb-4">
+            <h3 className="text-2xl font-semibold mb-4 flex items-center">
+              Project Portfolio
+            </h3>
+            {freelancer?.projectPortfolio.map((project: any, index: number) => (
+              <div key={index} className="mb-4">
+                <p className="text-xl font-medium">{project.projectTitle}</p>
+                <p className="text-gray-600">{project.projectDescription}</p>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {project.technologies.map((tech: string, index: number) => (
+                    <span
+                      key={index}
+                      className="bg-gray-200 text-gray-800 px-2 py-1 rounded text-sm"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+                <div className="flex flex-row flex-wrap mt-2">
+                  {project.portfolioFiles.map((file: string, index: number) => (
+                    <span key={index} className="w-20 h-20 rounded-sm ">
+                      <Image
+                        key={index}
+                        src={file || "/placeholder.svg"}
+                        alt={`Project image ${index + 1}`}
+                        width={50}
+                        height={50}
+                        className="rounded-lg object-cover w-full h-32"
+                      />
+                    </span>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
