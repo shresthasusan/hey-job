@@ -4,6 +4,8 @@ import { HeartIcon as Unliked, MapPinIcon } from "@heroicons/react/24/outline";
 import { useState, useEffect, use, useContext } from "react";
 import SaveButton from "../../saveButton";
 import { Appcontext } from "@/app/context/appContext";
+import { set } from "mongoose";
+import PostingSkeleton from "../skeletons/postingSkeleton";
 
 const truncateString = (str: string, num: number) => {
   if (str.length <= num) {
@@ -40,6 +42,7 @@ export interface Job {
 const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
   // State variable to store fetched job data, initialized as an empty array
   const [data, setData] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true); // Add loading state
   const {
     setJobData,
     setJobDetailsVisible,
@@ -54,6 +57,7 @@ const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
 
     // Async function to fetch job data from the API
     const fetchData = async () => {
+      setLoading(true);
       try {
         // Build the query string based on the passed props
         const params = new URLSearchParams();
@@ -90,6 +94,8 @@ const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
       } catch (error) {
         // Log any errors that occur during the fetch
         console.error("Error fetching jobs:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -132,61 +138,69 @@ const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
 
   return (
     <div className="flex  flex-col mt-8 w-full ">
-      {data.map((job, index) => (
-        <div key={index} className="relative">
-          <div
-            className={`flex flex-col gap-1  p-5 border-t-2  border-gray-200 group`}
-            onClick={() => loadJobDetails(job)}
-          >
-            <p className="text-xs text-gray-400">
-              {" "}
-              Posted {getTimeAgo(job.createdAt)}
-            </p>
-            <div className="flex items-center justify-between ">
-              <h1 className="text-2xl text-gray-500  font-medium group-hover:text-primary-500 transition-all duration-250">
-                {job.title}
-              </h1>
-              {/* {job.saved ? (
+      {loading ? (
+        <PostingSkeleton />
+      ) : data.length === 0 ? (
+        <p className="text-center text-gray-500 mt-5">
+          No jobs found. Try adjusting your search criteria.
+        </p>
+      ) : (
+        data.map((job, index) => (
+          <div key={index} className="relative">
+            <div
+              className={`flex flex-col gap-1  p-5 border-t-2  border-gray-200 group`}
+              onClick={() => loadJobDetails(job)}
+            >
+              <p className="text-xs text-gray-400">
+                {" "}
+                Posted {getTimeAgo(job.createdAt)}
+              </p>
+              <div className="flex items-center justify-between ">
+                <h1 className="text-2xl text-gray-500  font-medium group-hover:text-primary-500 transition-all duration-250">
+                  {job.title}
+                </h1>
+                {/* {job.saved ? (
                 <Liked className="w-6 h-6 text-red-600 " />
               ) : (
                 <Unliked className="w-6 h-6  " />
               )} */}
-            </div>
-            <p className="text-xs mt-2 text-gray-400">
-              {job.type} - {job.experience} - Est. Budget: {job.budget}
-            </p>
-            <p className="text-black my-5 ">
-              {truncateString(job.description, 400)}
-              {job.description.length > 400 ? (
-                <button className="text-primary-700 hover:text-primary-500">
-                  Read More
-                </button>
-              ) : null}
-            </p>
-            <div className="flex justify-start gap-5 flex-wrap items-center">
-              {job.tags.map((tag, index) => (
-                <div
-                  key={index}
-                  className="bg-slate-200 text-slate-500 p-3 flex flex-wrap justify-center items-center  rounded-2xl"
-                >
-                  {tag}
-                </div>
-              ))}
-            </div>
-            <div className="flex justify-between items-center mt-5">
-              <p className="text-sm mt-5 flex font-medium  text-gray-500">
-                <MapPinIcon className="w-5 h-5 " /> {job.location}
+              </div>
+              <p className="text-xs mt-2 text-gray-400">
+                {job.type} - {job.experience} - Est. Budget: {job.budget}
               </p>
-              {job.status !== "active" && (
-                <p className="text-red-500 text-sm mt-2">
-                  This job is no longer active
+              <p className="text-black my-5 ">
+                {truncateString(job.description, 400)}
+                {job.description.length > 400 ? (
+                  <button className="text-primary-700 hover:text-primary-500">
+                    Read More
+                  </button>
+                ) : null}
+              </p>
+              <div className="flex justify-start gap-5 flex-wrap items-center">
+                {job.tags.map((tag, index) => (
+                  <div
+                    key={index}
+                    className="bg-slate-200 text-slate-500 p-3 flex flex-wrap justify-center items-center  rounded-2xl"
+                  >
+                    {tag}
+                  </div>
+                ))}
+              </div>
+              <div className="flex justify-between items-center mt-5">
+                <p className="text-sm mt-5 flex font-medium  text-gray-500">
+                  <MapPinIcon className="w-5 h-5 " /> {job.location}
                 </p>
-              )}
+                {job.status !== "active" && (
+                  <p className="text-red-500 text-sm mt-2">
+                    This job is no longer active
+                  </p>
+                )}
+              </div>
             </div>
+            <SaveButton itemId={job.jobId} saved={job.saved} itemType={"job"} />
           </div>
-          <SaveButton itemId={job.jobId} saved={job.saved} itemType={"job"} />
-        </div>
-      ))}
+        ))
+      )}
     </div>
   );
 };

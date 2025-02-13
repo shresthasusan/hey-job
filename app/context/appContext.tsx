@@ -42,6 +42,10 @@ interface AppContextValue {
   setJobData: React.Dispatch<React.SetStateAction<Job | null>>;
   jobDetailsVisible: boolean;
   setJobDetailsVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  talentData: any;
+  setTalentData: React.Dispatch<React.SetStateAction<any>>;
+  talentDetailsVisible: boolean;
+  setTalentDetailsVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const defaultValue: AppContextValue = {
@@ -62,6 +66,10 @@ const defaultValue: AppContextValue = {
   setJobData: () => {},
   jobDetailsVisible: false,
   setJobDetailsVisible: () => {},
+  talentData: null,
+  setTalentData: () => {},
+  talentDetailsVisible: false,
+  setTalentDetailsVisible: () => {},
 };
 
 // Create the context
@@ -80,6 +88,8 @@ const Appcontextprovider: React.FC<Props> = ({ children }) => {
   const [chatVisual, setChatVisual] = useState<boolean>(false);
   const [jobData, setJobData] = useState<Job | null>(null);
   const [jobDetailsVisible, setJobDetailsVisible] = useState(false);
+  const [talentData, setTalentData] = useState<any>(null); // Replace `any` with the appropriate type
+  const [talentDetailsVisible, setTalentDetailsVisible] = useState(false);
 
   const loadUserData = async (uid: string): Promise<void> => {
     try {
@@ -147,6 +157,10 @@ const Appcontextprovider: React.FC<Props> = ({ children }) => {
     setJobData,
     jobDetailsVisible,
     setJobDetailsVisible,
+    talentData,
+    setTalentData,
+    talentDetailsVisible,
+    setTalentDetailsVisible,
   };
 
   return <Appcontext.Provider value={value}>{children}</Appcontext.Provider>;
