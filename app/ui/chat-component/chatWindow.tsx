@@ -229,10 +229,15 @@ const ChatWindow: React.FC = () => {
                 </div>
 
                 {/* Input field for typing new messages */}
-                <div className="py-5  flex items-center bottom-0 sticky bg-white w-full">
+                <div className="py-5 flex items-center sticky bottom-0 bg-white w-full">
                   <input
-                    className="w-full bg-gray-200 py-5 px-3 rounded-xl"
+                    className="w-full resize-none max-h-40 h-12 px-3 overflow-y-auto bg-gray-200 py-5 rounded-xl"
                     onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault(); // Prevents new line in input
+                        sendMessage();
+                      }}}
                     value={input}
                     type="text"
                     placeholder="Type your message here..."
