@@ -19,6 +19,8 @@ interface IUser extends Document {
   zipPostalCode: string;
   phone: string;
   profilePicture: string;
+  emailVerified: boolean;
+  kcyVerified: boolean;
 }
 
 // Define the schema corresponding to the document interface.
@@ -75,6 +77,14 @@ const userSchema = new Schema<IUser>(
     profilePicture: {
       type: String,
       required: false,
+    },
+    emailVerified: {
+      type: Boolean,
+      default: false,
+    },
+    kcyVerified: {
+      type: Boolean,
+      default: false,
     },
   },
 
