@@ -262,13 +262,15 @@ const ChatWindow: React.FC = () => {
                   <div className="font-semibold text-xl py-4 ">
                     {chatUser.username}
                   </div>
-                  <Image
-                    src={chatUser.avatar || "/default-avatar.png"}
-                    className="object-cover rounded-full"
-                    alt="Group image"
-                    width={200}
-                    height={200}
-                  />
+                  <span className="w-48 h-48 overflow-hidden rounded-full">
+                    <Image
+                      src={chatUser.avatar || "/default-avatar.png"}
+                      className="object-cover rounded-full"
+                      alt="Group image"
+                      width={200}
+                      height={200}
+                    />
+                  </span>
                   <div className="font-semibold py-4  text-neutral-400">
                     Last seen {convertTimestamp(chatUser.lastSeen)}
                   </div>

@@ -4,11 +4,12 @@ import { Appcontext } from "@/app/context/appContext";
 import {
   ArrowLeftIcon,
   MapPinIcon,
-  ClockIcon,
   CurrencyDollarIcon,
   UserIcon,
   TagIcon,
   DocumentTextIcon,
+  BriefcaseIcon,
+  AcademicCapIcon,
 } from "@heroicons/react/24/outline";
 import { useContext } from "react";
 import SaveButton from "../saveButton";
@@ -59,6 +60,8 @@ const TalentDetailsSlider: React.FC = () => {
             itemType={"freelancer"}
           />
         </div>
+
+        {/* Profile Section */}
         <div className="flex flex-row items-center space-y-10 border-b p-5 gap-10">
           <span className="flex items-center justify-center w-40 h-40 rounded-full overflow-hidden">
             <Image
@@ -72,7 +75,7 @@ const TalentDetailsSlider: React.FC = () => {
             <h2 className="text-5xl font-medium mb-2">
               {freelancer?.fullName}
             </h2>
-            <div className="text-md flex pb-4 gap-5 ">
+            <div className="text-md flex pb-4 gap-5">
               <div className="flex items-center">
                 <MapPinIcon className="w-4 h-4 mr-2 text-gray-600" />
                 <p className="text-gray-600">{freelancer?.location}</p>
@@ -85,52 +88,100 @@ const TalentDetailsSlider: React.FC = () => {
           </span>
         </div>
 
-        {/* Job Description */}
+        {/* Bio Section */}
         <div className="mt-4 border-b pb-4">
-          <h3 className="text-lg  mb-2">Bio</h3>
+          <h3 className="text-lg mb-2">Bio</h3>
           <p className="text-gray-800">{freelancer?.bio}</p>
         </div>
 
-        {/* Skills & Tags */}
+        {/* Skills */}
         <div className="mt-4 border-b pb-4">
-          <h3 className="text-lg  mb-2">Skills</h3>
+          <h3 className="text-lg mb-2">Skills</h3>
           <div className="flex flex-wrap gap-2">
-            {freelancer?.skills.map((tag: string, index: number) => (
+            {freelancer?.skills.map((skill: string, index: number) => (
               <span
                 key={index}
                 className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full flex items-center"
               >
                 <TagIcon className="w-4 h-4 mr-1" />
-                {tag}
+                {skill}
               </span>
             ))}
           </div>
         </div>
 
-        {/* File Attachments */}
-        {freelancer?.fileUrls && (
+        {/* Work Experience */}
+        {freelancer?.workExperience?.length > 0 && (
           <div className="mt-4 border-b pb-4">
-            <h3 className="text-lg  mb-2">Attachments</h3>
-            <div className="flex items-center space-x-2">
-              <DocumentTextIcon className="w-5 h-5 text-gray-600" />
-              {freelancer.fileUrls.map((url: string, index: number) => (
-                <a
-                  key={index}
-                  href={url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline"
-                >
-                  View Attachment {index + 1}
-                </a>
-              ))}
-            </div>
+            <h3 className="text-lg mb-2 flex items-center">
+              <BriefcaseIcon className="w-5 h-5 mr-2 text-gray-600" />
+              Work Experience
+            </h3>
+            {freelancer?.workExperience.map((job: any, index: number) => (
+              <div key={index} className="mb-2">
+                <p className="font-medium">
+                  {job.jobTitle} at {job.company}
+                </p>
+                <p className="text-gray-600">
+                  {job.startDate} - {job.endDate}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Project Portfolio */}
+        {freelancer?.projectPortfolio?.length > 0 && (
+          <div className="mt-4 border-b pb-4">
+            <h3 className="text-lg mb-2 flex items-center">
+              <DocumentTextIcon className="w-5 h-5 mr-2 text-gray-600" />
+              Project Portfolio
+            </h3>
+            {freelancer?.projectPortfolio.map((project: any, index: number) => (
+              <div key={index} className="mb-4">
+                <p className="font-medium">{project.projectTitle}</p>
+                <p className="text-gray-600">{project.projectDescription}</p>
+                <div className="flex flex-wrap mt-2">
+                  {project.portfolioFiles.map((file: string, idx: number) => (
+                    <a
+                      key={idx}
+                      href={file}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline mr-2"
+                    >
+                      View File {idx + 1}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Education */}
+        {freelancer?.education?.length > 0 && (
+          <div className="mt-4 border-b pb-4">
+            <h3 className="text-lg mb-2 flex items-center">
+              <AcademicCapIcon className="w-5 h-5 mr-2 text-gray-600" />
+              Education
+            </h3>
+            {freelancer?.education.map((edu: any, index: number) => (
+              <div key={index} className="mb-2">
+                <p className="font-medium">
+                  {edu.degree} at {edu.institution}
+                </p>
+                <p className="text-gray-600">
+                  {edu.startDate} - {edu.endDate}
+                </p>
+              </div>
+            ))}
           </div>
         )}
 
         {/* Apply Button */}
         <div className="mt-6">
-          <button className="w-full bg-primary-600 text-white py-3 rounded-lg  hover:bg-primary-700 transition">
+          <button className="w-full bg-primary-600 text-white py-3 rounded-lg hover:bg-primary-700 transition">
             Apply for this Job
           </button>
         </div>
