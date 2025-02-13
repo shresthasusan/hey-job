@@ -6,9 +6,9 @@ export async function POST(req) {
   try {
     const { email } = await req.json();
     await connectMongoDB();
-    const user = await User.findOne({ email }).select("_id");
-    console.log(user); // This will log the user to thes
-    if (user) {
+    const existingUser = await User.findOne({ email }).select("_id");
+    console.log(existingUser); // This will log the user to thes
+    if (existingUser) {
       return NextResponse.json({ message: "User exists" }, { status: 200 });
     }
     return NextResponse.json({ user });
