@@ -147,7 +147,7 @@ const ChatWindow: React.FC = () => {
         unSub();
       };
     }
-  }, [messagesId, chatUser]);
+  }, [messagesId, chatUser, setMessages]);
 
   console.log("userData", userData);
 
