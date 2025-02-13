@@ -58,7 +58,7 @@ const VerifyEmail = () => {
 
   return (
     <motion.div
-      className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-400 to-indigo-600"
+      className="flex items-center justify-center min-h-screen bg-gradient-to-br from-primary-700 to-primary-400"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8 }}
