@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useEffect, useState, Suspense } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { motion } from "framer-motion";
 
 const VerifyEmail = () => {
   const searchParams = useSearchParams();
@@ -35,7 +36,24 @@ const VerifyEmail = () => {
     verifyEmail();
   }, [searchParams]);
 
-  return <div className="text-center p-4">{message}</div>;
+  return (
+    <motion.div
+      className="flex items-center justify-center min-h-screen bg-gray-100"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <motion.div
+        className="bg-white p-8 rounded-lg shadow-lg text-center"
+        initial={{ scale: 0.8 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <h1 className="text-2xl font-bold mb-4">Email Verification</h1>
+        <p className="text-gray-700">{message}</p>
+      </motion.div>
+    </motion.div>
+  );
 };
 
 // ✅ Wrap in <Suspense> before exporting
