@@ -3,7 +3,7 @@ import { connectMongoDB } from "../../../lib/mongodb";
 import { NextRequest, NextResponse } from "next/server";
 import FreelancerInfo from "@/models/freelancerInfo";
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET({ params }: { params: { id: string } }) {
     const { id } = params;
     try {
         await connectMongoDB();
