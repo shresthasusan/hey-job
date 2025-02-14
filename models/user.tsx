@@ -20,7 +20,7 @@ interface IUser extends Document {
   phone: string;
   profilePicture: string;
   emailVerified: boolean;
-  kcyVerified: boolean;
+  kycVerified: boolean;
 }
 
 // Define the schema corresponding to the document interface.
@@ -82,7 +82,7 @@ const userSchema = new Schema<IUser>(
       type: Boolean,
       default: false,
     },
-    kcyVerified: {
+    kycVerified: {
       type: Boolean,
       default: false,
     },
