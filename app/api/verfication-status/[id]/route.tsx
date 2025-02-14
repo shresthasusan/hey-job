@@ -2,21 +2,22 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectMongoDB } from "@/app/lib/mongodb";
 import User from "@/models/user";
 
-export async function GET({ params }: { params: { userId: string } }) {
-  const { userId } = params;
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const { id } = params;
   try {
     await connectMongoDB();
 
-    if (!userId) {
+    if (!id) {
       return NextResponse.json(
         { message: "User ID is required" },
         { status: 400 }
       );
     }
 
-    const user = await User.findById(userId).select(
-      "emailVerified kycVerified"
-    );
+    const user = await User.findById(id).select("emailVerified kycVerified");
 
     if (!user) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });

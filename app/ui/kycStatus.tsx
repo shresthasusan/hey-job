@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import useFetch from "../hooks/useFetch";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
@@ -10,31 +10,31 @@ export interface KYCStatusResponse {
 
 const KYCStatus: React.FC = () => {
   const { data: session } = useSession();
+  const [isVisible, setIsVisible] = useState(true);
 
-  const { data, error } = useFetch<KYCStatusResponse>(
-    `verification-status/${session?.user.id}`
+  const { data } = useFetch<KYCStatusResponse>(
+    `verfication-status/${session?.user.id}`
   );
 
-  if (error) {
-    return <div>Error fetching KYC status</div>;
-  }
-
-  if (!data) {
-    return <div>Loading...</div>;
-  }
-
-  if (data.kycVerified) {
-    return null; // Do not show the notification bar if KYC is verified
+  if (data?.kycVerified || !isVisible) {
+    return null; // Do not show the notification bar if KYC is verified or if the notification is closed
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-yellow-500 text-white p-4 flex justify-between items-center">
+    <div className="fixed top-[75px] z-20 left-0 right-0 bg-yellow-500 text-white p-2 px-10 flex justify-between items-center">
       <span>
-        Your KYC is not verified. Please complete your KYC verification.
+        Your KYC is not verified. Please complete your KYC verification.{" "}
+        <Link href="/kyc-verification-form" className="underline">
+          {" "}
+          Verify Now
+        </Link>
       </span>
-      <Link href="/kyc-verification-form">
-        <a className="bg-white text-yellow-500 px-4 py-2 rounded">Verify Now</a>
-      </Link>
+      <button
+        className="text-white ml-4 text-2xl"
+        onClick={() => setIsVisible(false)}
+      >
+        &times;
+      </button>
     </div>
   );
 };
