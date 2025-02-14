@@ -12,18 +12,12 @@ import {
   getDoc,
   onSnapshot,
 } from "firebase/firestore";
-import {
-  PaperAirplaneIcon,
-  PhotoIcon,
-  ShareIcon,
-} from "@heroicons/react/24/outline";
+import { PaperAirplaneIcon, PhotoIcon } from "@heroicons/react/24/outline";
 import UserProfileLoader from "@/app/lib/userProfileLoader";
 
 const ChatWindow: React.FC = () => {
   const { userData, messagesId, chatUser, messages, setMessages, chatVisual } =
     useContext(Appcontext);
-
-  // console.log('data',userData);
 
   const [input, setInput] = useState("");
 
@@ -108,6 +102,7 @@ const ChatWindow: React.FC = () => {
       console.error(error);
     }
   };
+
   const convertTimestamp = (timestamp: any) => {
     let date;
     if (!timestamp) {
@@ -134,6 +129,7 @@ const ChatWindow: React.FC = () => {
       return hour + ":" + minute + "AM";
     }
   };
+
   useEffect(() => {
     if (messagesId) {
       const unSub = onSnapshot(doc(db, "messages", messagesId), (res) => {
@@ -149,10 +145,12 @@ const ChatWindow: React.FC = () => {
     }
   }, [messagesId, chatUser, setMessages]);
 
-  console.log("userData", userData);
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      sendMessage();
+    }
+  };
 
-  // console.log("chatData", chatData);
-  console.log("CHATuSE", chatUser);
   return (
     <>
       <UserProfileLoader />
@@ -230,12 +228,12 @@ const ChatWindow: React.FC = () => {
 
                 {/* Input field for typing new messages */}
                 <div className="py-5  flex items-center bottom-0 sticky bg-white w-full">
-                  <input
-                    className="w-full bg-gray-200 py-5 px-3 rounded-xl"
+                  <textarea
+                    className="w-full bg-gray-200 py-5 px-3 rounded-xl h-32  overflow-y-auto"
                     onChange={(e) => setInput(e.target.value)}
                     value={input}
-                    type="text"
                     placeholder="Type your message here..."
+                    onKeyDown={handleKeyDown}
                   />
                   <input
                     onChange={sendImage}
@@ -250,12 +248,10 @@ const ChatWindow: React.FC = () => {
                   <span onClick={sendMessage}>
                     <PaperAirplaneIcon className="w-8 h-8 top-0 " />
                   </span>
-                  {/* hereee */}
                 </div>
               </div>
 
               {/* Group info section */}
-
               <div className="w-2/5 border-l-2 px-5">
                 <div className="flex flex-col">
                   {/* Group title */}
