@@ -125,16 +125,13 @@ const KYCForm = ({ params }: { params: { id: string } }) => {
         : "";
 
       // Prepare final submission data matching Mongoose schema
-      const submissionData = {
+      const submissionData: any = {
         userId: session?.user.id,
         fullName: formData.fullName,
         dateOfBirth: formData.dateOfBirth,
         gender: formData.gender,
         nationality: formData.nationality,
         documentType: formData.documentType,
-        citizenshipNumber: formData.citizenshipNumber,
-        passportNumber: formData.passportNumber,
-        panNumber: formData.panNumber,
         address: {
           province: formData.address.province,
           district: formData.address.district,
@@ -149,6 +146,20 @@ const KYCForm = ({ params }: { params: { id: string } }) => {
         },
         status: "pending",
       };
+
+      // Conditionally add document numbers
+      if (
+        formData.documentType === "citizenship" &&
+        formData.citizenshipNumber
+      ) {
+        submissionData.citizenshipNumber = formData.citizenshipNumber;
+      }
+      if (formData.documentType === "passport" && formData.passportNumber) {
+        submissionData.passportNumber = formData.passportNumber;
+      }
+      if (formData.documentType === "pan" && formData.panNumber) {
+        submissionData.panNumber = formData.panNumber;
+      }
 
       // Send data to API
       const res = await fetch(`/api/kyc-submit/${id}`, {
