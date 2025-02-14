@@ -7,7 +7,6 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../../../lib/firebase"; // Import Firebase storage
 import Image from "next/image";
 
-import useFirebaseAuth from "@/app/hooks/useFirebaseAuth";
 import { doc, updateDoc } from "firebase/firestore";
 
 interface Props {
