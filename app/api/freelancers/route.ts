@@ -4,6 +4,7 @@ import FreelancerInfo from "@/models/freelancerInfo";
 import { getServerSession } from "next-auth/next";
 import { NextRequest, NextResponse } from "next/server";
 import SavedFreelancers from "@/models/savedFreelancers";
+import User from "@/models/user";
 
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -33,7 +34,6 @@ export async function GET(req: NextRequest) {
         // Extract freelancer IDs and fetch their details from FreelancerInfo
         const savedFreelancerIds = savedFreelancersData.map((record) => record.freelancerId);
         freelancers = await FreelancerInfo.find({ userId: { $in: savedFreelancerIds } });
-
       }
     } else {
       // Fetch freelancers matching the search parameter
@@ -47,13 +47,18 @@ export async function GET(req: NextRequest) {
     const savedFreelancerRecords = await SavedFreelancers.find({ userId });
     const savedFreelancerIds = savedFreelancerRecords.map((record) => record.freelancerId.toString());
 
-    // Add 'saved' field to each freelancer and include freelancerId
-    const freelancersWithSavedFlag = freelancers.map((freelancer) => ({
-      freelancerId: freelancer._id, // Include freelancer ID
-      ...freelancer._doc,          // Include freelancer details
-      saved: savedFreelancerIds.includes(freelancer.userId.toString()), // Check if saved
-
-    }));
+    // Add 'saved' field and 'profilePicture' to each freelancer and include freelancerId
+    const freelancersWithSavedFlag = await Promise.all(
+      freelancers.map(async (freelancer) => {
+        const user = await User.findOne({ _id: freelancer.userId });
+        return {
+          freelancerId: freelancer._id, // Include freelancer ID
+          ...freelancer._doc,          // Include freelancer details
+          saved: savedFreelancerIds.includes(freelancer.userId.toString()), // Check if saved
+          profilePicture: user?.profilePicture || "/images/avatar.png", // Include profile picture
+        };
+      })
+    );
 
     return NextResponse.json({ freelancers: freelancersWithSavedFlag });
   } catch (error) {

@@ -1,5 +1,5 @@
 "use client";
-import { ChangeEvent, FormEvent, use, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Button } from "@/app/ui/button";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -11,7 +11,7 @@ import clsx from "clsx";
 export type project = {
   projectTitle: string;
   projectDescription: string;
-  technologies: string;
+  technologies: string[];
   portfolioFiles?: string[];
 };
 
@@ -34,7 +34,6 @@ type FormData = {
   fullName?: string;
   email?: string;
   location: string;
-  phone: string;
   skills: string[];
   workExperience?: work[];
   projectPortfolio?: project[];
@@ -43,10 +42,11 @@ type FormData = {
   languages: string[];
   rate: string;
 };
+
 const defaultPortfolioItem = {
   projectTitle: "",
   projectDescription: "",
-  technologies: "",
+  technologies: [],
   portfolioFiles: [],
 };
 
@@ -88,46 +88,15 @@ const MultiStepForm = () => {
     fullName: fullName,
     email: email,
     location: "",
-    phone: "",
     skills: [],
-    workExperience: [
-      // {
-      //   jobTitle: "",
-      //   company: "",
-      //   startDate: "",
-      //   endDate: "",
-      // },
-    ],
-    projectPortfolio: [
-      // {
-      //   projectTitle: "",
-      //   projectDescription: "",
-      //   technologies: "",
-      //   portfolioFiles: [],
-      // },
-    ],
-    education: [
-      // {
-      //   degree: "",
-      //   institution: "",
-      //   startDate: "",
-      //   endDate: "",
-      // },
-    ],
+    workExperience: [],
+    projectPortfolio: [],
+    education: [],
     bio: "",
     languages: [],
     rate: "",
   };
   const [formData, setFormData] = useState<FormData>(initialFormData);
-
-  // useEffect(() => {
-  //   setFormData({
-  //     ...formData,
-  //     userId: userId,
-  //     fullName: fullName,
-  //     email: email,
-  //   });
-  // }, [session]);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -173,7 +142,10 @@ const MultiStepForm = () => {
       const updatedArray = [...(prevState[field] || [])] as any; // Type assertion for dynamic access
       updatedArray[index] = {
         ...updatedArray[index],
-        [name]: value,
+        [name]:
+          name === "technologies"
+            ? value.split(",").map((tech) => tech.trim())
+            : value,
       };
       return {
         ...prevState,
@@ -181,6 +153,7 @@ const MultiStepForm = () => {
       };
     });
   };
+
   const handleArrayChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -198,7 +171,6 @@ const MultiStepForm = () => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      // console.log("Submitting form data:", formData);
       setUploading(true);
 
       // Upload files for each project
@@ -221,13 +193,11 @@ const MultiStepForm = () => {
           )
         : [];
 
-      console.log("Updated projects:", updatedProjects);
       const finalFormData = {
         ...formData,
         projectPortfolio: updatedProjects,
       };
 
-      console.log("Final form data:", finalFormData);
       const response = await fetch("/api/freelancerInfo", {
         method: "POST",
         headers: {
@@ -247,6 +217,7 @@ const MultiStepForm = () => {
       console.error("An error occurred while submitting the form", error);
     }
   };
+
   const stepTitles = [
     "Personal Information",
     "Project Portfolio",
@@ -328,7 +299,6 @@ const MultiStepForm = () => {
       )}
 
       {/* Step 2: Project Portfolio */}
-
       {step === 1 &&
         formData.projectPortfolio?.map((portfolio, index) => (
           <div key={index} className="border p-4 rounded-md mb-2">
@@ -379,7 +349,7 @@ const MultiStepForm = () => {
               </label>
               <input
                 type="text"
-                value={portfolio.technologies}
+                value={portfolio.technologies.join(", ")}
                 name="technologies"
                 onChange={(e) =>
                   handleObjectArrayChange(
@@ -446,7 +416,6 @@ const MultiStepForm = () => {
       )}
 
       {/* Similar structure for Work Experience and Education */}
-
       {step === 2 &&
         formData.workExperience?.map((work, index) => (
           <div key={index} className="border p-4 rounded-md mb-2">
@@ -544,7 +513,6 @@ const MultiStepForm = () => {
         </Button>
       )}
       {/* Similar structure for  Education */}
-
       {step === 3 &&
         formData.education?.map((edu, index) => (
           <div key={index} className="border p-4 rounded-md mb-2">
