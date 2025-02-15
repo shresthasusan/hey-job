@@ -7,6 +7,7 @@ export async function GET(req: NextRequest) {
 
     try {
         const kycs = await KYC.find({});
+        console.log("KYC data fetched successfully");
         return NextResponse.json(kycs, { status: 200 });
     } catch (error) {
         console.error("Error fetching KYC data:", error);
