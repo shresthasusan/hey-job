@@ -13,6 +13,7 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { PaperAirplaneIcon, PhotoIcon } from "@heroicons/react/24/outline";
+import UserProfileLoader from "@/app/lib/userProfileLoader";
 
 interface uId {
   uId: string;
@@ -155,11 +156,11 @@ const ChatWindow: React.FC<uId> = ({ uId }) => {
       sendMessage();
     }
   };
-  loadUserData(uId);
+  // loadUserData(uId);
 
   return (
     <>
-      {/* <UserProfileLoader userId={uId} /> */}
+      <UserProfileLoader />
       {/* Container for the entire chat window layout */}
       <div className="w-full p-5">
         <div className="flex flex-row gap-5 justify-between bg-white">

@@ -3,6 +3,7 @@ import { createContext, useEffect, useState, ReactNode } from "react";
 import { db, auth } from "../lib/firebase";
 import { doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
 import { Job } from "../ui/dashboard-components/job-list/jobList";
+import useFirebaseAuth from "../hooks/useFirebaseAuth";
 
 // Define the types for the context value
 interface UserData {
@@ -92,6 +93,8 @@ const Appcontextprovider: React.FC<Props> = ({ children }) => {
   const [jobDetailsVisible, setJobDetailsVisible] = useState(false);
   const [talentData, setTalentData] = useState<any>(null); // Replace `any` with the appropriate type
   const [talentDetailsVisible, setTalentDetailsVisible] = useState(false);
+
+  useFirebaseAuth(); // Initialize Firebase Auth
 
   const loadUserData = async (uid: string): Promise<void> => {
     try {
