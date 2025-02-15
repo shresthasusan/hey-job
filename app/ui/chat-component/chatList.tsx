@@ -14,14 +14,10 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { auth, db } from "@/app/lib/firebase";
+import { db } from "@/app/lib/firebase";
 import { Appcontext } from "@/app/context/appContext";
-import { onAuthStateChanged } from "firebase/auth";
-import UserProfileLoader from "@/app/lib/userProfileLoader";
 
 const ChatList: React.FC = () => {
-  //hereeee
-
   type ChatDataItem = {
     messageId: string;
     lastMessage: string;
@@ -30,6 +26,7 @@ const ChatList: React.FC = () => {
     messageSeen: boolean;
     userData: UserData;
     user: UserData;
+    lastMessageSender?: string;
   };
 
   interface UserData {
@@ -37,18 +34,6 @@ const ChatList: React.FC = () => {
     name?: string;
     avatar?: string;
     [key: string]: any; // Additional properties for user data
-  }
-
-  const defaultChatUser: UserData = {
-    id: "0",
-    key: 0,
-  };
-
-  interface ChatItem {
-    rId: string;
-    updatedAt: number;
-    userData: UserData;
-    [key: string]: any; // Additional properties for chat items
   }
 
   interface AppContextValue {
@@ -78,7 +63,6 @@ const ChatList: React.FC = () => {
   } = context;
 
   const [user, setUser] = useState<UserData | null>(null);
-  <UserProfileLoader />;
 
   const [showSearch, setShowSearch] = useState(false);
 
@@ -241,9 +225,6 @@ const ChatList: React.FC = () => {
               </div>
             </div>
           ) : (
-            // <div className="text-center text-gray-500 mt-4">
-            //   No chats available
-            // </div>
             chatData?.map((item: ChatDataItem, index: number) => (
               <div
                 key={index}
@@ -264,8 +245,18 @@ const ChatList: React.FC = () => {
                 <div className="w-[80%] relative">
                   <div className="text-lg font-medium">
                     {item.userData.username}
+                    {!item.messageSeen && (
+                      <span className="absolute top-0 right-0 h-3 w-3">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 "></span>
+                      </span>
+                    )}
                   </div>
-                  <div className="text-sm w-[80%] overflow-hidden text-gray-500">
+                  <div
+                    className={`text-sm w-[80%] overflow-hidden text-gray-500 ${
+                      !item.messageSeen ? "font-bold" : ""
+                    }`}
+                  >
+                    {item.rId === item.lastMessageSender ? "" : "You: "}
                     {item.lastMessage}
                   </div>
                 </div>
