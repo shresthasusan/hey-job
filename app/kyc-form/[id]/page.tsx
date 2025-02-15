@@ -12,6 +12,7 @@ const KYCForm = ({ params }: { params: { id: string } }) => {
   const [uploading, setUploading] = useState(false);
 
   const [formData, setFormData] = useState({
+    email: "",
     fullName: "",
     dateOfBirth: "",
     gender: "",
@@ -128,6 +129,7 @@ const KYCForm = ({ params }: { params: { id: string } }) => {
       const submissionData: any = {
         userId: session?.user.id,
         fullName: formData.fullName,
+        email: session?.user.email,
         dateOfBirth: formData.dateOfBirth,
         gender: formData.gender,
         nationality: formData.nationality,

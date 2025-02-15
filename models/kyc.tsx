@@ -4,6 +4,7 @@ import mongoose, { Schema, Document } from "mongoose";
 interface IKYC extends Document {
   userId: mongoose.Schema.Types.ObjectId;
   fullName: string;
+  email: string;
   dateOfBirth: Date;
   gender: "Male" | "Female" | "Other";
   nationality: string;
@@ -39,6 +40,7 @@ const kycSchema = new Schema<IKYC>(
       unique: true,
     },
     fullName: { type: String, required: true },
+    email: { type: String, unique: true, required: true },
     dateOfBirth: { type: Date, required: true },
     gender: { type: String, enum: ["Male", "Female", "Other"], required: true },
     nationality: { type: String, required: true },
