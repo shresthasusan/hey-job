@@ -19,7 +19,7 @@ const ModeSelect = () => {
 
   useFirebaseAuth();
   createFirebaseUser(
-    session?.user.name || "",
+    session?.user.name + " " + session?.user.lastName || "",
     session?.user.email || "",
     session?.user.id || ""
   );
