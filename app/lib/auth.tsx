@@ -4,8 +4,8 @@ import path from "path";
 import { connectMongoDB } from "./mongodb";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import GoogleProvider from "next-auth/providers/google"
-import GithubProvider from "next-auth/providers/github"
+import GoogleProvider from "next-auth/providers/google";
+import GithubProvider from "next-auth/providers/github";
 
 import { type DefaultSession, type DefaultUser } from "next-auth";
 
@@ -49,9 +49,6 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.AUTH_GITHUB_SECRET!,
     }),
 
-
-
- 
     CredentialsProvider({
       name: "credentials",
       credentials: {
@@ -78,6 +75,12 @@ export const authOptions: NextAuthOptions = {
             console.log("Password mismatch for user:", email);
             return null;
           }
+
+          // const emailVerified = user.emailVerified;
+          // if (!emailVerified) {
+          //   console.log("Email not verified for user:", email);
+          //   return null;
+          // }
 
           // Transform the Mongoose document into a plain JSON object
           const plainUser = {
