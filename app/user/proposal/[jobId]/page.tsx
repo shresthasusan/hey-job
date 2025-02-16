@@ -1,5 +1,5 @@
 import ProposalForm from "@/app/ui/proposal/proposal-form";
-import Proposal from "@/models/proposal";
+
 import React from "react";
 
 const page = ({ params }: { params: { jobId: string } }) => {
