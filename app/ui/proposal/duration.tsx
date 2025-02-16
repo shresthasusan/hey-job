@@ -1,15 +1,37 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 
-const Duration = () => {
+interface DurationProps {
+  duration: string;
+  setDuration: (value: string) => void;
+  isSubmitted: boolean;
+}
+
+const Duration = ({ duration, setDuration, isSubmitted }: DurationProps) => {
   return (
-    <div className="border-2 border-gray-300 rounded-xl p-6 w-full bg-white ">
-      <p className="font-semibold text-2xl mb-4">Cover Letter</p>
-      <p className="text-sm text-gray-500">
-        Write cover letter to the client why you want this job.
-      </p>
-      <div className="space-y-6 flex justify-between "></div>
+    <div className="border-[1px] border-gray-300 rounded-xl p-3 w-full bg-white">
+      <div className="my-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          How long will this project take?
+        </label>
+        <select
+          value={duration}
+          onChange={(e) => setDuration(e.target.value)}
+          className={`border p-3 rounded-md w-1/4 text-sm mt-1 ${
+            isSubmitted && !duration ? "border-red-500" : "border-gray-300"
+          }`}
+        >
+          <option value="">Select duration</option>
+          <option value="less than 1 month">Less than 1 month</option>
+          <option value="less than 3 months">Less than 3 months</option>
+          <option value="less than 6 months">Less than 6 months</option>
+          <option value="1 year">1 year</option>
+        </select>
+        {isSubmitted && !duration && (
+          <p className="text-red-500 text-sm mt-1">Duration is required.</p>
+        )}
+      </div>
     </div>
   );
 };

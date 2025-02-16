@@ -3,7 +3,11 @@
 import useFetch from "@/app/hooks/useFetch";
 import React, { useEffect } from "react";
 import { getTimeAgo } from "../dashboard-components/job-list/jobList";
-import { MapPinIcon, TrophyIcon } from "@heroicons/react/24/outline";
+import {
+  BanknotesIcon,
+  MapPinIcon,
+  TrophyIcon,
+} from "@heroicons/react/24/outline";
 import { CurrencyRupeeIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 interface JobDetailsProps {
@@ -61,10 +65,10 @@ const JobDetails = ({ jobId }: JobDetailsProps) => {
   }
 
   return (
-    <div className="border-2 border-gray-300 rounded-xl p-5 ">
+    <div className="border-[1px] border-gray-300 rounded-xl p-5 ">
       <p className="font-semibold text-xl">Job Details</p>
       <div className="flex justify-between mt-2">
-        <div className="py-5 space-y-8 border-r-2 border-gray-300 pr-5 flex-1">
+        <div className="py-5 space-y-8 border-r-[1px] border-gray-300 pr-5 flex-1">
           <p className="text-xl">{data?.job.title}</p>
           <p className="mt-3">
             {data?.job.tags.map((tag) => (
@@ -77,41 +81,43 @@ const JobDetails = ({ jobId }: JobDetailsProps) => {
             </span>
           </p>
           <p className="text-gray-500 text-sm">{data?.job.description}</p>
-          <p className="font-medium text-xl mt-18">
-            Attachments
-            <div className="flex gap-5 mt-2">
-              {data.job.fileUrls?.length > 0 &&
-                data?.job.fileUrls.map((url, index) => (
-                  <Link
-                    key={index}
-                    className="text-primary-500 text-sm"
-                    href={url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Attachment {index + 1}
-                  </Link>
-                ))}
-            </div>
-          </p>
         </div>
-        <div className="py-5 m-10 pr-14 text-sm">
+        <div className="py-5 m-10 pr-14 text-md">
           <div className="flex flex-col gap-5">
             <div className="flex gap-2 justify-start items-center">
-              <TrophyIcon className="w-4 h-4 text-primary-500" />
+              <TrophyIcon className="w-5 h-5 text-primary-500" />
               <p className="text-black">{data?.job.experience}</p>
             </div>
             <div className="flex gap-2 justify-start items-center">
-              <CurrencyRupeeIcon className="w-4 h-4 text-primary-500" />
-              <p className="text-black">{data?.job.budget}</p>
+              <BanknotesIcon className="w-5 h-5 text-primary-500" />
+              <p className="text-black">
+                {""} $ {data?.job.budget}
+              </p>
             </div>
             <div className="flex gap-2 justify-start items-center">
-              <MapPinIcon className="w-4 h-4 text-primary-500" />
+              <MapPinIcon className="w-5 h-5 text-primary-500" />
               <p className="text-black">{data?.job.location}</p>
             </div>
           </div>
         </div>
       </div>
+      <p className="font-medium text-xl border-t-[1px] py-5 border-gray-300 mt-14">
+        Attachments
+        <div className="flex gap-5 mt-2">
+          {data.job.fileUrls?.length > 0 &&
+            data?.job.fileUrls.map((url, index) => (
+              <Link
+                key={index}
+                className="text-primary-500 text-sm hover:underline"
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Attachment {index + 1}
+              </Link>
+            ))}
+        </div>
+      </p>
     </div>
   );
 };
