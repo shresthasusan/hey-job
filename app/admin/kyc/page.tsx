@@ -78,11 +78,13 @@ const KYCPage = () => {
       {/* Uploaded Documents Section */}
       <div className="mt-10">
         <h2 className="text-2xl font-semibold text-gray-700">
-          Uploaded Documents
+          Uploaded Documents:
         </h2>
 
         <div className="mt-4 space-y-4">
-          {uploadedDocs.map((doc) => (
+          {uploadedDocs
+          .filter((doc) => doc.status === "pending")
+          .map((doc) => (
             <div
               key={doc._id}
               className="flex items-center justify-between bg-gray-50 shadow-md p-4 rounded-lg cursor-pointer"
