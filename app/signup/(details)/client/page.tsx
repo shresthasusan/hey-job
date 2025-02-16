@@ -1,11 +1,7 @@
-import React from "react";
+import WelcomeText from "@/app/ui/login-signup-component/client/first-page";
 
-const page = () => {
-  return (
-    <div className="flex flex-col items-center top-2/3 mt-[10%] h-screen">
-      <div className="text-4xl">Join as a client or freelancer</div>
-    </div>
-  );
+const page = async () => {
+  return <WelcomeText />;
 };
 
 export default page;
