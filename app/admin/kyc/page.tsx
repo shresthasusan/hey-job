@@ -67,9 +67,8 @@ const KYCPage = () => {
       });
 
       if (res.ok) {
-        setUploadedDocs((prevDocs) =>
-          prevDocs.map((doc) => (doc._id === id ? { ...doc, status } : doc))
-        );
+        // Refetch KYC data after successful update
+        await fetchKYCData();
         setSelectedDoc(null); // Close the overlay after action
       } else {
         throw new Error("Failed to update status");
@@ -213,13 +212,13 @@ const KYCPage = () => {
             <div className="flex gap-2 mt-4">
               <button
                 className="px-4 py-1 bg-green-500 text-white rounded-lg hover:bg-green-600"
-                onClick={() => handleAction(selectedDoc.userId, "approved")}
+                onClick={() => handleAction(selectedDoc._id, "approved")}
               >
                 Approve
               </button>
               <button
                 className="px-4 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600"
-                onClick={() => handleAction(selectedDoc.userId, "rejected")}
+                onClick={() => handleAction(selectedDoc._id, "rejected")}
               >
                 Reject
               </button>
