@@ -14,14 +14,10 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { auth, db } from "@/app/lib/firebase";
+import { db } from "@/app/lib/firebase";
 import { Appcontext } from "@/app/context/appContext";
-import { onAuthStateChanged } from "firebase/auth";
-import UserProfileLoader from "@/app/lib/userProfileLoader";
 
 const ChatList: React.FC = () => {
-  //hereeee
-
   type ChatDataItem = {
     messageId: string;
     lastMessage: string;
@@ -30,6 +26,7 @@ const ChatList: React.FC = () => {
     messageSeen: boolean;
     userData: UserData;
     user: UserData;
+    lastMessageSender?: string;
   };
 
   interface UserData {
@@ -37,18 +34,6 @@ const ChatList: React.FC = () => {
     name?: string;
     avatar?: string;
     [key: string]: any; // Additional properties for user data
-  }
-
-  const defaultChatUser: UserData = {
-    id: "0",
-    key: 0,
-  };
-
-  interface ChatItem {
-    rId: string;
-    updatedAt: number;
-    userData: UserData;
-    [key: string]: any; // Additional properties for chat items
   }
 
   interface AppContextValue {
@@ -78,70 +63,53 @@ const ChatList: React.FC = () => {
   } = context;
 
   const [user, setUser] = useState<UserData | null>(null);
-  <UserProfileLoader />;
 
   const [showSearch, setShowSearch] = useState(false);
+  const [searchResults, setSearchResults] = useState<UserData[]>([]);
 
   const inputHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
-      const input = e.target.value?.trim().toLowerCase(); // Ensure input is a trimmed lowercase string
-      if (input) {
-        setShowSearch(true);
-
-        const userRef = collection(db, "users");
-        const q = query(userRef, where("username", "==", input));
-        const querySnap = await getDocs(q);
-
-        if (!querySnap.empty && querySnap.docs[0].data().id !== userData?.id) {
-          let userExist = false;
-          chatData?.forEach((user: ChatDataItem) => {
-            if (user.rId === querySnap.docs[0].data().id) {
-              userExist = true;
-            }
-          });
-          setUser(querySnap.docs[0].data() as UserData);
-          if (!userExist) {
-            setUser(querySnap.docs[0].data() as UserData);
-          }
-        } else {
-          setUser(null);
-        }
-      } else {
+      const input = e.target.value?.trim().toLowerCase(); // Ensure input is trimmed & lowercase
+      if (!input) {
         setShowSearch(false);
+        setSearchResults([]); // Clear search results when input is empty
+        return;
+      }
+
+      setShowSearch(true);
+
+      const userRef = collection(db, "users");
+      const q = query(
+        userRef,
+        where("username", ">=", input),
+        where("username", "<=", input + "\uf8ff")
+      );
+      const querySnap = await getDocs(q);
+
+      if (!querySnap.empty) {
+        const users: UserData[] = querySnap.docs
+          .map((doc) => doc.data() as UserData)
+          .filter((user) => user.id !== userData?.id); // Exclude current user
+
+        setSearchResults(users);
+      } else {
+        setSearchResults([]);
       }
     } catch (error) {
-      console.error(error);
+      console.error("Search error:", error);
     }
   };
 
-  const addChat = async () => {
-    console.log("user", user);
-    console.log("userData", userData);
-
-    const messagesRef = collection(db, "messages");
-    const chatsRef = collection(db, "chats");
-
+  const addChat = async (selectedUser: UserData) => {
     try {
-      // Check if user.id exists in chatData.rId
+      const messagesRef = collection(db, "messages");
+      const chatsRef = collection(db, "chats");
+
       const conversationExists = chatData?.some(
-        (chat) => chat.rId === user?.id
+        (chat) => chat.rId === selectedUser.id
       );
       if (conversationExists) {
-        alert("You already have a conversation with this user.");
-        if (user) {
-          const chatDataItem: ChatDataItem = {
-            messageId: "", // You can set this to an appropriate value if available
-            lastMessage: "",
-            rId: user.id,
-            updateDoc: Date.now(),
-            messageSeen: false,
-            userData: user,
-            user: user,
-          };
-          setChat(chatDataItem);
-          console.log("send", userData);
-          setChatUser(user);
-        }
+        setChatUser(selectedUser);
         return;
       }
 
@@ -151,7 +119,7 @@ const ChatList: React.FC = () => {
         messages: [],
       });
 
-      await updateDoc(doc(chatsRef, user?.id), {
+      await updateDoc(doc(chatsRef, selectedUser.id), {
         chatsData: arrayUnion({
           messageId: newMessageRef.id,
           lastMessage: "",
@@ -165,12 +133,15 @@ const ChatList: React.FC = () => {
         chatsData: arrayUnion({
           messageId: newMessageRef.id,
           lastMessage: "",
-          rId: user?.id,
+          rId: selectedUser.id,
           updateDoc: Date.now(),
           messageSeen: true,
         }),
       });
-    } catch (error: any) {
+
+      setChatUser(selectedUser);
+      setMessagesId(newMessageRef.id);
+    } catch (error) {
       console.error("Error adding chat:", error);
     }
   };
@@ -222,56 +193,60 @@ const ChatList: React.FC = () => {
       {/* User list */}
       <div className="h-full pb-16 overflow-scroll">
         <div className="flex flex-col">
-          {showSearch && user ? (
-            <div
-              onClick={addChat}
-              className="flex flex-row py-2 px-2 justify-center hover:bg-gray-200 items-center border-b-2"
-            >
-              <div className="w-1/4">
-                <Image
-                  src={user.avatar || "/default-avatar.png"}
-                  className="object-cover h-12 w-12 rounded-full"
-                  alt={user.username}
-                  width={48}
-                  height={48}
-                />
-              </div>
-              <div className="w-[80%] relative">
-                <div className="text-lg font-medium">{user.username}</div>
-              </div>
-            </div>
-          ) : (
-            // <div className="text-center text-gray-500 mt-4">
-            //   No chats available
-            // </div>
-            chatData?.map((item: ChatDataItem, index: number) => (
-              <div
-                key={index}
-                className="flex flex-row py-2 px-2 justify-center hover:bg-gray-200 items-center border-b-2"
-                onClick={() => setChat(item)}
-              >
-                {/* User avatar */}
-                <div className="w-1/4">
-                  <Image
-                    src={item.userData.avatar || "/default-avatar.png"}
-                    className="object-cover h-12 w-12 rounded-full"
-                    alt={item.userData.username}
-                    width={48}
-                    height={48}
-                  />
-                </div>
-                {/* User details */}
-                <div className="w-[80%] relative">
-                  <div className="text-lg font-medium">
-                    {item.userData.username}
+          {showSearch && searchResults.length > 0
+            ? searchResults.map((user, index) => (
+                <div
+                  key={index}
+                  onClick={() => addChat(user)}
+                  className="flex flex-row py-2 px-2 justify-center hover:bg-gray-200 items-center border-b-2"
+                >
+                  <div className="w-1/4">
+                    <Image
+                      src={user.avatar || "/default-avatar.png"}
+                      className="object-cover h-12 w-12 rounded-full"
+                      alt={user.username}
+                      width={48}
+                      height={48}
+                    />
                   </div>
-                  <div className="text-sm w-[80%] overflow-hidden text-gray-500">
-                    {item.lastMessage}
+                  <div className="w-[80%] relative">
+                    <div className="text-lg font-medium">{user.username}</div>
                   </div>
                 </div>
-              </div>
-            ))
-          )}
+              ))
+            : chatData?.map((item: ChatDataItem, index: number) => (
+                <div
+                  key={index}
+                  className="flex flex-row py-2 px-2 justify-center hover:bg-gray-200 items-center border-b-2"
+                  onClick={() => setChat(item)}
+                >
+                  <div className="w-1/4">
+                    <Image
+                      src={item.userData.avatar || "/default-avatar.png"}
+                      className="object-cover h-12 w-12 rounded-full"
+                      alt={item.userData.username}
+                      width={48}
+                      height={48}
+                    />
+                  </div>
+                  <div className="w-[80%] relative">
+                    <div className="text-lg font-medium">
+                      {item.userData.username}
+                      {!item.messageSeen && (
+                        <span className="absolute top-0 right-0 h-3 w-3">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 "></span>
+                        </span>
+                      )}
+                    </div>
+                    <div
+                      className={`text-sm w-[80%] overflow-hidden text-gray-500 ${!item.messageSeen ? "font-bold" : ""}`}
+                    >
+                      {item.rId === item.lastMessageSender ? "" : "You: "}
+                      {item.lastMessage}
+                    </div>
+                  </div>
+                </div>
+              ))}
         </div>
       </div>
     </div>

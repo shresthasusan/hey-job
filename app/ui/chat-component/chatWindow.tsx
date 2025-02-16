@@ -15,11 +15,17 @@ import {
 import { PaperAirplaneIcon, PhotoIcon } from "@heroicons/react/24/outline";
 import UserProfileLoader from "@/app/lib/userProfileLoader";
 
-const ChatWindow: React.FC = () => {
+interface uId {
+  uId: string;
+}
+
+const ChatWindow: React.FC<uId> = ({ uId }) => {
   const { userData, messagesId, chatUser, messages, setMessages, chatVisual } =
     useContext(Appcontext);
 
   const [input, setInput] = useState("");
+
+  const { loadUserData } = useContext(Appcontext);
 
   const sendMessage = async () => {
     try {
@@ -150,6 +156,7 @@ const ChatWindow: React.FC = () => {
       sendMessage();
     }
   };
+  // loadUserData(uId);
 
   return (
     <>

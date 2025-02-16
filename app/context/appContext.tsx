@@ -3,6 +3,7 @@ import { createContext, useEffect, useState, ReactNode } from "react";
 import { db, auth } from "../lib/firebase";
 import { doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
 import { Job } from "../ui/dashboard-components/job-list/jobList";
+import useFirebaseAuth from "../hooks/useFirebaseAuth";
 
 // Define the types for the context value
 interface UserData {
@@ -21,6 +22,8 @@ interface ChatItem {
   rId: string;
   updatedAt: number;
   userData: UserData;
+  lastMessage?: string;
+  lastMessageSender?: string;
   [key: string]: any; // Additional properties for chat items
 }
 
@@ -91,6 +94,8 @@ const Appcontextprovider: React.FC<Props> = ({ children }) => {
   const [talentData, setTalentData] = useState<any>(null); // Replace `any` with the appropriate type
   const [talentDetailsVisible, setTalentDetailsVisible] = useState(false);
 
+  useFirebaseAuth(); // Initialize Firebase Auth
+
   const loadUserData = async (uid: string): Promise<void> => {
     try {
       const userRef = doc(db, "users", uid);
@@ -110,7 +115,7 @@ const Appcontextprovider: React.FC<Props> = ({ children }) => {
           });
         }
       }, 6000);
-      console.log("loadUserData function callled");
+      console.log("loadUserData function called");
       // Clear the interval when the component unmounts
       clearInterval(intervalId);
     } catch (error) {
@@ -127,9 +132,21 @@ const Appcontextprovider: React.FC<Props> = ({ children }) => {
 
         for (const item of chatItems) {
           const userRef = doc(db, "users", item.rId);
+          const MessageRef = doc(db, "messages", item.messageId);
+          const messageSnap = await getDoc(MessageRef);
           const userSnap = await getDoc(userRef);
           const userData = userSnap.data() as UserData;
-          tempData.push({ ...item, userData });
+
+          // Extract the last message from the messageSnap
+          const messages = messageSnap.data()?.messages || [];
+          const lastMessage =
+            messages.length > 0 ? messages[messages.length - 1] : null;
+
+          tempData.push({
+            ...item,
+            userData,
+            lastMessageSender: lastMessage?.sId || "",
+          });
         }
 
         setChatData(tempData.sort((a, b) => b.updatedAt - a.updatedAt));

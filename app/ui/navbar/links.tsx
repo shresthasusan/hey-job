@@ -6,8 +6,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
 import LinksDropdown from "./linksDropdown";
+import { useSession } from "next-auth/react";
 
 const Links = () => {
+  const { data: session } = useSession();
+
   const currentPath = usePathname();
   const [isDropdownVisible, setDropdownVisible] = useState(0);
   return (
@@ -98,7 +101,7 @@ const Links = () => {
           {(currentPath.startsWith("/user") ||
             currentPath.startsWith("/search/jobs")) && (
             <Link
-              href="/user/chatroom"
+              href={`/user/chatroom/${session?.user?.id}`}
               className={clsx("hover:text-primary-600", {
                 "text-primary-600": currentPath == "/user/chatroom",
               })}
@@ -109,7 +112,7 @@ const Links = () => {
           {(currentPath.startsWith("/client") ||
             currentPath.startsWith("/search/talent")) && (
             <Link
-              href="/client/chatroom"
+              href={`/client/chatroom/${session?.user?.id}`}
               className={clsx("hover:text-primary-600", {
                 "text-primary-600": currentPath == "/user/chatroom",
               })}
