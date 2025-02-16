@@ -31,20 +31,31 @@ const KYCPage = () => {
 
   const [uploadedDocs, setUploadedDocs] = useState<Document[]>([]);
   const [selectedDoc, setSelectedDoc] = useState<Document | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false); // State to track refreshing status
 
+  // Function to fetch KYC data
+  const fetchKYCData = async () => {
+    try {
+      const res = await fetch("/api/admin/fetch-kycs");
+      const data = await res.json();
+      setUploadedDocs(data);
+    } catch (error) {
+      console.error("Error fetching KYC data:", error);
+    } finally {
+      setIsRefreshing(false); // Reset refreshing state
+    }
+  };
+
+  // Fetch KYC data on component mount
   useEffect(() => {
-    const fetchKYCData = async () => {
-      try {
-        const res = await fetch("/api/admin/fetch-kycs");
-        const data = await res.json();
-        setUploadedDocs(data);
-      } catch (error) {
-        console.error("Error fetching KYC data:", error);
-      }
-    };
-
     fetchKYCData();
   }, []);
+
+  // Function to handle refresh
+  const handleRefresh = async () => {
+    setIsRefreshing(true); // Set refreshing state to true
+    await fetchKYCData(); // Refetch KYC data
+  };
 
   // Function to handle approval or rejection of a document
   const handleAction = async (id: string, status: "approved" | "rejected") => {
@@ -75,6 +86,17 @@ const KYCPage = () => {
         KYC Verification
       </h1>
 
+      {/* Refresh Button */}
+      <div className="mt-4 flex justify-end">
+        <button
+          onClick={handleRefresh}
+          disabled={isRefreshing}
+          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-blue-300"
+        >
+          {isRefreshing ? "Refreshing..." : "Refresh"}
+        </button>
+      </div>
+
       {/* Uploaded Documents Section */}
       <div className="mt-10">
         <h2 className="text-2xl font-semibold text-gray-700">
@@ -83,30 +105,30 @@ const KYCPage = () => {
 
         <div className="mt-4 space-y-4">
           {uploadedDocs
-          .filter((doc) => doc.status === "pending")
-          .map((doc) => (
-            <div
-              key={doc._id}
-              className="flex items-center justify-between bg-gray-50 shadow-md p-4 rounded-lg cursor-pointer"
-              onClick={() => setSelectedDoc(doc)}
-            >
-              <p className="text-gray-800 font-medium">{doc.fullName}</p>
+            .filter((doc) => doc.status === "pending")
+            .map((doc) => (
+              <div
+                key={doc._id}
+                className="flex items-center justify-between bg-gray-50 shadow-md p-4 rounded-lg cursor-pointer"
+                onClick={() => setSelectedDoc(doc)}
+              >
+                <p className="text-gray-800 font-medium">{doc.fullName}</p>
 
-              <div className="flex items-center gap-3">
-                <span
-                  className={`px-3 py-1 text-sm rounded-lg font-semibold ${
-                    doc.status === "pending"
-                      ? "bg-yellow-400 text-black"
-                      : doc.status === "approved"
-                        ? "bg-green-500 text-white"
-                        : "bg-red-500 text-white"
-                  }`}
-                >
-                  {doc.status}
-                </span>
+                <div className="flex items-center gap-3">
+                  <span
+                    className={`px-3 py-1 text-sm rounded-lg font-semibold ${
+                      doc.status === "pending"
+                        ? "bg-yellow-400 text-black"
+                        : doc.status === "approved"
+                          ? "bg-green-500 text-white"
+                          : "bg-red-500 text-white"
+                    }`}
+                  >
+                    {doc.status}
+                  </span>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
       </div>
 
