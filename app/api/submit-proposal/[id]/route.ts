@@ -5,7 +5,7 @@ import { getServerSession } from "next-auth";
 import Jobs from "@/models/jobs";
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
-    const { id } = params
+    const { id } = params;
     await connectMongoDB(); // Ensure database connection
 
     try {
@@ -29,9 +29,11 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
         const clientId = job.userId;
 
-        const existingProposal = await Proposal.findOne({ jobId: `${jobId}`, id: `${id}` });
-        console.log("existing check", existingProposal)
-        if (existingProposal) {
+        // Check if a proposal already exists for this job and user
+        const existingProposal = await Proposal.find({ jobId: jobId, userId: id });
+        console.log("Existing Proposal Check:", existingProposal);
+
+        if (existingProposal.length > 0) {
             return NextResponse.json({ error: "You have already submitted a proposal for this job" }, { status: 409 });
         }
 
@@ -51,4 +53,4 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
         console.error("Proposal Submission Error:", error);
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
-}
+}   
