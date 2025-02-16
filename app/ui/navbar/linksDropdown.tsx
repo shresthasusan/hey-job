@@ -10,14 +10,20 @@ import Image from "next/image";
 import { signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import NotificationsPage from "../dashboard-components/job-list/notification";
+import useFetch from "@/app/hooks/useFetch";
 
 interface Props {
   isDropdownVisible?: Number;
   isOpen?: Boolean;
   currentMode?: String;
 }
+interface User {
+  profilePicture: string;
+}
+
 const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const { data: user } = useFetch<User>(`user/${session?.user.id}`);
 
   return (
     <>
@@ -100,7 +106,8 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
                      h-24 w-24"
             >
               <Image
-                src="/image1.png"
+                src={user?.profilePicture || "/image1.png"}
+    
                 alt="profile"
                 width={150}
                 height={150}

@@ -12,6 +12,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { useContext, useEffect, useState } from "react";
 import SaveButton from "../saveButton";
+import Link from "next/link";
 
 const JobDetailsSlider: React.FC = () => {
   const {
@@ -181,10 +182,13 @@ const JobDetailsSlider: React.FC = () => {
         )}
 
         {/* Apply Button */}
-        <div className="mt-6">
-          <button className="w-full bg-primary-600 text-white py-3 rounded-lg  hover:bg-primary-700 transition">
+        <div className="mt-10">
+          <Link
+            className="w-full bg-primary-600 text-white py-3 rounded-lg px-8  hover:bg-primary-700 transition"
+            href={`/user/proposal/${job?.jobId}`}
+          >
             Apply for this Job
-          </button>
+          </Link>
         </div>
       </div>
     </div>

@@ -10,22 +10,61 @@ const InsightsPage = () => {
     totalKYC: 0,
     verifiedKYC: 0,
     pendingKYC: 0,
+    rejectedKYC: 0,
   });
 
   useEffect(() => {
-    fetchInsights();
+    const fetchKYCData = async () => {
+      try {
+        const res = await fetch("/api/admin/fetch-kycs");
+        const data = await res.json();
+
+        // Count KYC statuses
+        const verifiedKYC = data.filter((doc: any) => doc.status === "approved").length;
+        const pendingKYC = data.filter((doc: any) => doc.status === "pending").length;
+        const rejectedKYC = data.filter((doc: any) => doc.status === "rejected").length;
+        const totalKYC = verifiedKYC + pendingKYC + rejectedKYC; // Correct total count
+
+        setInsights((prev) => ({
+          ...prev,
+          totalKYC,
+          verifiedKYC,
+          pendingKYC,
+          rejectedKYC,
+        }));
+      } catch (error) {
+        console.error("Error fetching KYC data:", error);
+      }
+    };
+
+    fetchKYCData();
   }, []);
 
-  const fetchInsights = async () => {
-    try {
-      const res = await fetch("/api/stats");
-      const data = await res.json();
-      setInsights(data);
-    } catch (error) {
-      console.error("Error fetching insights:", error);
-    }
-  };
-
+  useEffect(() => {
+    const fetchUserStats = async () => {
+      try {
+        const response = await fetch("/api/stats");
+        const datas = await response.json();
+  
+        if (response.ok) {
+          setInsights((prev) => ({
+            ...prev,
+            totalUsers: datas.totalUsers,
+            freelancers: datas.freelancers,
+            clients: datas.clients,
+          }));
+        } else {
+          console.error("Failed to fetch user stats:", datas.error);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+  
+    fetchUserStats();
+  }, []);
+  
+  
   return (
     <div className="flex flex-col flex-1 p-6 md:p-10 bg-white-100 min-h-screen">
       {/* Heading */}
@@ -69,6 +108,12 @@ const InsightsPage = () => {
         <div className="bg-yellow-200 shadow-lg p-6 rounded-lg text-center">
           <h2 className="text-xl font-semibold text-gray-700">Pending KYC</h2>
           <p className="text-3xl font-bold text-yellow-800">{insights.pendingKYC}</p>
+        </div>
+
+        {/* Rejected KYC */}
+        <div className="bg-red-200 shadow-lg p-6 rounded-lg text-center">
+          <h2 className="text-xl font-semibold text-gray-700">Rejected KYC</h2>
+          <p className="text-3xl font-bold text-red-800">{insights.rejectedKYC}</p>
         </div>
       </div>
     </div>
