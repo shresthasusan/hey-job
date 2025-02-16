@@ -2,10 +2,11 @@ import ProposalForm from "@/app/ui/proposal/proposal-form";
 import Proposal from "@/models/proposal";
 import React from "react";
 
-const page = () => {
+const page = ({ params }: { params: { jobId: string } }) => {
+  const { jobId } = params;
   return (
     <div className="flex max-w-screen-xl w-full py-14 mx-auto">
-      <ProposalForm />
+      <ProposalForm jobId={jobId} />
     </div>
   );
 };

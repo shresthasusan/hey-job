@@ -13,6 +13,7 @@ export async function GET(req: NextRequest) {
   const savedJobs = searchParams.get('savedJobs');
   const title = searchParams.get('title');
   const experience = searchParams.get('Experience');
+  const jobId = searchParams.get('jobId');
 
 
   if (!session) {
@@ -24,6 +25,18 @@ export async function GET(req: NextRequest) {
 
   try {
     await connectMongoDB();
+
+
+
+    if (jobId) {
+      // Fetch job when jobId is provided, without requiring isSaved
+      const job = await Jobs.findById(jobId);
+      if (!job) {
+        return NextResponse.json({ message: "Job not found" }, { status: 404 });
+      }
+      return NextResponse.json({ job });
+    }
+
 
     // Fetch jobs based on query parameters
     if (!title) {
