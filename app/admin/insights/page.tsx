@@ -43,7 +43,7 @@ const InsightsPage = () => {
   useEffect(() => {
     const fetchUserStats = async () => {
       try {
-        const response = await fetch("/api/stats");
+        const response = await fetch("/api/admin/stats");
         const datas = await response.json();
 
         if (response.ok) {
