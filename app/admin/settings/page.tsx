@@ -117,17 +117,7 @@ const AdminSettingsPage = () => {
             />
           </div>
 
-          {/* Auto Backup */}
-          <div className="flex items-center justify-between p-3 bg-white shadow rounded-lg">
-            <label className="text-gray-700">Enable Auto Backup</label>
-            <input
-              type="checkbox"
-              name="autoBackup"
-              checked={settings.autoBackup}
-              onChange={handleChange}
-              className="w-5 h-5"
-            />
-          </div>
+         
 
           {/* Two-Factor Authentication */}
           <div className="flex items-center justify-between p-3 bg-white shadow rounded-lg">
