@@ -38,6 +38,28 @@ export interface Job {
   status: string;
 }
 
+export const getTimeAgo = (dateString: string) => {
+  const units = [
+    { label: "year", seconds: 31536000 },
+    { label: "month", seconds: 2592000 },
+    { label: "day", seconds: 86400 },
+    { label: "hour", seconds: 3600 },
+    { label: "minute", seconds: 60 },
+  ];
+
+  const diffInSeconds = Math.floor(
+    (new Date().getTime() - new Date(dateString).getTime()) / 1000
+  );
+  if (diffInSeconds < 60) return "just now";
+
+  for (const unit of units) {
+    const value = Math.floor(diffInSeconds / unit.seconds);
+    if (value >= 1) return `${value} ${unit.label}${value > 1 ? "s" : ""} ago`;
+  }
+
+  return "just now";
+};
+
 // JobList component definition
 const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
   // State variable to store fetched job data, initialized as an empty array
@@ -107,28 +129,6 @@ const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
       controller.abort();
     };
   }, [query, bestMatches, mostRecent, savedJobs]); // Empty dependency array means this effect runs once when the component mounts
-  const getTimeAgo = (dateString: string) => {
-    const units = [
-      { label: "year", seconds: 31536000 },
-      { label: "month", seconds: 2592000 },
-      { label: "day", seconds: 86400 },
-      { label: "hour", seconds: 3600 },
-      { label: "minute", seconds: 60 },
-    ];
-
-    const diffInSeconds = Math.floor(
-      (new Date().getTime() - new Date(dateString).getTime()) / 1000
-    );
-    if (diffInSeconds < 60) return "just now";
-
-    for (const unit of units) {
-      const value = Math.floor(diffInSeconds / unit.seconds);
-      if (value >= 1)
-        return `${value} ${unit.label}${value > 1 ? "s" : ""} ago`;
-    }
-
-    return "just now";
-  };
 
   const loadJobDetails = (job: Job) => {
     setJobData(job);
