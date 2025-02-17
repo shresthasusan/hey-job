@@ -10,6 +10,7 @@ import {
   BoltIcon,
   CurrencyRupeeIcon,
 } from "@heroicons/react/24/outline";
+import Image from "next/image";
 
 interface NavItemProps {
   href: string;
@@ -23,7 +24,9 @@ const NavItem: React.FC<NavItemProps> = ({ href, icon, label, isActive }) => (
     <Link
       href={href}
       className={`flex items-center space-x-4 p-3 rounded-lg transition ${
-        isActive ? "bg-yellow-400 text-black" : "hover:bg-yellow-400 hover:text-black"
+        isActive
+          ? "bg-yellow-400 text-black"
+          : "hover:bg-yellow-400 hover:text-black"
       }`}
     >
       <span className="w-6 h-6">{icon}</span>
@@ -40,13 +43,17 @@ const Sidebar: React.FC = () => {
       <nav className="flex flex-col h-full py-6">
         {/* Logo */}
         <div className="flex items-center justify-center px-4 mb-6">
-          <img src="/logo/login-logo.png" alt="logo" className="w-15 h-20 p-1" />
+          <Image
+            src="/logo/login-logo.png"
+            alt="logo"
+            className="w-15 h-20 p-1"
+          />
         </div>
 
         {/* Admin Profile Section */}
         <div className="flex flex-col items-center px-4 py-4 border-b">
-          <img
-            src="/admin-avatar.jpg" // Change this to the admin's actual avatar URL
+          <Image
+            src="/image1.png" // Change this to the admin's actual avatar URL
             alt="Admin Avatar"
             className="w-14 h-14 rounded-full border-2 border-gray-300"
           />
@@ -55,11 +62,36 @@ const Sidebar: React.FC = () => {
 
         {/* Navigation Menu */}
         <ul className="mt-8 space-y-3">
-          <NavItem href="/admin" icon={<HomeIcon className="w-6 h-6" />} label="Dashboard" isActive={pathname === "/admin"} />
-          <NavItem href="/admin/kyc" icon={<AdjustmentsHorizontalIcon className="w-6 h-6" />} label="KYC Verification" isActive={pathname === "/admin/kyc"} />
-          <NavItem href="/admin/insights" icon={<ServerIcon className="w-6 h-6" />} label="Insights" isActive={pathname === "/admin/insights"} />
-          <NavItem href="/admin/transaction" icon={<CurrencyRupeeIcon className="w-6 h-6" />} label="Transactions" isActive={pathname === "/admin/transaction"} />
-          <NavItem href="/admin/settings" icon={<BoltIcon className="w-6 h-6" />} label="Settings" isActive={pathname === "/admin/settings"} />
+          <NavItem
+            href="/admin"
+            icon={<HomeIcon className="w-6 h-6" />}
+            label="Dashboard"
+            isActive={pathname === "/admin"}
+          />
+          <NavItem
+            href="/admin/kyc"
+            icon={<AdjustmentsHorizontalIcon className="w-6 h-6" />}
+            label="KYC Verification"
+            isActive={pathname === "/admin/kyc"}
+          />
+          <NavItem
+            href="/admin/insights"
+            icon={<ServerIcon className="w-6 h-6" />}
+            label="Insights"
+            isActive={pathname === "/admin/insights"}
+          />
+          <NavItem
+            href="/admin/transaction"
+            icon={<CurrencyRupeeIcon className="w-6 h-6" />}
+            label="Transactions"
+            isActive={pathname === "/admin/transaction"}
+          />
+          <NavItem
+            href="/admin/settings"
+            icon={<BoltIcon className="w-6 h-6" />}
+            label="Settings"
+            isActive={pathname === "/admin/settings"}
+          />
         </ul>
       </nav>
     </div>
