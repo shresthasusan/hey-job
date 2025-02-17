@@ -110,6 +110,7 @@ const ChatList: React.FC = () => {
       );
       if (conversationExists) {
         setChatUser(selectedUser);
+        alert("heyyy");
         return;
       }
 
@@ -122,7 +123,7 @@ const ChatList: React.FC = () => {
       await updateDoc(doc(chatsRef, selectedUser.id), {
         chatsData: arrayUnion({
           messageId: newMessageRef.id,
-          lastMessage: "",
+          lastMessage: "You can now start your conversation",
           rId: userData?.id,
           updateDoc: Date.now(),
           messageSeen: true,
@@ -132,7 +133,7 @@ const ChatList: React.FC = () => {
       await updateDoc(doc(chatsRef, userData?.id), {
         chatsData: arrayUnion({
           messageId: newMessageRef.id,
-          lastMessage: "",
+          lastMessage: "You can now start your conversation",
           rId: selectedUser.id,
           updateDoc: Date.now(),
           messageSeen: true,

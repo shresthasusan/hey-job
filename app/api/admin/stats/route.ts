@@ -1,6 +1,7 @@
 import { connectMongoDB } from "@/app/lib/mongodb";
 import { NextResponse } from "next/server";
 import User from "../../../../models/user";
+import KYC from "@/models/kyc";
 
 
 
@@ -13,10 +14,14 @@ export async function GET() {
     const totalUsers = await User.countDocuments();
     const freelancers = await User.countDocuments({ "roles.freelancer": true });
     const clients = await User.countDocuments({ "roles.client": true });
+    const totalKyc = await KYC.countDocuments();
+    const approvedKyc = await KYC.countDocuments({ status: 'approved' });
+    const pendingKyc = await KYC.countDocuments({ status: 'pending' });
+    const rejectedKyc = await KYC.countDocuments({ status: 'rejected' });
 
     console.log("Total users:", totalUsers, "Freelancers:", freelancers, "Clients:", clients);
 
-    return NextResponse.json({ totalUsers, freelancers, clients });
+    return NextResponse.json({ totalUsers, freelancers, clients, totalKyc, approvedKyc, pendingKyc, rejectedKyc });
   } catch (error) {
     console.error("Error fetching user stats:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

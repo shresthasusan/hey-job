@@ -27,6 +27,7 @@ const KYCPage = () => {
       citizenshipFront: string;
       citizenshipBack: string;
     };
+    updatedAt: Date;
   }
 
   const [uploadedDocs, setUploadedDocs] = useState<Document[]>([]);
@@ -36,7 +37,7 @@ const KYCPage = () => {
   // Function to fetch KYC data
   const fetchKYCData = async () => {
     try {
-      const res = await fetch("/api/admin/fetch-kycs");
+      const res = await fetch(`/api/admin/fetch-kycs?status=${"pending"}`);
       const data = await res.json();
       setUploadedDocs(data);
     } catch (error) {
@@ -67,8 +68,14 @@ const KYCPage = () => {
       });
 
       if (res.ok) {
+        const updatedDoc = await res.json(); // Fetch the updated response from the backend
+
         setUploadedDocs((prevDocs) =>
-          prevDocs.map((doc) => (doc._id === id ? { ...doc, status } : doc))
+          prevDocs.map((doc) =>
+            doc.userId === id
+              ? { ...doc, status, updatedAt: new Date() } // Update `updatedAt`
+              : doc
+          )
         );
         setSelectedDoc(null); // Close the overlay after action
       } else {
@@ -97,24 +104,39 @@ const KYCPage = () => {
         </button>
       </div>
 
-      {/* Uploaded Documents Section */}
-      <div className="mt-10">
-        <h2 className="text-2xl font-semibold text-gray-700">
-          Uploaded Documents:
-        </h2>
+      {/* Tabulated UI */}
+      <div className="mt-4">
+        <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+          {/* Table Header */}
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Full Name
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Status
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Last Updated
+              </th>
+            </tr>
+          </thead>
 
-        <div className="mt-4 space-y-4">
-          {uploadedDocs
-            .filter((doc) => doc.status === "pending")
-            .map((doc) => (
-              <div
+          {/* Table Body */}
+          <tbody className="divide-y divide-gray-200">
+            {uploadedDocs.map((doc) => (
+              <tr
                 key={doc._id}
-                className="flex items-center justify-between bg-gray-50 shadow-md p-4 rounded-lg cursor-pointer"
+                className="hover:bg-gray-50 cursor-pointer"
                 onClick={() => setSelectedDoc(doc)}
               >
-                <p className="text-gray-800 font-medium">{doc.fullName}</p>
+                {/* Full Name */}
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  {doc.fullName}
+                </td>
 
-                <div className="flex items-center gap-3">
+                {/* Status */}
+                <td className="px-6 py-4 whitespace-nowrap">
                   <span
                     className={`px-3 py-1 text-sm rounded-lg font-semibold ${
                       doc.status === "pending"
@@ -126,10 +148,16 @@ const KYCPage = () => {
                   >
                     {doc.status}
                   </span>
-                </div>
-              </div>
+                </td>
+
+                {/* Last Updated */}
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {new Date(doc.updatedAt).toLocaleString()}
+                </td>
+              </tr>
             ))}
-        </div>
+          </tbody>
+        </table>
       </div>
 
       {/* Overlay Card */}
@@ -144,6 +172,7 @@ const KYCPage = () => {
             </button>
             <h2 className="text-2xl font-bold mb-4">KYC Details</h2>
             <div className="space-y-2">
+              {/* KYC Details */}
               <p>
                 <strong>Full Name:</strong> {selectedDoc.fullName}
               </p>
