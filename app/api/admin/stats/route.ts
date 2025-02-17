@@ -1,6 +1,6 @@
 import { connectMongoDB } from "@/app/lib/mongodb";
 import { NextResponse } from "next/server";
-import User from "../../../models/user";
+import User from "../../../../models/user";
 
 
 

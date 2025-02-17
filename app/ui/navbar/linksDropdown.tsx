@@ -21,6 +21,7 @@ interface User {
   profilePicture: string;
 }
 
+
 const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
   const { data: session, status } = useSession();
   const { data: user } = useFetch<User>(`user/${session?.user.id}`);
@@ -47,10 +48,20 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
             {(currentMode?.startsWith("/client") ||
               currentMode?.startsWith("/search/talent")) && (
               <>
-                <li className=" p-3 hover:bg-slate-100">Post Jobs</li>
-                <li className=" p-3 hover:bg-slate-100">All Contracts</li>
+               <Link href={"/client/post-job"}>
+                <li className=" p-3 hover:bg-slate-100">
+                 Post Jobs
+                  </li></Link>
+
+                  <Link href={"/client/your-contracts"}>
+                  <li className=" p-3 hover:bg-slate-100">All Contracts</li>
+                  </Link>
+
+                <Link href={"/client/your-jobs"}>
                 <li className=" p-3 hover:bg-slate-100">All Jobs Posts</li>
+              </Link>
               </>
+                
             )}
           </ul>
         </div>
@@ -73,10 +84,16 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
             {(currentMode?.startsWith("/client") ||
               currentMode?.startsWith("/search/talent")) && (
               <>
+              <Link href={"/client/business/paymenthistory"}>
                 <li className=" p-3 hover:bg-slate-100">Discover</li>
+              </Link>
+              <Link href={"/client/your-hires"}>
                 <li className=" p-3 hover:bg-slate-100">Your Hires </li>
-                <li className=" p-3 hover:bg-slate-100">Recently Viewed</li>
+              </Link>
+              <Link href={"/client/saved-talents"}>
+                
                 <li className=" p-3 hover:bg-slate-100">Saved Talents</li>
+                </Link>
               </>
             )}
           </ul>
@@ -131,15 +148,21 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
           <div className="hover:bg-slate-200 p-1">
             {(currentMode?.startsWith("/user") ||
               currentMode?.startsWith("/search/jobs")) && (
-              <Link href={"/client/best-matches"}>
+               //href={session?.user?.roles?.client === true ? "/client/best-matches" : "/signup/client"}>
+
+
+              <Link 
+               href={"/client/best-matches"}>
                 <span className="flex items-center gap-1">
                   <UserCircleIcon className="size-8" />
                   <span className="flex flex-col ">
                     {session?.user?.name} {session?.user?.lastName}
+                   
                     <p className="text-xs text-gray-400">Client</p>
                   </span>
                 </span>
               </Link>
+                
             )}
             {(currentMode?.startsWith("/client") ||
               currentMode?.startsWith("/search/talent")) && (
