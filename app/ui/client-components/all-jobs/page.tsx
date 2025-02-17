@@ -17,7 +17,9 @@ interface AllJobsPageProps {
   userId: string;
 }
 
-const AllJobsPage = ({ userId }: AllJobsPageProps) => {
+const AllJobsPage: React.FC<AllJobsPageProps> = ({
+  userId,
+}: AllJobsPageProps) => {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
