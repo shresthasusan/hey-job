@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import JobDetailsModal from "../jobdetailsmodal/page";
+import JobDetailsModal from "../jobdetailsmodal/jobDetailCard";
 
 interface Job {
   id: string;
@@ -13,13 +13,13 @@ interface Job {
   tags: string[];
 }
 
-interface AllJobsPageProps {
+interface AllJobsListProps {
   userId: string;
 }
 
-const AllJobsPage: React.FC<AllJobsPageProps> = ({
+const AllJobsList: React.FC<AllJobsListProps> = ({
   userId,
-}: AllJobsPageProps) => {
+}: AllJobsListProps) => {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
@@ -81,4 +81,4 @@ const AllJobsPage: React.FC<AllJobsPageProps> = ({
   );
 };
 
-export default AllJobsPage;
+export default AllJobsList;
