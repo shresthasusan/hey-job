@@ -38,7 +38,7 @@ async function sendEmail(email: string, token: string) {
   };
 
   await transporter.sendMail(mailOptions);
-  console.log("Email sent to:", email);
+  console.log("✅ Email sent to:", email);
 }
 
 export async function POST(req: NextRequest) {
@@ -49,20 +49,35 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Invalid email address" }, { status: 400 });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
     await connectMongoDB();
+
     const existingUser = await User.findOne({ email }).select("_id");
-    console.log(existingUser); // This will log the user to thes
     if (existingUser) {
       return NextResponse.json({ message: "User already exists" }, { status: 400 });
     }
-    await User.create({ email, name, lastName, password: hashedPassword });
-    console.log("✅ User Created:", email);
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create new user and retrieve `_id`
+    const newUser = await User.create({ email, name, lastName, password: hashedPassword });
+
+    console.log("✅ User Created:", newUser._id);
+
+    // Generate email verification token
     const token = await createVerificationToken(email) as string;
     console.log("✅ Verification Token Created:", token);
+
+    // Send email verification
     await sendEmail(email, token);
     console.log("✅ Email Sent:", email);
-    return NextResponse.json({ message: "Success" }, { status: 200 });
+
+    // Return user _id along with success message
+    return NextResponse.json({
+      message: "Success",
+      userId: newUser._id.toString() // Send _id as string
+    }, { status: 200 });
+
   } catch (error) {
     console.error("Error registering user:", error);
     return NextResponse.json({ message: "Error" }, { status: 500 });

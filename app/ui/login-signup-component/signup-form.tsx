@@ -55,8 +55,10 @@ const SignupForm = () => {
         return;
       }
 
-      const form = e.target as HTMLFormElement;
+      const { userId } = await res.json(); // ✅ Extract `userId` from API response
+      console.log("✅ Retrieved User ID:", userId);
 
+      // Sign in the user after registration
       const response = await signIn("credentials", {
         email,
         password,
@@ -69,9 +71,9 @@ const SignupForm = () => {
         return;
       }
 
-      form.reset();
-      router.push("/signup/usermode-select");
-      console.log("success");
+      // ✅ Redirect user to profile upload page with `userId`
+      router.push(`/signup/profile-upload/${userId}`);
+      console.log("✅ Registration & Login Successful, Redirecting...");
     } catch (error) {
       console.error("Error during registration:", error);
       setError("An unexpected error occurred. Please try again.");

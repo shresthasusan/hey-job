@@ -1,8 +1,9 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import useFetch from "../hooks/useFetch";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation"; // ✅ Use this instead of next/router
 
 export interface KYCStatusResponse {
   kycVerified: boolean;
@@ -11,10 +12,17 @@ export interface KYCStatusResponse {
 const KYCStatus: React.FC = () => {
   const { data: session } = useSession();
   const [isVisible, setIsVisible] = useState(true);
+  const router = useRouter(); // ✅ Use useRouter from next/navigation
 
   const { data, error } = useFetch<KYCStatusResponse>(
     `/verification-status/${session?.user.id}`
   );
+
+  useEffect(() => {
+    if (!session?.user.roles.client && !session?.user.roles.freelancer) {
+      router.push(`/signup/profile-upload/${session?.user.id}`); // if both roles is not true
+    }
+  }, [session, router]);
 
   if (error) {
     console.error("Error fetching KYC status:", error);
@@ -22,7 +30,7 @@ const KYCStatus: React.FC = () => {
   }
 
   if (data?.kycVerified || !isVisible) {
-    return null; // Do not show the notification bar if KYC is verified or if the notification is closed
+    return null; // Do not show the notification bar if KYC is verified or closed
   }
 
   return (
@@ -30,7 +38,6 @@ const KYCStatus: React.FC = () => {
       <span>
         Your KYC is not verified. Please complete your KYC verification.{" "}
         <Link href={`/kyc-form/${session?.user.id}`} className="underline">
-          {" "}
           Verify Now
         </Link>
       </span>

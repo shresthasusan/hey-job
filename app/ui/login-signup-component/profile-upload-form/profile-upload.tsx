@@ -4,10 +4,12 @@ import { countries } from "@/app/lib/data";
 import { ChangeEvent, use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { db, storage } from "../../../lib/firebase"; // Import Firebase storage
+import { createFirebaseUser, db, storage } from "../../../lib/firebase"; // Import Firebase storage
 import Image from "next/image";
 
 import { doc, updateDoc } from "firebase/firestore";
+import { useSession } from "next-auth/react";
+import useFirebaseAuth from "@/app/hooks/useFirebaseAuth";
 
 interface Props {
   params: {
@@ -15,6 +17,15 @@ interface Props {
   };
 }
 const ProfileUploadForm = ({ params }: Props) => {
+  const { data: session } = useSession();
+
+  useFirebaseAuth();
+  createFirebaseUser(
+    session?.user.name + " " + session?.user.lastName || "",
+    session?.user.email || "",
+    session?.user.id || ""
+  );
+
   interface formData {
     userId?: string;
     dob: string;
@@ -116,7 +127,7 @@ const ProfileUploadForm = ({ params }: Props) => {
         alert("Portfolio submitted successfully!");
         setFormData(formData);
 
-        router.push("/");
+        router.push("/signup/usermode-select");
       } else {
         alert("Error submitting portfolio.");
       }
