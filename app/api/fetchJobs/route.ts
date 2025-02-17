@@ -14,19 +14,18 @@ export async function GET(req: NextRequest) {
   const title = searchParams.get('title');
   const experience = searchParams.get('Experience');
   const jobId = searchParams.get('jobId');
+  const clientId = searchParams.get('userId'); // Get userId from query parameters
 
+ const userId = session?.user.id;
 
   if (!session) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
-  const userId = session?.user.id;  // Get the logged-in user's ID from the session
   let jobs: any[] = [];
 
   try {
     await connectMongoDB();
-
-
 
     if (jobId) {
       // Fetch job when jobId is provided, without requiring isSaved
@@ -37,6 +36,12 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ job });
     }
 
+    if(clientId){
+      // Fetch jobs posted by the user
+      jobs = await Jobs.find({ userId: session?.user.id, // Get userId from session
+      });
+      return NextResponse.json({ jobs });
+    }
 
     // Fetch jobs based on query parameters
     if (!title) {
@@ -60,18 +65,14 @@ export async function GET(req: NextRequest) {
       jobs = await Jobs.find({
         userId: { $ne: userId },
         title: { $regex: title, $options: "i" },
-
-
       });
-    }
-    else {
+    } else {
       // Fetch jobs where 'title' and 'experience' match the search parameters
       jobs = await Jobs.find({
         userId: { $ne: userId },
         title: { $regex: title, $options: "i" },
       })
         .where('experience').in(experience.split(','));
-      ;
     }
 
     // Fetch saved job ids for the current user

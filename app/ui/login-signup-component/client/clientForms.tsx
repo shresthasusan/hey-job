@@ -113,7 +113,7 @@ const ClientForm = () => {
       });
 
       if (response.ok) {
-        router.push(`/client/best-matches`);
+        router.push(`/client/best-matches`); // Redirect after successful registration
       } else {
         alert("Error submitting client details.");
       }
