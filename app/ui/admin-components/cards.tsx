@@ -10,7 +10,7 @@ const Comp = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await fetch("/api/stats", {
+        const response = await fetch("/api/admin/stats", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
