@@ -11,20 +11,28 @@ import { Button } from "../../button";
 // import { useRouter } from "next/router";
 import { useRouter } from "next/navigation";
 import TypingAnimation from "../../typingAnimation";
+import { useEffect } from "react";
 
 const WelcomeText = () => {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const userName = session?.user.name;
 
   const id = session?.user.id;
 
-  // if (!session) {
-  //   router.push("/login");
-  // }
-  if (session?.user.roles.freelancer) {
-    router.push("/");
-  }
+  useEffect(() => {
+    if (status !== "authenticated") return;
+
+    fetch("/api/user?fields=roles") // ✅ Fetch only roles from API
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.roles && !data.roles.client && !data.roles.freelancer) {
+          router.push(`/signup/profile-upload/${session?.user.id}`);
+        }
+        if (data.roles.client) router.push(`/client/best-matches`);
+      })
+      .catch((err) => console.error("Error fetching roles:", err));
+  }, [status, session, router]);
   return (
     <div className="flex flex-col items-center top-2/3 justify-center h-screen">
       <div className="text-4xl">

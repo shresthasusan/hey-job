@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import useFetch from "../hooks/useFetch";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation"; // ✅ Use this instead of next/router
+import { usePathname, useRouter } from "next/navigation"; // ✅ Use this instead of next/router
 
 export interface KYCStatusResponse {
   kycVerified: boolean;
@@ -13,7 +13,7 @@ const KYCStatus: React.FC = () => {
   const { data: session, status } = useSession();
   const [isVisible, setIsVisible] = useState(true);
   const router = useRouter(); // ✅ Use useRouter from next/navigation
-
+  const pathname = usePathname();
   const { data, error } = useFetch<KYCStatusResponse>(
     `/verification-status/${session?.user.id}`
   );
@@ -27,9 +27,14 @@ const KYCStatus: React.FC = () => {
         if (data.roles && !data.roles.client && !data.roles.freelancer) {
           router.push(`/signup/profile-upload/${session?.user.id}`);
         }
+        if (pathname.startsWith("/users") && !data.roles.freelancer) {
+          router.push(`/signup/freelancer`);
+        } else if (pathname.startsWith("/client") && !data.roles.client) {
+          router.push(`/signup/client`);
+        }
       })
       .catch((err) => console.error("Error fetching roles:", err));
-  }, [status, session, router]);
+  }, [status, session, router, pathname]);
 
   if (error) {
     console.error("Error fetching KYC status:", error);

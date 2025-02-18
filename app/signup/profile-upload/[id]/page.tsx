@@ -13,9 +13,6 @@ interface Props {
   };
 }
 const SignUppage = async ({ params }: Props) => {
-  const session = await getServerSession(authOptions); //typescript error
-  // if (session) redirect("/");
-
   return (
     <>
       <ProfileUploadForm
