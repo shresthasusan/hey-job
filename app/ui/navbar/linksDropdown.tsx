@@ -23,7 +23,6 @@ interface User {
 
 const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
   const { data: session, status } = useSession();
-  const { data: user } = useFetch<User>(`user/${session?.user.id}`);
 
   return (
     <>
@@ -119,7 +118,7 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
                      h-24 w-24"
             >
               <Image
-                src={user?.profilePicture || "/image1.png"}
+                src={session?.user?.profilePicture || "/image1.png"}
                 alt="profile"
                 width={150}
                 height={150}

@@ -20,6 +20,7 @@ declare module "next-auth" {
         client?: boolean;
         freelancer?: boolean;
       };
+      profilePicture?: string;
     };
   }
   interface User extends DefaultUser {
@@ -31,6 +32,7 @@ declare module "next-auth" {
       client?: boolean;
       freelancer?: boolean;
     };
+    profilePicture?: string;
   }
 }
 
@@ -88,6 +90,7 @@ export const authOptions: NextAuthOptions = {
             lastName: user.lastName,
             id: user.id,
             roles: user.roles,
+            profilePicture: user.profilePicture,
           };
 
           console.log("User authorized:", plainUser);
@@ -130,6 +133,7 @@ export const authOptions: NextAuthOptions = {
           user.name = name;
           user.lastName = lastName;
           user.roles = newUser.roles;
+          user.profilePicture = newUser.profilePicture;
         } else {
           // Use existing user data
 
@@ -138,6 +142,7 @@ export const authOptions: NextAuthOptions = {
           user.lastName = existingUser.lastName;
           user.email = existingUser.email;
           user.roles = existingUser.roles;
+          user.profilePicture = existingUser.profilePicture;
         }
       }
       return true;
@@ -150,6 +155,7 @@ export const authOptions: NextAuthOptions = {
         token.email = user.email;
         token.lastName = user.lastName;
         token.roles = user.roles;
+        token.picture = user.profilePicture;
       }
       return token;
     },
@@ -162,6 +168,7 @@ export const authOptions: NextAuthOptions = {
           email: token.email as string,
           lastName: token.lastName as string,
           roles: token.roles as { client?: boolean; freelancer?: boolean },
+          profilePicture: token.picture || "",
         };
       }
       return session;
