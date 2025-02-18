@@ -26,9 +26,6 @@ const WelcomeText = () => {
     fetch("/api/user?fields=roles") // ✅ Fetch only roles from API
       .then((res) => res.json())
       .then((data) => {
-        if (data.roles && !data.roles.client && !data.roles.freelancer) {
-          router.push(`/signup/profile-upload/${session?.user.id}`);
-        }
         if (data.roles.client) router.push(`/client/best-matches`);
       })
       .catch((err) => console.error("Error fetching roles:", err));
