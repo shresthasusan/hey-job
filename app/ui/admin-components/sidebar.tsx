@@ -39,14 +39,16 @@ const Sidebar: React.FC = () => {
   const pathname = usePathname(); // Get current route
 
   return (
-    <div className="fixed left-0 top-0 h-full w-64 bg-white shadow-md text-black">
+    <div className="left-0 top-0 h-screen p-10 bg-white shadow-md text-black">
       <nav className="flex flex-col h-full py-6">
         {/* Logo */}
         <div className="flex items-center justify-center px-4 mb-6">
           <Image
             src="/logo/login-logo.png"
             alt="logo"
-            className="w-15 h-20 p-1"
+            className="w-20 h-20 p-1"
+            width={50}
+            height={50}
           />
         </div>
 
@@ -56,6 +58,8 @@ const Sidebar: React.FC = () => {
             src="/image1.png" // Change this to the admin's actual avatar URL
             alt="Admin Avatar"
             className="w-14 h-14 rounded-full border-2 border-gray-300"
+            width={50}
+            height={50}
           />
           <span className="mt-2 font-semibold text-sm">John Doe</span>
         </div>
