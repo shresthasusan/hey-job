@@ -17,9 +17,6 @@ export async function middleware(req: NextRequest) {
 
   const isAdminPanel = pathname.startsWith("/admin") && !isAdminAuthPage;
 
-  const isUserPage =
-    !pathname.startsWith("/admin") && !isAuthPage && !isAdminAuthPage;
-
   // 1. Redirect authenticated users trying to access login or signup to home
   if ((isAuthPage || isAdminAuthPage) && token) {
     return NextResponse.redirect(new URL("/", req.url));
@@ -42,12 +39,18 @@ export async function middleware(req: NextRequest) {
     );
   }
 
+  const isUserPage =
+    !pathname.startsWith("/admin") &&
+    !pathname.startsWith("/api") &&
+    !isAuthPage &&
+    !isAdminAuthPage;
+
   // 4. Prevent admin users from accessing regular user pages
   if (token && token.role === "admin" && isUserPage) {
     return NextResponse.redirect(new URL("/admin", req.url));
   }
 
-  // 5. Handle API routes
+  // // 5. Handle API routes
   if (pathname.startsWith("/api/admin") && (!token || token.role !== "admin")) {
     return new NextResponse(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,

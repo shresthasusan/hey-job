@@ -9,8 +9,10 @@ import {
   ServerIcon,
   BoltIcon,
   CurrencyRupeeIcon,
+  ArrowLeftStartOnRectangleIcon,
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
+import { signOut } from "next-auth/react";
 
 interface NavItemProps {
   href: string;
@@ -37,6 +39,11 @@ const NavItem: React.FC<NavItemProps> = ({ href, icon, label, isActive }) => (
 
 const Sidebar: React.FC = () => {
   const pathname = usePathname(); // Get current route
+
+  const handleLogout = () => {
+    // Here you would typically handle the logout logic, such as clearing session or making an API call
+    console.log("Logging out");
+  };
 
   return (
     <div className="left-0 top-0 h-screen p-10 bg-white shadow-md text-black">
@@ -97,6 +104,18 @@ const Sidebar: React.FC = () => {
             isActive={pathname === "/admin/settings"}
           />
         </ul>
+
+        {/* Logout Button */}
+        <div className="mt-auto">
+          <button
+            onClick={() => signOut()}
+            className={`flex items-center space-x-4 p-3 w-full rounded-lg transition
+              hover:bg-yellow-400 hover:text-black`}
+          >
+            <ArrowLeftStartOnRectangleIcon className="h-6 w-6" />
+            <span className="text-sm font-medium">Logout</span>
+          </button>
+        </div>
       </nav>
     </div>
   );
