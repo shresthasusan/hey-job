@@ -5,14 +5,17 @@ export async function middleware(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
   const pathname = req.nextUrl.pathname;
-  const isAuthPage = pathname === "/login" || pathname === "/signup";
+  const isAuthPage =
+    pathname === "/login" ||
+    pathname === "/signup" ||
+    pathname === "/api/register";
 
-  // 🚀 If the user is authenticated and tries to access login/signup, redirect to home
+  //  If the user is authenticated and tries to access login/signup, redirect to home
   if (isAuthPage && token) {
     return NextResponse.redirect(new URL("/", req.url));
   }
 
-  // 🚀 If the user is not authenticated and tries to access a protected route, redirect to login
+  // If the user is not authenticated and tries to access a protected route, redirect to login
   if (!token && !isAuthPage) {
     return NextResponse.redirect(
       new URL(`/login?callbackUrl=${encodeURIComponent(req.url)}`, req.url)
