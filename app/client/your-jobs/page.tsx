@@ -5,9 +5,8 @@ import { Button } from "../../ui/button";
 import AllJobsList from "@/app/ui/client-components/all-jobs/clientJobList";
 
 const YourJobsPage = ({ params }: { params: { id: string } }) => {
+  const { id } = params;
   const { data: session } = useSession();
-  const userId = session?.user?.id;
-
   return (
     <>
       <div className="mx-auto text-center">
@@ -18,7 +17,7 @@ const YourJobsPage = ({ params }: { params: { id: string } }) => {
           </span>{" "}
           has posted.
         </h1>
-        {userId ? <AllJobsList userId={userId} /> : <p>Loading...</p>}
+        {id ? <AllJobsList userId={id} /> : <p>Loading...</p>}
       </div>
       <div className="flex justify-center mt-4">
         <Button
