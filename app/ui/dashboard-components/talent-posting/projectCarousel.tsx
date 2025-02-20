@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import JobDetailsModal from '../../client-components/jobdetailsmodal/page';
+
 interface Job {
     id: string;
     title: string;
@@ -42,7 +42,7 @@ const AllJobsPage: React.FC<AllJobsPageProps> = ({ userId }) => {
         <div className="container mx-auto p-4">
             {jobs.length === 0 ? (
                 <div className="text-center">
-                    <p className="text-xl">You haven't posted any job yet.</p>
+                    <p className="text-xl">You haven&apoas;t posted any job yet.</p>
                 </div>
             ) : (
                 <div className="space-y-8">
