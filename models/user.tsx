@@ -21,6 +21,7 @@ interface IUser extends Document {
   profilePicture: string;
   emailVerified: boolean;
   kycVerified: boolean;
+  oauth: boolean;
 }
 
 // Define the schema corresponding to the document interface.
@@ -40,7 +41,9 @@ const userSchema = new Schema<IUser>(
     },
     password: {
       type: String,
-      required: true,
+      required: function () {
+        return !this.oauth;
+      },
     },
     roles: {
       client: { type: Boolean, default: false },
@@ -83,6 +86,10 @@ const userSchema = new Schema<IUser>(
       default: false,
     },
     kycVerified: {
+      type: Boolean,
+      default: false,
+    },
+    oauth: {
       type: Boolean,
       default: false,
     },

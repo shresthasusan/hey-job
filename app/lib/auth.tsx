@@ -1,6 +1,5 @@
 import User from "@/models/user";
 import { NextAuthOptions } from "next-auth";
-import path from "path";
 import { connectMongoDB } from "./mongodb";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
@@ -108,6 +107,42 @@ export const authOptions: NextAuthOptions = {
     signIn: "/login",
   },
   callbacks: {
+    async signIn({ user, account }) {
+      if (account?.provider === "google" || account?.provider === "github") {
+        await connectMongoDB();
+        const existingUser = await User.findOne({ email: user.email });
+
+        // Split name into firstName and lastName
+        let [name, ...lastNameParts] = user.name.split(" ");
+        let lastName = lastNameParts.join(" ") || ""; // Join the remaining parts as last name
+
+        if (!existingUser) {
+          // Create a new user if not found
+          const newUser = await User.create({
+            name,
+            lastName,
+            email: user.email,
+            profilePicture: user.image,
+            emailVerified: true,
+            oauth: true,
+          });
+          user.id = newUser._id.toString();
+          user.name = name;
+          user.lastName = lastName;
+          user.roles = newUser.roles;
+        } else {
+          // Use existing user data
+
+          user.id = existingUser._id.toString();
+          user.name = existingUser.name;
+          user.lastName = existingUser.lastName;
+          user.email = existingUser.email;
+          user.roles = existingUser.roles;
+        }
+      }
+      return true;
+    },
+
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;

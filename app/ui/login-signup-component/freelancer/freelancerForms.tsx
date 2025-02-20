@@ -209,7 +209,7 @@ const MultiStepForm = () => {
       if (response.ok) {
         setFormData(initialFormData);
         setFiles({});
-        router.push(`/signup/profile-upload/${userId}`);
+        router.push(`/`);
       } else {
         alert("Error submitting portfolio.");
       }

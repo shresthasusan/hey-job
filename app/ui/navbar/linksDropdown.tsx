@@ -21,7 +21,6 @@ interface User {
   profilePicture: string;
 }
 
-
 const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
   const { data: session, status } = useSession();
   const { data: user } = useFetch<User>(`user/${session?.user.id}`);
@@ -35,33 +34,29 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
               currentMode?.startsWith("/search/jobs")) && (
               <>
                 <li className=" p-3 hover:bg-slate-100">
-                <Link href={"/user/best-matches"}>Jobs</Link>
+                  <Link href={"/user/best-matches"}>Jobs</Link>
+                </li>
 
-                  </li>
-                
                 <li className=" p-3 hover:bg-slate-100">
-                <Link href={"/user/saved-jobs"}>Saved Jobs</Link>
-
+                  <Link href={"/user/saved-jobs"}>Saved Jobs</Link>
                 </li>
               </>
             )}
             {(currentMode?.startsWith("/client") ||
               currentMode?.startsWith("/search/talent")) && (
               <>
-               <Link href={"/client/post-job"}>
-                <li className=" p-3 hover:bg-slate-100">
-                 Post Jobs
-                  </li></Link>
+                <Link href={"/client/post-job"}>
+                  <li className=" p-3 hover:bg-slate-100">Post Jobs</li>
+                </Link>
 
-                  <Link href={"/client/your-contracts"}>
+                <Link href={"/client/your-contracts"}>
                   <li className=" p-3 hover:bg-slate-100">All Contracts</li>
-                  </Link>
+                </Link>
 
-                <Link href={"/client/your-jobs"}>
-                <li className=" p-3 hover:bg-slate-100">All Jobs Posts</li>
-              </Link>
+                <Link href={`/client/your-jobs/${session?.user.id}`}>
+                  <li className=" p-3 hover:bg-slate-100">All Jobs Posts</li>
+                </Link>
               </>
-                
             )}
           </ul>
         </div>
@@ -73,8 +68,10 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
               currentMode?.startsWith("/search/jobs")) && (
               <>
                 <li className=" p-3 hover:bg-slate-100">
-                <Link href={"/user/business/paymenthistory"}>Payment History</Link>
-                 </li>
+                  <Link href={"/user/business/paymenthistory"}>
+                    Payment History
+                  </Link>
+                </li>
                 <li className=" p-3 hover:bg-slate-100">
                   <Link href={"/user/business/transaction"}>Transaction</Link>
                 </li>
@@ -84,15 +81,14 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
             {(currentMode?.startsWith("/client") ||
               currentMode?.startsWith("/search/talent")) && (
               <>
-              <Link href={"/client/business/paymenthistory"}>
-                <li className=" p-3 hover:bg-slate-100">Discover</li>
-              </Link>
-              <Link href={"/client/your-hires"}>
-                <li className=" p-3 hover:bg-slate-100">Your Hires </li>
-              </Link>
-              <Link href={"/client/saved-talents"}>
-                
-                <li className=" p-3 hover:bg-slate-100">Saved Talents</li>
+                <Link href={"/client/business/paymenthistory"}>
+                  <li className=" p-3 hover:bg-slate-100">Discover</li>
+                </Link>
+                <Link href={"/client/your-hires"}>
+                  <li className=" p-3 hover:bg-slate-100">Your Hires </li>
+                </Link>
+                <Link href={"/client/saved-talents"}>
+                  <li className=" p-3 hover:bg-slate-100">Saved Talents</li>
                 </Link>
               </>
             )}
@@ -106,7 +102,7 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
       )}
       {isDropdownVisible === 4 && (
         <div className="absolute rounded-xl  p-2 bg-white text-xm right-0 top-10 shadow-[0_0px_20px_rgba(228,228,228,1)] before:absolute before:-top-1 before:right-2 before:translateX-1/2 before:rotate-[135deg] before:z-10  before:bg-white before:border-white before:border-8 after:right-0  z-20  after:h-6 after:absolute after:-top-5">
-          <NotificationsPage/>
+          <NotificationsPage />
         </div>
       )}
       {isDropdownVisible === 6 && !isOpen && (
@@ -124,7 +120,6 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
             >
               <Image
                 src={user?.profilePicture || "/image1.png"}
-    
                 alt="profile"
                 width={150}
                 height={150}
@@ -148,21 +143,17 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
           <div className="hover:bg-slate-200 p-1">
             {(currentMode?.startsWith("/user") ||
               currentMode?.startsWith("/search/jobs")) && (
-               //href={session?.user?.roles?.client === true ? "/client/best-matches" : "/signup/client"}>
+              // href={session?.user?.roles?.client === true ? "/client/best-matches" : "/signup/client"}>
 
-
-              <Link 
-               href={"/client/best-matches"}>
+              <Link href={"/client/best-matches"}>
                 <span className="flex items-center gap-1">
                   <UserCircleIcon className="size-8" />
                   <span className="flex flex-col ">
                     {session?.user?.name} {session?.user?.lastName}
-                   
                     <p className="text-xs text-gray-400">Client</p>
                   </span>
                 </span>
               </Link>
-                
             )}
             {(currentMode?.startsWith("/client") ||
               currentMode?.startsWith("/search/talent")) && (
@@ -197,18 +188,15 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
               </span>
             </Link>
           </div>{" "}
-          <button 
-  onClick={() => signOut()} 
-  className="hover:bg-slate-200 p-1 w-full flex items-center gap-1 text-left">
-  <ArrowLeftStartOnRectangleIcon className="size-8" />
-  <span className="flex flex-col">
-    <p>Log out</p>
-  </span>
-</button>
-
-              
-            
-          
+          <button
+            onClick={() => signOut()}
+            className="hover:bg-slate-200 p-1 w-full flex items-center gap-1 text-left"
+          >
+            <ArrowLeftStartOnRectangleIcon className="size-8" />
+            <span className="flex flex-col">
+              <p>Log out</p>
+            </span>
+          </button>
         </>
       )}
     </>
