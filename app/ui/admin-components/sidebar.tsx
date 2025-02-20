@@ -46,7 +46,7 @@ const Sidebar: React.FC = () => {
   };
 
   return (
-    <div className="left-0 top-0 h-screen p-10 bg-white shadow-md text-black">
+    <div className="left-0 top-0 h-screen px-5 w-1/6 bg-white shadow-md text-black">
       <nav className="flex flex-col h-full py-6">
         {/* Logo */}
         <div className="flex items-center justify-center px-4 mb-6">

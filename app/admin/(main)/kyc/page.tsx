@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 const KYCPage = () => {
   interface Document {
@@ -32,33 +32,41 @@ const KYCPage = () => {
 
   const [uploadedDocs, setUploadedDocs] = useState<Document[]>([]);
   const [selectedDoc, setSelectedDoc] = useState<Document | null>(null);
-  const [isRefreshing, setIsRefreshing] = useState(false); // State to track refreshing status
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  // Function to fetch KYC data
-  const fetchKYCData = async () => {
+  // Memoize fetchKYCData with useCallback
+  const fetchKYCData = useCallback(async () => {
     try {
-      const res = await fetch(`/api/admin/fetch-kycs?status=${"pending"}`);
+      const res = await fetch(
+        `/api/admin/fetch-kycs?status=pending&search=${encodeURIComponent(searchQuery)}`
+      );
       const data = await res.json();
       setUploadedDocs(data);
     } catch (error) {
       console.error("Error fetching KYC data:", error);
     } finally {
-      setIsRefreshing(false); // Reset refreshing state
+      setIsRefreshing(false);
     }
-  };
+  }, [searchQuery]);
 
-  // Fetch KYC data on component mount
+  // Fetch data with debouncing on search query change
+  useEffect(() => {
+    const timer = setTimeout(() => fetchKYCData(), 500);
+    return () => clearTimeout(timer);
+  }, [fetchKYCData]);
+
+  // Initial fetch on component mount
   useEffect(() => {
     fetchKYCData();
-  }, []);
+  }, [fetchKYCData]);
 
-  // Function to handle refresh
+  // Handle manual refresh
   const handleRefresh = async () => {
-    setIsRefreshing(true); // Set refreshing state to true
-    await fetchKYCData(); // Refetch KYC data
+    setIsRefreshing(true);
+    await fetchKYCData();
   };
 
-  // Function to handle approval or rejection of a document
   const handleAction = async (id: string, status: "approved" | "rejected") => {
     try {
       const res = await fetch(`/api/admin/update-kyc-status/${id}`, {
@@ -68,16 +76,13 @@ const KYCPage = () => {
       });
 
       if (res.ok) {
-        const updatedDoc = await res.json(); // Fetch the updated response from the backend
-
+        const updatedDoc = await res.json();
         setUploadedDocs((prevDocs) =>
           prevDocs.map((doc) =>
-            doc.userId === id
-              ? { ...doc, status, updatedAt: new Date() } // Update `updatedAt`
-              : doc
+            doc.userId === id ? { ...doc, status, updatedAt: new Date() } : doc
           )
         );
-        setSelectedDoc(null); // Close the overlay after action
+        setSelectedDoc(null);
       } else {
         throw new Error("Failed to update status");
       }
@@ -88,26 +93,30 @@ const KYCPage = () => {
 
   return (
     <div className="flex flex-col p-6 w-full md:p-10 bg-white min-h-screen">
-      {/* Heading */}
       <h1 className="text-4xl text-black-400 text-center md:text-left">
         KYC Verification
       </h1>
-
-      {/* Refresh Button */}
-      <div className="mt-4 flex justify-end">
-        <button
-          onClick={handleRefresh}
-          disabled={isRefreshing}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-blue-300"
-        >
-          {isRefreshing ? "Refreshing..." : "Refresh"}
-        </button>
+      <div className="mt-4 flex justify-between items-center gap-4">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search by full name..."
+          className="px-4 py-2 border rounded-lg w-1/3 mb-4 hover:border-primary-500"
+        />
+        <span className="flex gap-3 items-center">
+          <p>Total {uploadedDocs.length} pending documents</p>
+          <button
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-blue-300"
+          >
+            {isRefreshing ? "Refreshing..." : "Refresh"}
+          </button>
+        </span>
       </div>
-
-      {/* Tabulated UI */}
       <div className="mt-4">
         <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
-          {/* Table Header */}
           <thead className="bg-gray-100">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -121,8 +130,6 @@ const KYCPage = () => {
               </th>
             </tr>
           </thead>
-
-          {/* Table Body */}
           <tbody className="divide-y divide-gray-200">
             {uploadedDocs.map((doc) => (
               <tr
@@ -130,12 +137,9 @@ const KYCPage = () => {
                 className="hover:bg-gray-50 cursor-pointer"
                 onClick={() => setSelectedDoc(doc)}
               >
-                {/* Full Name */}
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                   {doc.fullName}
                 </td>
-
-                {/* Status */}
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span
                     className={`px-3 py-1 text-sm rounded-lg font-semibold ${
@@ -149,8 +153,6 @@ const KYCPage = () => {
                     {doc.status}
                   </span>
                 </td>
-
-                {/* Last Updated */}
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {new Date(doc.updatedAt).toLocaleString()}
                 </td>
@@ -159,8 +161,6 @@ const KYCPage = () => {
           </tbody>
         </table>
       </div>
-
-      {/* Overlay Card */}
       {selectedDoc && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-3xl w-full relative">
@@ -168,11 +168,10 @@ const KYCPage = () => {
               className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
               onClick={() => setSelectedDoc(null)}
             >
-              &times;
+              ×
             </button>
             <h2 className="text-2xl font-bold mb-4">KYC Details</h2>
             <div className="space-y-2">
-              {/* KYC Details */}
               <p>
                 <strong>Full Name:</strong> {selectedDoc.fullName}
               </p>
