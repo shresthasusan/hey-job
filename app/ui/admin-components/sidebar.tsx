@@ -9,8 +9,10 @@ import {
   ServerIcon,
   BoltIcon,
   CurrencyRupeeIcon,
+  ArrowLeftStartOnRectangleIcon,
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
+import { signOut } from "next-auth/react";
 
 interface NavItemProps {
   href: string;
@@ -38,15 +40,22 @@ const NavItem: React.FC<NavItemProps> = ({ href, icon, label, isActive }) => (
 const Sidebar: React.FC = () => {
   const pathname = usePathname(); // Get current route
 
+  const handleLogout = () => {
+    // Here you would typically handle the logout logic, such as clearing session or making an API call
+    console.log("Logging out");
+  };
+
   return (
-    <div className="fixed left-0 top-0 h-full w-64 bg-white shadow-md text-black">
+    <div className="left-0 top-0 h-screen px-5 w-1/6 bg-white shadow-md text-black">
       <nav className="flex flex-col h-full py-6">
         {/* Logo */}
         <div className="flex items-center justify-center px-4 mb-6">
           <Image
             src="/logo/login-logo.png"
             alt="logo"
-            className="w-15 h-20 p-1"
+            className="w-20 h-20 p-1"
+            width={50}
+            height={50}
           />
         </div>
 
@@ -56,6 +65,8 @@ const Sidebar: React.FC = () => {
             src="/image1.png" // Change this to the admin's actual avatar URL
             alt="Admin Avatar"
             className="w-14 h-14 rounded-full border-2 border-gray-300"
+            width={50}
+            height={50}
           />
           <span className="mt-2 font-semibold text-sm">John Doe</span>
         </div>
@@ -93,6 +104,18 @@ const Sidebar: React.FC = () => {
             isActive={pathname === "/admin/settings"}
           />
         </ul>
+
+        {/* Logout Button */}
+        <div className="mt-auto">
+          <button
+            onClick={() => signOut()}
+            className={`flex items-center space-x-4 p-3 w-full rounded-lg transition
+              hover:bg-yellow-400 hover:text-black`}
+          >
+            <ArrowLeftStartOnRectangleIcon className="h-6 w-6" />
+            <span className="text-sm font-medium">Logout</span>
+          </button>
+        </div>
       </nav>
     </div>
   );

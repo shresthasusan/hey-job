@@ -4,7 +4,6 @@ import Image from "next/image";
 import React from "react";
 import { useSession } from "next-auth/react";
 import SkeletonProfileCard from "./skeletons/skeletonProfileCard";
-import useFetch from "@/app/hooks/useFetch";
 
 interface Props {
   mode: string;
@@ -16,7 +15,7 @@ interface User {
 const ProfileCard = ({ mode }: Props) => {
   // Use the useSession hook to get session data and status
   const { data: session, status } = useSession();
-  const { data: user } = useFetch<User>(`user/${session?.user.id}`);
+  // const { data: user } = useFetch<User>(`user/${session?.user.id}`);
 
   // If the session status is loading, return a skeleton component
   if (status === "loading") {
@@ -40,7 +39,7 @@ const ProfileCard = ({ mode }: Props) => {
       {/* Profile image section */}
       <div className="bg-yellow-400 rounded-full absolute translate-y-[50%] overflow-hidden translate-x-1/2 right-[50%] h-24 w-24">
         <Image
-          src={user?.profilePicture || "/image1.png"}
+          src={session?.user?.profilePicture || "/image1.png"}
           alt="profile"
           width={150}
           height={150}

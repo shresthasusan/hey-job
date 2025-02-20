@@ -7,6 +7,7 @@ import GoogleProvider from "next-auth/providers/google";
 import GithubProvider from "next-auth/providers/github";
 
 import { type DefaultSession, type DefaultUser } from "next-auth";
+import Admin from "@/models/admin";
 
 // Extend the NextAuth User and Session types
 declare module "next-auth" {
@@ -16,10 +17,8 @@ declare module "next-auth" {
       email: string;
       lastName: string;
       id: string;
-      roles: {
-        client?: boolean;
-        freelancer?: boolean;
-      };
+      role: string;
+      profilePicture?: string;
     };
   }
   interface User extends DefaultUser {
@@ -27,10 +26,8 @@ declare module "next-auth" {
     name: string;
     email: string;
     lastName: string;
-    roles: {
-      client?: boolean;
-      freelancer?: boolean;
-    };
+    role: string;
+    profilePicture?: string;
   }
 }
 
@@ -62,9 +59,26 @@ export const authOptions: NextAuthOptions = {
         const { email, password } = credentials;
         try {
           await connectMongoDB();
-          const user = await User.findOne({ email });
+          let user = await User.findOne({ email });
 
           if (!user) {
+            // Check if the user is an admin
+            const admin = await Admin.findOne({ userName: email });
+            if (admin) {
+              const isPasswordValid = await bcrypt.compare(
+                password,
+                admin.password
+              );
+              if (isPasswordValid) {
+                return {
+                  name: admin.name,
+                  lastName: admin.lastName,
+                  email: admin.userName,
+                  id: admin._id.toString(),
+                  role: "admin",
+                };
+              }
+            }
             console.log("User not found:", email);
             return null;
           }
@@ -75,19 +89,13 @@ export const authOptions: NextAuthOptions = {
             return null;
           }
 
-          // const emailVerified = user.emailVerified;
-          // if (!emailVerified) {
-          //   console.log("Email not verified for user:", email);
-          //   return null;
-          // }
-
-          // Transform the Mongoose document into a plain JSON object
           const plainUser = {
             name: user.name,
             email: user.email,
             lastName: user.lastName,
-            id: user.id,
-            roles: user.roles,
+            id: user._id.toString(),
+            role: "user",
+            profilePicture: user.profilePicture,
           };
 
           console.log("User authorized:", plainUser);
@@ -129,7 +137,8 @@ export const authOptions: NextAuthOptions = {
           user.id = newUser._id.toString();
           user.name = name;
           user.lastName = lastName;
-          user.roles = newUser.roles;
+          user.role = "user";
+          user.profilePicture = newUser.profilePicture;
         } else {
           // Use existing user data
 
@@ -137,7 +146,8 @@ export const authOptions: NextAuthOptions = {
           user.name = existingUser.name;
           user.lastName = existingUser.lastName;
           user.email = existingUser.email;
-          user.roles = existingUser.roles;
+          user.role = "user";
+          user.profilePicture = existingUser.profilePicture;
         }
       }
       return true;
@@ -149,7 +159,8 @@ export const authOptions: NextAuthOptions = {
         token.name = user.name;
         token.email = user.email;
         token.lastName = user.lastName;
-        token.roles = user.roles;
+        token.role = user.role; // Add this
+        token.picture = user.profilePicture;
       }
       return token;
     },
@@ -161,7 +172,8 @@ export const authOptions: NextAuthOptions = {
           name: token.name as string,
           email: token.email as string,
           lastName: token.lastName as string,
-          roles: token.roles as { client?: boolean; freelancer?: boolean },
+          role: token.role as string,
+          profilePicture: token.picture || "",
         };
       }
       return session;

@@ -6,12 +6,12 @@ import OrderCard from "../ui/dashboard-components/orderCard";
 
 const Page = () => {
   return (
-    <div className="flex min-h-screen bg-white-100">
+    <div className="flex flex-row min-h-screen bg-white-100">
       {/* Sidebar */}
       <Sidebar />
 
       {/* Main Content */}
-      <div className="flex flex-col flex-1 p-6 md:p-10">
+      <div className="flex p-6 flex-col md:p-10">
         {/* Header */}
         <h1 className="text-4xl text-black-400 text-center md:text-left">
           Admin Dashboard
@@ -25,8 +25,7 @@ const Page = () => {
           </div>
 
           {/* Right Column - Additional Components */}
-          <div className="flex flex-col gap-6">
-          </div>
+          <div className="flex flex-col gap-6"></div>
         </div>
       </div>
     </div>

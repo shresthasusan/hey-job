@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import Card from "../card";
 
 const Comp = () => {
   const [stats, setStats] = useState({
@@ -27,21 +28,15 @@ const Comp = () => {
     fetchStats();
   }, []);
 
-  const truncateString = (str: string, num: number) => {
-    if (str.length <= num) return str;
-    return str.slice(0, num) + "... ";
-  };
-
   return (
-    <div className="flex flex-col max-w-[600px] w-[40%] min-w-[250px] gap-2 relative rounded-3xl h-[150px] px-5 py-2 overflow-hidden shadow-lg">
+    <Card className="flex flex-col gap-2 ">
       <h1 className="text-2xl font-medium"> Active users</h1>
-
       {/* User Stats */}
-      <div className="flex justify-between flex-col text-gray-700">
+      <div className="flex justify-between flex-col text-gray-700 p-5">
         <p>Freelancers: {stats.freelancers}</p>
         <p>Clients: {stats.clients}</p>
       </div>
-    </div>
+    </Card>
   );
 };
 
