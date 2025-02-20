@@ -71,7 +71,7 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }) => {
                 </div>
 
                 <div className="mt-4 border-b pb-4">
-                <h3 className="text-xl text-green-600 p-4 "> Proposals. <Link className='underline' href={''}>View all the proposals</Link></h3>
+                <h3 className="text-xl text-green-600 p-4 "> Proposals. <Link className='underline' href={'/client/job-proposal'}>View all the proposals</Link></h3>
                     
                    
                     
