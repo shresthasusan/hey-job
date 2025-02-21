@@ -1,11 +1,11 @@
 import User from "@/models/user";
+import Session from "@/models/session";
 import { NextAuthOptions } from "next-auth";
 import { connectMongoDB } from "./mongodb";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import GoogleProvider from "next-auth/providers/google";
 import GithubProvider from "next-auth/providers/github";
-
 import { type DefaultSession, type DefaultUser } from "next-auth";
 import Admin from "@/models/admin";
 
@@ -31,20 +31,16 @@ declare module "next-auth" {
   }
 }
 
-// Define the authOptions with proper TypeScript types
 export const authOptions: NextAuthOptions = {
   providers: [
-    // Google Authentication
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
-
     GithubProvider({
       clientId: process.env.AUTH_GITHUB_ID!,
       clientSecret: process.env.AUTH_GITHUB_SECRET!,
     }),
-
     CredentialsProvider({
       name: "credentials",
       credentials: {
@@ -62,7 +58,6 @@ export const authOptions: NextAuthOptions = {
           let user = await User.findOne({ email });
 
           if (!user) {
-            // Check if the user is an admin
             const admin = await Admin.findOne({ userName: email });
             if (admin) {
               const isPasswordValid = await bcrypt.compare(
@@ -89,7 +84,7 @@ export const authOptions: NextAuthOptions = {
             return null;
           }
 
-          const plainUser = {
+          return {
             name: user.name,
             email: user.email,
             lastName: user.lastName,
@@ -97,9 +92,6 @@ export const authOptions: NextAuthOptions = {
             role: "user",
             profilePicture: user.profilePicture,
           };
-
-          console.log("User authorized:", plainUser);
-          return plainUser;
         } catch (error) {
           console.error("Authorization error:", error);
           return null;
@@ -109,6 +101,7 @@ export const authOptions: NextAuthOptions = {
   ],
   session: {
     strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   secret: process.env.NEXTAUTH_SECRET,
   pages: {
@@ -120,12 +113,10 @@ export const authOptions: NextAuthOptions = {
         await connectMongoDB();
         const existingUser = await User.findOne({ email: user.email });
 
-        // Split name into firstName and lastName
         let [name, ...lastNameParts] = user.name.split(" ");
-        let lastName = lastNameParts.join(" ") || ""; // Join the remaining parts as last name
+        let lastName = lastNameParts.join(" ") || "";
 
         if (!existingUser) {
-          // Create a new user if not found
           const newUser = await User.create({
             name,
             lastName,
@@ -140,8 +131,6 @@ export const authOptions: NextAuthOptions = {
           user.role = "user";
           user.profilePicture = newUser.profilePicture;
         } else {
-          // Use existing user data
-
           user.id = existingUser._id.toString();
           user.name = existingUser.name;
           user.lastName = existingUser.lastName;
@@ -159,12 +148,37 @@ export const authOptions: NextAuthOptions = {
         token.name = user.name;
         token.email = user.email;
         token.lastName = user.lastName;
-        token.role = user.role; // Add this
+        token.role = user.role;
         token.picture = user.profilePicture;
+
+        // Store session in database using token.sub as the unique key
+        await connectMongoDB();
+        const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
+        await Session.findOneAndUpdate(
+          { token: token.sub }, // Unique per JWT token
+          {
+            userId: user.id,
+            token: token.sub,
+            expires,
+          },
+          { upsert: true }
+        );
       }
       return token;
     },
+
     async session({ session, token }) {
+      await connectMongoDB();
+      const dbSession = await Session.findOne({ token: token.sub });
+
+      if (!dbSession || dbSession.expires < new Date()) {
+        if (dbSession) {
+          // Clean up expired session
+          await Session.deleteOne({ token: token.sub });
+        }
+        throw new Error("Session expired or invalid");
+      }
+
       if (token) {
         session.user = {
           ...session.user,
