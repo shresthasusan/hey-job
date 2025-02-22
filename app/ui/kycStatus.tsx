@@ -37,7 +37,8 @@ const KYCStatus: React.FC = () => {
         if (pathname.startsWith("/user") && !data.roles.freelancer) {
           console.log("false", data.roles.freelancer);
           router.push(`/signup/freelancer`);
-        } else if (pathname.startsWith("/client") && !data.roles.client) {
+        }
+        if (pathname.startsWith("/client") && !data.roles.client) {
           router.push(`/signup/client`);
         }
       })
