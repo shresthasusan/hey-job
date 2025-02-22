@@ -53,7 +53,7 @@ export async function middleware(req: NextRequest) {
     !isAdminAuthPage;
 
   // 4. Prevent admin users from accessing regular user pages
-  if (token?.role === "admin" && isUserPage) {
+  if (token && token.role === "admin" && isUserPage) {
     return NextResponse.redirect(new URL("/admin", req.url));
   }
 
