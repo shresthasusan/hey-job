@@ -24,6 +24,12 @@ export async function middleware(req: NextRequest) {
 
   // 2. Redirect unauthenticated users trying to access user-protected routes to login
   if (!token && !isAuthPage && !isAdminAuthPage) {
+    if (pathname.startsWith("/api")) {
+      return new NextResponse(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
     return NextResponse.redirect(
       new URL(`/login?callbackUrl=${encodeURIComponent(req.url)}`, req.url)
     );
