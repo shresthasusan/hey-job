@@ -150,34 +150,37 @@ export const authOptions: NextAuthOptions = {
         token.lastName = user.lastName;
         token.role = user.role;
         token.picture = user.profilePicture;
-
-        // Store session in database using token.sub as the unique key
-        await connectMongoDB();
-        const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
-        await Session.findOneAndUpdate(
-          { token: token.sub }, // Unique per JWT token
-          {
-            userId: user.id,
-            token: token.sub,
-            expires,
-          },
-          { upsert: true }
-        );
       }
+
+      // console.log("JWT Token in jwt callback:", token);
+
+      // await connectMongoDB();
+      // const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+      // await Session.findOneAndUpdate(
+      //   { token: token.jti }, // Use jti instead of sub
+      //   {
+      //     userId: token.id, // Use token.id instead of user.id since user may not always be present
+      //     token: token.jti,
+      //     expires,
+      //   },
+      //   { upsert: true }
+      // );
+
       return token;
     },
 
     async session({ session, token }) {
-      await connectMongoDB();
-      const dbSession = await Session.findOne({ token: token.sub });
+      // console.log("JWT Token in session callback:", token);
 
-      if (!dbSession || dbSession.expires < new Date()) {
-        if (dbSession) {
-          // Clean up expired session
-          await Session.deleteOne({ token: token.sub });
-        }
-        throw new Error("Session expired or invalid");
-      }
+      // await connectMongoDB();
+      // const dbSession = await Session.findOne({ token: token.jti }); // Use jti
+
+      // if (!dbSession || dbSession.expires < new Date()) {
+      //   if (dbSession) {
+      //     await Session.deleteOne({ token: token.jti });
+      //   }
+      //   throw new Error("Session expired or invalid");
+      // }
 
       if (token) {
         session.user = {

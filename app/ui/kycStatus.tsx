@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import useFetch from "../hooks/useFetch";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { usePathname, useRouter } from "next/navigation"; // ✅ Use this instead of next/router
+import { redirect, usePathname, useRouter } from "next/navigation"; // ✅ Use this instead of next/router
 
 export interface KYCStatusResponse {
   kycVerified: boolean;
@@ -11,13 +11,20 @@ export interface KYCStatusResponse {
 
 const KYCStatus: React.FC = () => {
   const { data: session, status } = useSession();
+
   const [isVisible, setIsVisible] = useState(true);
   const router = useRouter(); // ✅ Use useRouter from next/navigation
   const pathname = usePathname();
   const { data, error } = useFetch<KYCStatusResponse>(
     `/verification-status/${session?.user.id}`
-  );
+  ); // fetch kycVerified
 
+  if (!session) {
+    router.push(`/login`);
+  }
+  if (session?.user.role !== "user") {
+    router.push("/admin");
+  }
   useEffect(() => {
     if (status !== "authenticated") return;
 
@@ -27,7 +34,8 @@ const KYCStatus: React.FC = () => {
         if (data.roles && !data.roles.client && !data.roles.freelancer) {
           router.push(`/signup/profile-upload/${session?.user.id}`);
         }
-        if (pathname.startsWith("/users") && !data.roles.freelancer) {
+        if (pathname.startsWith("/user") && !data.roles.freelancer) {
+          console.log("false", data.roles.freelancer);
           router.push(`/signup/freelancer`);
         } else if (pathname.startsWith("/client") && !data.roles.client) {
           router.push(`/signup/client`);
