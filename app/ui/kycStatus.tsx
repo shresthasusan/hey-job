@@ -18,32 +18,25 @@ const KYCStatus: React.FC = () => {
   const { data, error } = useFetch<KYCStatusResponse>(`/verification-status`); // fetch kycVerified
   const id = session?.user.id;
 
-  if (!session) {
-    router.push(`/login`);
-  }
-  if (session?.user.role !== "user") {
-    router.push("/");
-  }
+  useEffect(() => {
+    if (status !== "authenticated") return;
 
-  // useEffect(() => {
-  //   if (status !== "authenticated") return;
-
-  //   fetch("/api/user?fields=roles") // ✅ Fetch only roles from API
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       if (data.roles && !data.roles.client && !data.roles.freelancer) {
-  //         router.push(`/signup/profile-upload/${id}`);
-  //       }
-  //       if (pathname.startsWith("/user") && !data.roles.freelancer) {
-  //         console.log("false", data.roles.freelancer);
-  //         router.push(`/signup/freelancer`);
-  //       }
-  //       if (pathname.startsWith("/client") && !data.roles.client) {
-  //         router.push(`/signup/client`);
-  //       }
-  //     })
-  //     .catch((err) => console.error("Error fetching roles:", err));
-  // }, [status, id, router, pathname]);
+    fetch("/api/user?fields=roles") // ✅ Fetch only roles from API
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.roles && !data.roles.client && !data.roles.freelancer) {
+          router.push(`/signup/profile-upload/${id}`);
+        }
+        if (pathname.startsWith("/user") && !data.roles.freelancer) {
+          console.log("false", data.roles.freelancer);
+          router.push(`/signup/freelancer`);
+        }
+        if (pathname.startsWith("/client") && !data.roles.client) {
+          router.push(`/signup/client`);
+        }
+      })
+      .catch((err) => console.error("Error fetching roles:", err));
+  }, [status, id, router, pathname]);
 
   if (error) {
     console.error("Error fetching KYC status:", error);
