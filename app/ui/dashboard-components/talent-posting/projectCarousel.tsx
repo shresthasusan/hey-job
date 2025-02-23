@@ -1,5 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
+import { ClockIcon, CurrencyDollarIcon, MapPinIcon, TagIcon, UserIcon } from '@heroicons/react/24/outline';
+import { getTimeAgo } from '../../dashboard-components/job-list/jobList';
 
 interface Job {
     id: string;
@@ -58,12 +60,56 @@ const AllJobsPage: React.FC<AllJobsPageProps> = ({ userId }) => {
                             <li
                             key={`${job.id}-${job.title}`}
                                 className="border p-6 rounded-full hover:bg-gray-100 shadow hover:shadow-lg transition-shadow duration-300 relative cursor-pointer"
-                            >
-                                <h2 className="text-3xl font-semibold mb-2">{job.title}</h2>
-                                <p className="text-gray-700">{job.description}</p>
+                            > <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                            <div  className="bg-white border rounded-2xl p-10  shadow-lg w-full max-w-5xl max-h-5xl overflow-y-auto">
+                                <h2 className="text-4xl font-bold mb-2">{job?.title}</h2>
+                
+                                <div className="space-y-2 border-b text-sm flex pb-4 gap-5 justify-between">
+                                    <div className="flex items-center">
+                                        <UserIcon className="w-5 h-5 mr-2 text-gray-600" />
+                                        <p className="text-gray-600">{job?.fullName}</p>
+                                    </div>
+                                    <div className="flex items-center">
+                                        <MapPinIcon className="w-5 h-5 mr-2 text-gray-600" />
+                                        <p className="text-gray-600">{job?.location}</p>
+                                    </div>
+                                    <div className="flex items-center">
+                                        <ClockIcon className="w-5 h-5 mr-2 text-gray-600" />
+                                        <p className="text-gray-600">
+                                            {getTimeAgo(job?.createdAt || new Date().toISOString())}
+                                        </p>
+                                    </div>
+                                    <div className="flex items-center">
+                                        <CurrencyDollarIcon className="w-5 h-5 mr-2 text-gray-600" />
+                                        <p className="text-gray-600">Est. Budget: ${job?.budget}</p>
+                                    </div>
+                                </div>
+                
+                                <div className="mt-4 border-b pb-4">
+                                    <h3 className="text-xl p-4  font-semibold mb-2">Job Description</h3>
+                                    <p className="text-gray-800">{job?.description}</p>
+                                </div>
+                
+                                <div className="mt-4 border-b pb-4">
+                                    <h3 className="text-xl p-4 font-semibold mb-2">Required Skills</h3>
+                                    <div className="flex flex-wrap justify-center gap-2">
+                                        {job?.tags.map((tag, index) => (
+                                            <span
+                                                key={index}
+                                                className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full flex items-center"
+                                            >
+                                                <TagIcon className="w-4 h-4 mr-1" />
+                                                {tag}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
                             </li>
                         ))}
                     </ul>
+                    
                 </div>
             )}
         </div>
