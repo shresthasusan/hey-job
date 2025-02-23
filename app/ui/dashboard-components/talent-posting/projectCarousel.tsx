@@ -13,6 +13,7 @@ interface Job {
   createdAt: string;
   budget: number;
   tags: string[];
+  proposalCount: number;
 }
 
 const ProjectCarousel: React.FC = () => {
@@ -71,7 +72,11 @@ const ProjectCarousel: React.FC = () => {
           <div ref={carouselRef} className="flex overflow-x-auto space-x-4 p-6 scrollbar-hide">
             {jobs.map((job) => (
               <div key={job.id} className="min-w-[300px] border-  p-4 rounded-lg shadow  transition-shadow duration-300 bg-white">
-                <h2 className="text-xl font-semibold mb-2">{job.title}</h2>
+                <h2 className="text-xl font-semibold mb-2">{job.title}
+                <span className=" ml-12 text-xs bg-green-500 text-white px-2 py-1 rounded-full">
+                {job.proposalCount} proposals
+                </span>
+                </h2>
                 <p className="text-gray-700 mb-2">{job.description}</p>
                 <div className="flex items-center mb-2">
                   <UserIcon className="w-5 h-5 mr-2 text-gray-600" />

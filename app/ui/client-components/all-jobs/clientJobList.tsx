@@ -11,6 +11,7 @@ interface Job {
   createdAt: string;
   budget: number;
   tags: string[];
+  proposalCount: number;
 }
 
 interface AllJobsListProps {
@@ -65,7 +66,7 @@ const AllJobsList: React.FC<AllJobsListProps> = (userId) => {
                 <h2 className="text-3xl font-semibold mb-2">{job.title}</h2>
                 <p className="text-gray-700">{job.description}</p>
                 <span className="absolute mr-4 bottom-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full">
-                  proposal
+                  {job.proposalCount} proposals
                 </span>
               </li>
             ))}
