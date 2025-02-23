@@ -15,16 +15,9 @@ const KYCStatus: React.FC = () => {
   const [isVisible, setIsVisible] = useState(true);
   const router = useRouter(); // ✅ Use useRouter from next/navigation
   const pathname = usePathname();
-  const { data, error } = useFetch<KYCStatusResponse>(
-    `/verification-status/${session?.user.id}`
-  ); // fetch kycVerified
+  const { data, error } = useFetch<KYCStatusResponse>(`/verification-status`); // fetch kycVerified
+  const id = session?.user.id;
 
-  if (!session) {
-    router.push(`/login`);
-  }
-  if (session?.user.role !== "user") {
-    router.push("/admin");
-  }
   useEffect(() => {
     if (status !== "authenticated") return;
 
@@ -32,17 +25,18 @@ const KYCStatus: React.FC = () => {
       .then((res) => res.json())
       .then((data) => {
         if (data.roles && !data.roles.client && !data.roles.freelancer) {
-          router.push(`/signup/profile-upload/${session?.user.id}`);
+          router.push(`/signup/profile-upload/${id}`);
         }
         if (pathname.startsWith("/user") && !data.roles.freelancer) {
           console.log("false", data.roles.freelancer);
           router.push(`/signup/freelancer`);
-        } else if (pathname.startsWith("/client") && !data.roles.client) {
+        }
+        if (pathname.startsWith("/client") && !data.roles.client) {
           router.push(`/signup/client`);
         }
       })
       .catch((err) => console.error("Error fetching roles:", err));
-  }, [status, session, router, pathname]);
+  }, [status, id, router, pathname]);
 
   if (error) {
     console.error("Error fetching KYC status:", error);

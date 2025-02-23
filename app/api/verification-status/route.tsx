@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectMongoDB } from "@/app/lib/mongodb";
 import User from "@/models/user";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/lib/auth";
 
 export async function GET(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const { id } = params;
+  const session = await getServerSession(authOptions);
+  const id = session?.user.id;
   try {
     await connectMongoDB();
 
