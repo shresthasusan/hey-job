@@ -8,6 +8,7 @@ import GithubProvider from "next-auth/providers/github";
 
 import { type DefaultSession, type DefaultUser } from "next-auth";
 import Admin from "@/models/admin";
+import { SignJWT } from "jose";
 
 // Extend the NextAuth User and Session types
 declare module "next-auth" {
@@ -19,6 +20,7 @@ declare module "next-auth" {
       id: string;
       role: string;
       profilePicture?: string;
+      accessToken?: string;
     };
   }
   interface User extends DefaultUser {
@@ -28,6 +30,7 @@ declare module "next-auth" {
     lastName: string;
     role: string;
     profilePicture?: string;
+    accessToken?: string;
   }
 }
 
@@ -89,17 +92,35 @@ export const authOptions: NextAuthOptions = {
             return null;
           }
 
-          const plainUser = {
+          const secretKey = new TextEncoder().encode(
+            process.env.ACCCESS_TOKEN_SECRET_KEY
+          );
+          const accessToken = await new SignJWT({
+            email,
             name: user.name,
-            email: user.email,
-            lastName: user.lastName,
+            lastname: user.lastName,
             id: user._id.toString(),
-            role: "user",
-            profilePicture: user.profilePicture,
-          };
+          })
+            .setProtectedHeader({ alg: "HS256" })
+            .sign(secretKey);
 
-          console.log("User authorized:", plainUser);
-          return plainUser;
+          // all these can be attached to the accessToken
+          // const plainUser = {
+          //   name: user.name,
+          //   email: user.email,
+          //   lastName: user.lastName,
+          //   id: user._id.toString(),
+          //   role: "user",
+          //   profilePicture: user.profilePicture,
+          // };
+
+          // console.log("User authorized:", plainUser);
+          return {
+            ...user,
+            role: "user",
+            id: user._id.toString(),
+            accessToken,
+          };
         } catch (error) {
           console.error("Authorization error:", error);
           return null;
@@ -154,28 +175,19 @@ export const authOptions: NextAuthOptions = {
     },
 
     async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-        token.name = user.name;
-        token.email = user.email;
-        token.lastName = user.lastName;
-        token.role = user.role; // Add this
-        token.picture = user.profilePicture;
-      }
-      return token;
+      return { ...token, ...user };
     },
     async session({ session, token }) {
-      if (token) {
-        session.user = {
-          ...session.user,
-          id: token.id as string,
-          name: token.name as string,
-          email: token.email as string,
-          lastName: token.lastName as string,
-          role: token.role as string,
-          profilePicture: token.picture || "",
-        };
-      }
+      session.user = {
+        id: token.id as string,
+        name: token.name as string,
+        email: token.email as string,
+        lastName: token.lastName as string,
+        role: token.role as string,
+        profilePicture: token.profilePicture as string | undefined,
+        accessToken: token.accessToken as string | undefined,
+      };
+
       return session;
     },
   },
