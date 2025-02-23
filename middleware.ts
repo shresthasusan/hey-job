@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
+import { authenticateToken } from "./app/lib/authorizationMiddleware";
 
 export async function middleware(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
@@ -11,6 +12,25 @@ export async function middleware(req: NextRequest) {
     pathname === "/login" ||
     pathname === "/signup" ||
     pathname === "/api/register";
+
+  // Check if we can create a seperate middleware for the server api requests
+  if (pathname.startsWith("/api/") && !isAuthPage) {
+    const authTokenMiddleware = await authenticateToken(req);
+    if (authTokenMiddleware?.error) {
+      return NextResponse.json(
+        JSON.stringify({ error: authTokenMiddleware.error }),
+        { status: 401 }
+      );
+    }
+
+    if (authTokenMiddleware?.user) {
+      req.user = authTokenMiddleware.user;
+    }
+  }
+
+  // https://nextjs.org/docs/app/building-your-application/authentication#creating-a-data-access-layer-dal
+  // better way for authorization rather than using the middleware
+  // check this and remove it all from here
 
   const isAdminAuthPage =
     pathname === "/admin/login" || pathname === "/api/admin/register";

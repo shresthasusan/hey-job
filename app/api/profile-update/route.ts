@@ -5,91 +5,85 @@ import User from "../../../models/user";
 import { Types } from "mongoose";
 
 interface RequestBody {
-    userId: string;
-    dob: string;
-    country: string;
-    streetAddress: string;
-    city: string;
-    state: string;
-    zipPostalCode: string;
-    phone: string;
-    profilePicture: string;
+  userId: string;
+  dob: string;
+  country: string;
+  streetAddress: string;
+  city: string;
+  state: string;
+  zipPostalCode: string;
+  phone: string;
+  profilePicture: string;
 }
 
 export async function POST(req: NextRequest) {
-    try {
-        const {
-            userId,
-            dob,
-            country,
-            streetAddress,
-            city,
-            state,
-            zipPostalCode,
-            phone,
-            profilePicture,
-        }: RequestBody = await req.json();
+  try {
+    // Now we can use the user data that we decoded and attached from the middleware
+    const user = req.user;
 
-        console.log("Request Body:", {
-            userId,
-            dob,
-            country,
-            streetAddress,
-            city,
-            state,
-            zipPostalCode,
-            phone,
-            profilePicture
-        });
+    // No need to validate if there is a user id or not as well
+    const userId = user.id;
 
-        if (!userId || !Types.ObjectId.isValid(userId)) {
-            return NextResponse.json(
-                { message: "Invalid or missing userId" },
-                { status: 400 }
-            );
-        }
+    const {
+      dob,
+      country,
+      streetAddress,
+      city,
+      state,
+      zipPostalCode,
+      phone,
+      profilePicture,
+    }: RequestBody = await req.json();
 
-        await connectMongoDB();
+    console.log("Request Body:", {
+      dob,
+      country,
+      streetAddress,
+      city,
+      state,
+      zipPostalCode,
+      phone,
+      profilePicture,
+    });
 
-        const fieldsToUpdate: Partial<RequestBody> = {};
-        if (dob) fieldsToUpdate.dob = dob;
-        if (country) fieldsToUpdate.country = country;
-        if (streetAddress) fieldsToUpdate.streetAddress = streetAddress;
-        if (city) fieldsToUpdate.city = city;
-        if (state) fieldsToUpdate.state = state;
-        if (zipPostalCode) fieldsToUpdate.zipPostalCode = zipPostalCode;
-        if (phone) fieldsToUpdate.phone = phone;
-        if (profilePicture) fieldsToUpdate.profilePicture = profilePicture;
+    await connectMongoDB();
 
-        console.log("Fields to Update:", fieldsToUpdate);
+    const fieldsToUpdate: Partial<RequestBody> = {};
+    if (dob) fieldsToUpdate.dob = dob;
+    if (country) fieldsToUpdate.country = country;
+    if (streetAddress) fieldsToUpdate.streetAddress = streetAddress;
+    if (city) fieldsToUpdate.city = city;
+    if (state) fieldsToUpdate.state = state;
+    if (zipPostalCode) fieldsToUpdate.zipPostalCode = zipPostalCode;
+    if (phone) fieldsToUpdate.phone = phone;
+    if (profilePicture) fieldsToUpdate.profilePicture = profilePicture;
 
-        const updatedUser = await User.findOneAndUpdate(
-            { _id: new Types.ObjectId(userId) },
-            { $set: fieldsToUpdate },
-            { new: true, runValidators: true, strict: false }
-        );
+    console.log("Fields to Update:", fieldsToUpdate);
 
-        console.log("Updated User:", updatedUser);
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: new Types.ObjectId(userId) },
+      { $set: fieldsToUpdate },
+      { new: true, runValidators: true, strict: false }
+    );
 
-        if (!updatedUser) {
-            return NextResponse.json(
-                { message: "User not found" },
-                { status: 404 }
-            );
-        }
+    console.log("Updated User:", updatedUser);
 
-        return NextResponse.json(
-            {
-                message: "Attributes added successfully",
-                data: updatedUser
-            },
-            { status: 200 }
-        );
-    } catch (error) {
-        console.error("Error updating user:", error);
-        return NextResponse.json(
-            { message: "Internal server error", error: error },
-            { status: 500 }
-        );
+    if (!updatedUser) {
+      return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
+
+    return NextResponse.json(
+      {
+        message: "Attributes added successfully",
+        data: updatedUser,
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error updating user:", error);
+    return NextResponse.json(
+      { message: "Internal server error", error: error },
+      { status: 500 }
+    );
+  }
 }
