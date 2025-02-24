@@ -9,6 +9,7 @@ import { storage } from "../../lib/firebase"; // Import Firebase storage
 import Image from "next/image";
 import useFirebaseAuth from "@/app/hooks/useFirebaseAuth";
 import clsx from "clsx";
+import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 
 const DetailsForm = () => {
   type formData = {
@@ -105,7 +106,7 @@ const DetailsForm = () => {
       // Add the file URLs and other portfolio data to the form data
       formData.fileUrls = fileUrls;
 
-      const response = await fetch("/api/post-job", {
+      const response = await fetchWithAuth("/api/post-job", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

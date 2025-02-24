@@ -13,6 +13,7 @@ import {
 import { useContext, useEffect, useState } from "react";
 import SaveButton from "../saveButton";
 import Link from "next/link";
+import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 
 const JobDetailsSlider: React.FC = () => {
   const {
@@ -29,7 +30,7 @@ const JobDetailsSlider: React.FC = () => {
   // Fetch job stats when the panel opens
   useEffect(() => {
     if (jobDetailsVisible && job?.jobId) {
-      fetch(`/api/job-stats/${job.jobId}`)
+      fetchWithAuth(`/api/job-stats/${job.jobId}`)
         .then((res) => res.json())
         .then((data) => {
           setJobStats({

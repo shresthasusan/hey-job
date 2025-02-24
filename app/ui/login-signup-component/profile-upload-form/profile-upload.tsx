@@ -10,6 +10,7 @@ import Image from "next/image";
 import { doc, updateDoc } from "firebase/firestore";
 import { useSession } from "next-auth/react";
 import useFirebaseAuth from "@/app/hooks/useFirebaseAuth";
+import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 
 interface Props {
   params: {
@@ -110,7 +111,7 @@ const ProfileUploadForm = ({ params }: Props) => {
       }
 
       console.log("Final form data:", formData);
-      const response = await fetch("/api/profile-update", {
+      const response = await fetchWithAuth("/api/profile-update", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

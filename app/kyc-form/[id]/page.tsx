@@ -5,6 +5,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "@/app/lib/firebase";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
+import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 
 const KYCForm = ({ params }: { params: { id: string } }) => {
   const { id } = params;
@@ -164,7 +165,7 @@ const KYCForm = ({ params }: { params: { id: string } }) => {
       }
 
       // Send data to API
-      const res = await fetch(`/api/kyc-submit/${id}`, {
+      const res = await fetchWithAuth(`/api/kyc-submit/${id}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(submissionData),

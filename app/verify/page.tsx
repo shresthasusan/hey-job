@@ -4,6 +4,7 @@ import React, { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/solid";
+import { fetchWithAuth } from "../lib/fetchWIthAuth";
 
 // Loading spinner animation
 const LoadingSpinner = () => (
@@ -34,7 +35,9 @@ const VerifyEmail = () => {
       }
 
       try {
-        const res = await fetch(`/api/email-verification?token=${token}`);
+        const res = await fetchWithAuth(
+          `/api/email-verification?token=${token}`
+        );
 
         if (!res.ok) {
           const errorData = await res.json();

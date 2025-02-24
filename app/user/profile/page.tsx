@@ -6,6 +6,7 @@ import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { storage } from "@/app/lib/firebase";
 import Image from "next/image";
 import { Button } from "../../ui/button";
+import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 
 const ProfilePage: React.FC = () => {
   const { data: session } = useSession();
@@ -51,12 +52,9 @@ const ProfilePage: React.FC = () => {
   const handleUpdateProfile = async () => {
     try {
       // Create a different file to handle all the fetch methods and attach the headers there. or can create a middleware for the requests as well where you can attach it.
-      const response = await fetch("/api/profile-update", {
+      const response = await fetchWithAuth("/api/profile-update", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session?.user.accessToken}`,
-        },
+
         body: JSON.stringify({
           name,
           bio,

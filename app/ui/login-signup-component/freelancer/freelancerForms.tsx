@@ -7,6 +7,7 @@ import { storage } from "../../../lib/firebase"; // Import Firebase storage
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import clsx from "clsx";
+import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 
 export type project = {
   projectTitle: string;
@@ -198,7 +199,7 @@ const MultiStepForm = () => {
         projectPortfolio: updatedProjects,
       };
 
-      const response = await fetch("/api/freelancerInfo", {
+      const response = await fetchWithAuth("/api/freelancerInfo", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

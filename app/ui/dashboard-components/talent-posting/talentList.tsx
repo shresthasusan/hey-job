@@ -9,6 +9,7 @@ import SaveButton from "../../saveButton";
 import Loading from "@/app/client/(dashboard)/loading";
 import { Appcontext } from "@/app/context/appContext";
 import Image from "next/image";
+import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 
 const truncateString = (str: any, num: any) => {
   if (str.length <= num) {
@@ -58,7 +59,7 @@ const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
             params.append(key, value);
           });
         }
-        const response = await fetch(`/api/freelancers?${params}`, {
+        const response = await fetchWithAuth(`/api/freelancers?${params}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Card from "../card";
+import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 
 const Comp = () => {
   const [stats, setStats] = useState({
@@ -11,7 +12,7 @@ const Comp = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await fetch("/api/admin/stats", {
+        const response = await fetchWithAuth("/api/admin/stats", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

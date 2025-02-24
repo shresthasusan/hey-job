@@ -7,8 +7,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const roles = fetch("/user");
-
   return (
     <div>
       <div className="fixed z-10 bg-white w-full ">

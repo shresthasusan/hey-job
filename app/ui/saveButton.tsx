@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { HeartIcon as Liked } from "@heroicons/react/24/solid";
 import { HeartIcon as Unliked } from "@heroicons/react/24/outline";
+import { fetchWithAuth } from "../lib/fetchWIthAuth";
 
 interface SaveButtonProps {
   itemId?: string;
@@ -15,7 +16,7 @@ const SaveButton = ({ itemId, saved, itemType }: SaveButtonProps) => {
     try {
       const endpoint =
         itemType === "job" ? "/api/saveJob" : "/api/saveFreelancer";
-      const response = await fetch(endpoint, {
+      const response = await fetchWithAuth(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ [`${itemType}Id`]: itemId }), // Dynamically set the key based on itemType
