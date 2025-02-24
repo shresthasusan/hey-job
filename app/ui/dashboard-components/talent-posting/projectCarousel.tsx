@@ -76,11 +76,7 @@ const ProjectCarousel: React.FC = () => {
               <div key={job.id} className="min-w-[300px] border p-4 rounded-lg shadow hover:shadow-lg transition-shadow duration-300 bg-white">
                 <h2 className="text-xl font-semibold mb-2 items-center">
                   {job.title}
-                  {job.proposalCount > 0 && (
-                    <span className="ml-2 text-xs bg-green-500 text-white px-2 py-1 rounded-full">
-                      {job.proposalCount} proposals
-                    </span>
-                  )}
+                 
                 </h2>
                 <p className="text-gray-700 mb-2">{job.description}</p>
                 <div className="flex items-center mb-2">
@@ -107,6 +103,11 @@ const ProjectCarousel: React.FC = () => {
                     </span>
                   ))}
                 </div>
+                <div className="mt-2 "> {job.proposalCount > 0 && (
+                    <span className="ml-2 relative text-xs bg-green-500 text-white px-2 py-1 rounded-full">
+                      {job.proposalCount} proposals
+                    </span>
+                  )}</div>
               </div>
             ))}
           </div>

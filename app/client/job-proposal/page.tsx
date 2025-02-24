@@ -1,30 +1,96 @@
-import React from 'react';
+"use client";
+import React, { useEffect, useState } from "react";
 
-interface Freelancer {
-    userId: string;
-    proposal: string;
+interface Proposal {
+  id: string;
+  jobId: string;
+  userId: string;
+  coverLetter: string;
+  bid: number;
 }
 
-const freelancers: Freelancer[] = [
-    { userId: 'user1', proposal: 'I am very interested in this job because...' },
-    { userId: 'user2', proposal: 'I have the skills required for this job...' },
-    // Add more freelancers as needed
-];
+interface Job {
+  id: string;
+  title: string;
+  description: string;
+  fullName: string;
+  location: string;
+  createdAt: string;
+  budget: number;
+  tags: string[];
+  proposalCount: number;
+}
 
-const JobProposalPage: React.FC = () => {
-    return (
-        <div className="p-5 font-sans">
-            <h1 className="text-center text-2xl font-bold text-gray-800">Job Proposals</h1>
-            <div className="flex flex-col items-center mt-5">
-                {freelancers.map((freelancer, index) => (
-                    <div key={index} className="bg-white border border-gray-300 rounded-lg p-4 m-2 w-4/5 shadow-md">
-                        <h2 className="text-lg font-semibold text-gray-700">{freelancer.userId}</h2>
-                        <p className="text-gray-600">{freelancer.proposal}</p>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
+interface AllProposalsListProps {
+  userId: string;
+}
+
+const AllProposalsList: React.FC<AllProposalsListProps> = ({ userId }) => {
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
+  const [proposals, setProposals] = useState<Proposal[]>([]);
+
+  // Fetch jobs posted by the user
+  useEffect(() => {
+    if (userId) {
+      const fetchJobs = async () => {
+        try {
+          const response = await fetch(`/api/fetchJobs?userId=${userId}`);
+          const data = await response.json();
+          setJobs(data.jobs);
+
+          // Automatically set the first job's ID to fetch proposals
+          if (data.jobs.length > 0) {
+            setSelectedJobId(data.jobs[4].id);
+          }
+        } catch (error) {
+          console.error("Error fetching jobs:", error);
+        }
+      };
+
+      fetchJobs();
+    }
+  }, [userId]);
+
+  // Fetch proposals when a job is selected
+  useEffect(() => {
+    if (selectedJobId) {
+      const fetchProposals = async () => {
+        try {
+          const response = await fetch(`/api/jobproposal?jobId=${selectedJobId}`);
+          const data = await response.json();
+          setProposals(data.proposals);
+        } catch (error) {
+          console.error("Error fetching proposals:", error);
+        }
+      };
+
+      fetchProposals();
+    }
+  }, [selectedJobId]);
+
+  return (
+    
+      <div className="space-y-8">
+        <p className="text-xl mb-4">Proposals for the selected job:</p>
+        <ul className="space-y-4">
+          {proposals.length > 0 ? (
+            proposals.map((proposal) => (
+              <li
+                key={`${proposal.id}-${proposal.jobId}`}
+                className="border border-gray-200 p-4 rounded-lg"
+              >
+                <h3 className="text-xl font-bold">{proposal.coverLetter}</h3>
+                <p className="text-gray-500">Bid: {proposal.bid}</p>
+              </li>
+            ))
+          ) : (
+            <p className="text-gray-500">No proposals found.</p>
+          )}
+        </ul>
+      </div>
+    
+  );
 };
 
-export default JobProposalPage;
+export default AllProposalsList;
