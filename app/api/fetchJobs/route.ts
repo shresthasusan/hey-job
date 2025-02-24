@@ -4,6 +4,7 @@ import { connectMongoDB } from "../../lib/mongodb";
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/lib/auth";
+import proposal from "@/models/proposal";
 
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -28,19 +29,31 @@ export async function GET(req: NextRequest) {
     await connectMongoDB();
 
     if (jobId) {
-      // Fetch job when jobId is provided, without requiring isSaved
+      // Fetch individual job with proposal count
       const job = await Jobs.findById(jobId);
       if (!job) {
         return NextResponse.json({ message: "Job not found" }, { status: 404 });
       }
-      return NextResponse.json({ job });
+
+      const proposalCount = await proposal.countDocuments({ jobId });
+
+      return NextResponse.json({ ...job.toObject(), proposalCount });
     }
 
-    if(clientId){
-      // Fetch jobs posted by the user
-      jobs = await Jobs.find({ userId: session?.user.id, // Get userId from session
-      });
-      return NextResponse.json({ jobs });
+    if (clientId) {
+      // Fetch all jobs posted by the client
+      const jobs = await Jobs.find({ userId: session?.user.id });
+
+      // Enrich jobs with proposal count
+      const jobsWithProposalCounts = await Promise.all(
+        jobs.map(async (job) => {
+          const proposalCount = await proposal.countDocuments({ jobId: job._id });
+          return { ...job.toObject(), proposalCount };
+        })
+      );
+
+      // Return a single object instead of an array
+      return NextResponse.json({ jobs: jobsWithProposalCounts });
     }
 
     // Fetch jobs based on query parameters
