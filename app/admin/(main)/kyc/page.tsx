@@ -1,5 +1,6 @@
 "use client";
 
+import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 import Image from "next/image";
 import React, { useState, useEffect, useCallback } from "react";
 
@@ -38,7 +39,7 @@ const KYCPage = () => {
   // Memoize fetchKYCData with useCallback
   const fetchKYCData = useCallback(async () => {
     try {
-      const res = await fetch(
+      const res = await fetchWithAuth(
         `/api/admin/fetch-kycs?status=pending&search=${encodeURIComponent(searchQuery)}`
       );
       const data = await res.json();
@@ -69,7 +70,7 @@ const KYCPage = () => {
 
   const handleAction = async (id: string, status: "approved" | "rejected") => {
     try {
-      const res = await fetch(`/api/admin/update-kyc-status/${id}`, {
+      const res = await fetchWithAuth(`/api/admin/update-kyc-status/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),

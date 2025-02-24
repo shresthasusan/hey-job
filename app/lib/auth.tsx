@@ -73,12 +73,24 @@ export const authOptions: NextAuthOptions = {
                 admin.password
               );
               if (isPasswordValid) {
+                const secretKey = new TextEncoder().encode(
+                  process.env.ACCCESS_TOKEN_SECRET_KEY
+                );
+                const accessToken = await new SignJWT({
+                  email,
+                  name: admin.name,
+                  lastname: admin.lastName,
+                  id: admin._id.toString(),
+                })
+                  .setProtectedHeader({ alg: "HS256" })
+                  .sign(secretKey);
                 return {
                   name: admin.name,
                   lastName: admin.lastName,
                   email: admin.userName,
                   id: admin._id.toString(),
                   role: "admin",
+                  accessToken,
                 };
               }
             }
