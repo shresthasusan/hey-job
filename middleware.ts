@@ -16,17 +16,31 @@ export async function middleware(req: NextRequest) {
   // Check if we can create a seperate middleware for the server api requests
   if (pathname.startsWith("/api/") && !isAuthPage) {
     const authTokenMiddleware = await authenticateToken(req);
-    if (authTokenMiddleware?.error) {
+    console.log('authResult:', authTokenMiddleware)
+
+    if (!authTokenMiddleware?.user) {
       return NextResponse.json(
-        JSON.stringify({ error: authTokenMiddleware.error }),
+        { error: authTokenMiddleware?.error || "Authentication required" },
         { status: 401 }
       );
     }
+    // Clone the request and add the user data as a custom header
+    const requestHeaders = new Headers(req.headers);
+    requestHeaders.set("x-user", JSON.stringify(authTokenMiddleware.user));
 
-    if (authTokenMiddleware?.user) {
-      req.user = authTokenMiddleware.user;
-    }
+    console.log("Set x-user header:", authTokenMiddleware.user);
+
+
+    // Pass the modified headers to the next handler
+    return NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      },
+    });
+
   }
+
+
 
   // https://nextjs.org/docs/app/building-your-application/authentication#creating-a-data-access-layer-dal
   // better way for authorization rather than using the middleware
