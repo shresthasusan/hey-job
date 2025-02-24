@@ -8,11 +8,7 @@ interface Props {
 const SignUppage = async ({ params }: Props) => {
   return (
     <>
-      <ProfileUploadForm
-        params={{
-          id: params.id,
-        }}
-      />
+      <ProfileUploadForm />
     </>
   );
 };

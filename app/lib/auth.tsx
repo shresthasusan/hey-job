@@ -103,20 +103,11 @@ export const authOptions: NextAuthOptions = {
           })
             .setProtectedHeader({ alg: "HS256" })
             .sign(secretKey);
-
-          // all these can be attached to the accessToken
-          // const plainUser = {
-          //   name: user.name,
-          //   email: user.email,
-          //   lastName: user.lastName,
-          //   id: user._id.toString(),
-          //   role: "user",
-          //   profilePicture: user.profilePicture,
-          // };
-
-          // console.log("User authorized:", plainUser);
           return {
-            ...user,
+            name: user.name,
+            lastName: user.lastName,
+            email: user.email,
+
             role: "user",
             id: user._id.toString(),
             accessToken,
@@ -155,13 +146,38 @@ export const authOptions: NextAuthOptions = {
             emailVerified: true,
             oauth: true,
           });
+
+          const secretKey = new TextEncoder().encode(
+            process.env.ACCCESS_TOKEN_SECRET_KEY
+          );
+          const accessToken = await new SignJWT({
+            email: user.email,
+            name: user.name,
+            lastname: user.lastName,
+            id: newUser._id.toString(),
+          })
+            .setProtectedHeader({ alg: "HS256" })
+            .sign(secretKey);
+
           user.id = newUser._id.toString();
           user.name = name;
           user.lastName = lastName;
           user.role = "user";
           user.profilePicture = newUser.profilePicture;
+          user.accessToken = accessToken;
         } else {
           // Use existing user data
+          const secretKey = new TextEncoder().encode(
+            process.env.ACCCESS_TOKEN_SECRET_KEY
+          );
+          const accessToken = await new SignJWT({
+            email: user.email,
+            name: user.name,
+            lastname: user.lastName,
+            id: existingUser._id.toString(),
+          })
+            .setProtectedHeader({ alg: "HS256" })
+            .sign(secretKey);
 
           user.id = existingUser._id.toString();
           user.name = existingUser.name;
@@ -169,6 +185,7 @@ export const authOptions: NextAuthOptions = {
           user.email = existingUser.email;
           user.role = "user";
           user.profilePicture = existingUser.profilePicture;
+          user.accessToken = accessToken;
         }
       }
       return true;

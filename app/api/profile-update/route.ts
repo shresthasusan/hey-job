@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { connectMongoDB } from "../../lib/mongodb";
 import { NextRequest } from "next/server";
 import User from "../../../models/user";
-import { Types } from "mongoose";
+
 
 interface RequestBody {
   userId: string;
@@ -18,11 +18,17 @@ interface RequestBody {
 
 export async function POST(req: NextRequest) {
   try {
-    // Now we can use the user data that we decoded and attached from the middleware
-    const user = req.user;
+    // Extract user from custom header
+    const userData = req.headers.get("x-user");
+    const user = userData ? JSON.parse(userData) : null;
 
-    // No need to validate if there is a user id or not as well
+    console.log("req.user in API (from x-user):", user);
+
+    if (!user || !user.id) {
+      return NextResponse.json({ message: "Unauthorized: No user data" }, { status: 401 });
+    }
     const userId = user.id;
+    console.log("Extracted userId:", userId); // Confirm userId is set
 
     const {
       dob,
@@ -61,7 +67,7 @@ export async function POST(req: NextRequest) {
     console.log("Fields to Update:", fieldsToUpdate);
 
     const updatedUser = await User.findOneAndUpdate(
-      { _id: new Types.ObjectId(userId) },
+      { _id: userId },
       { $set: fieldsToUpdate },
       { new: true, runValidators: true, strict: false }
     );

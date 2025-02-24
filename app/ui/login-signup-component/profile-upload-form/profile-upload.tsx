@@ -12,12 +12,7 @@ import { useSession } from "next-auth/react";
 import useFirebaseAuth from "@/app/hooks/useFirebaseAuth";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 
-interface Props {
-  params: {
-    id: string;
-  };
-}
-const ProfileUploadForm = ({ params }: Props) => {
+const ProfileUploadForm = () => {
   const { data: session } = useSession();
 
   useFirebaseAuth();
@@ -28,7 +23,6 @@ const ProfileUploadForm = ({ params }: Props) => {
   );
 
   interface formData {
-    userId?: string;
     dob: string;
     country: string;
     streetAddress: string;
@@ -42,7 +36,6 @@ const ProfileUploadForm = ({ params }: Props) => {
   // const { data: session } = useSession();
 
   const [formData, setFormData] = useState<formData>({
-    userId: params.id,
     dob: "",
     country: "",
     streetAddress: "",
@@ -118,8 +111,9 @@ const ProfileUploadForm = ({ params }: Props) => {
         },
         body: JSON.stringify(formData),
       });
+      const userId = session?.user.id ?? "111"; // Provide a default empty string
       // update profilePicture url in firebase db for chat
-      const docRef = doc(db, "users", params.id);
+      const docRef = doc(db, "users", userId);
       await updateDoc(docRef, {
         avatar: formData.profilePicture,
       });

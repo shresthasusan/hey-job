@@ -72,10 +72,6 @@ const MultiStepForm = () => {
   const [uploading, setUploading] = useState<boolean>(false);
   const [files, setFiles] = useState<{ [key: number]: File[] }>([]); // Store file data
 
-  const userId = session?.user.id;
-  const email = session?.user.email;
-  const fullName = session?.user.name + " " + session?.user.lastName;
-
   const handleAddItem = (field: ArrayFieldKey, defaultItem: any) => {
     setFormData((prevState) => ({
       ...prevState,
@@ -85,9 +81,6 @@ const MultiStepForm = () => {
 
   // Define initial form data using the FormData type
   const initialFormData: FormData = {
-    userId: userId,
-    fullName: fullName,
-    email: email,
     location: "",
     skills: [],
     workExperience: [],

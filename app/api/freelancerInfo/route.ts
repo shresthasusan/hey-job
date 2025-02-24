@@ -21,10 +21,21 @@ interface UserRequestBody {
 
 export async function POST(req: NextRequest) {
   try {
+    // Extract user from custom header
+    const userData = req.headers.get("x-user");
+    const user = userData ? JSON.parse(userData) : null;
+
+    console.log("req.user in API (from x-user):", user);
+
+    if (!user || !user.id) {
+      return NextResponse.json({ message: "Unauthorized: No user data" }, { status: 401 });
+    }
+    const userId = user.id;
+    const fullName = user.name + " " + user.lastName;
+    const email = user.email;
+    console.log("Extracted userId:", userId); // Confirm userId is set
+
     const {
-      userId,
-      fullName,
-      email,
       location,
       skills,
       workExperience,
