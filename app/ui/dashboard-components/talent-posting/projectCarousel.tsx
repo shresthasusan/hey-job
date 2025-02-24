@@ -30,7 +30,9 @@ const ProjectCarousel: React.FC = () => {
           const response = await fetch(`/api/fetchJobs?userId=${session?.user.id}`);
           const data = await response.json();
           console.log("Fetched jobs:", data.jobs); // Log the fetched jobs
-          setJobs(data.jobs);
+          // Sort jobs by creation date in descending order
+          const sortedJobs = data.jobs.sort((a: Job, b: Job) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+          setJobs(sortedJobs);
         } catch (error) {
           console.error("Error fetching jobs:", error);
         } finally {
@@ -71,11 +73,14 @@ const ProjectCarousel: React.FC = () => {
           </button>
           <div ref={carouselRef} className="flex overflow-x-auto space-x-4 p-6 scrollbar-hide">
             {jobs.map((job) => (
-              <div key={job.id} className="min-w-[300px] border-  p-4 rounded-lg shadow  transition-shadow duration-300 bg-white">
-                <h2 className="text-xl font-semibold mb-2">{job.title}
-                <span className=" ml-12 text-xs bg-green-500 text-white px-2 py-1 rounded-full">
-                {job.proposalCount} proposals
-                </span>
+              <div key={job.id} className="min-w-[300px] border p-4 rounded-lg shadow hover:shadow-lg transition-shadow duration-300 bg-white">
+                <h2 className="text-xl font-semibold mb-2 items-center">
+                  {job.title}
+                  {job.proposalCount > 0 && (
+                    <span className="ml-2 text-xs bg-green-500 text-white px-2 py-1 rounded-full">
+                      {job.proposalCount} proposals
+                    </span>
+                  )}
                 </h2>
                 <p className="text-gray-700 mb-2">{job.description}</p>
                 <div className="flex items-center mb-2">
@@ -100,7 +105,6 @@ const ProjectCarousel: React.FC = () => {
                       <TagIcon className="w-4 h-4 mr-1" />
                       {tag}
                     </span>
-                    
                   ))}
                 </div>
               </div>
@@ -108,9 +112,8 @@ const ProjectCarousel: React.FC = () => {
           </div>
           <button onClick={scrollRight} className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-200 p-2 rounded-full shadow-md hover:bg-gray-300 transition-colors duration-300">
             <ChevronRightIcon className="w-6 h-6 text-gray-600" />
-            
           </button>
-        </div>  
+        </div>
       )}
     </div>
   );
