@@ -3,7 +3,8 @@ import React, { useEffect, useState } from "react";
 import useFetch from "../hooks/useFetch";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { redirect, usePathname, useRouter } from "next/navigation"; // ✅ Use this instead of next/router
+import { usePathname, useRouter } from "next/navigation"; // ✅ Use this instead of next/router
+import { fetchWithAuth } from "../lib/fetchWIthAuth";
 
 export interface KYCStatusResponse {
   kycVerified: boolean;
@@ -21,7 +22,7 @@ const KYCStatus: React.FC = () => {
   useEffect(() => {
     if (status !== "authenticated") return;
 
-    fetch("/api/user?fields=roles") // ✅ Fetch only roles from API
+    fetchWithAuth("/api/user?fields=roles") // ✅ Fetch only roles from API
       .then((res) => res.json())
       .then((data) => {
         if (data.roles && !data.roles.client && !data.roles.freelancer) {

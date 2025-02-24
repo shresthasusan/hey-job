@@ -6,6 +6,7 @@ import SaveButton from "../../saveButton";
 import { Appcontext } from "@/app/context/appContext";
 import { set } from "mongoose";
 import PostingSkeleton from "../skeletons/postingSkeleton";
+import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 
 const truncateString = (str: string, num: number) => {
   if (str.length <= num) {
@@ -93,25 +94,19 @@ const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
           });
         }
 
-        const response = await fetch(`/api/fetchJobs?${params.toString()}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          next: {
-            revalidate: 3600, // Revalidate the data every 1 hour
-          },
-        });
+        const response = await fetchWithAuth(
+          `/api/fetchJobs?${params.toString()}`,
+          {
+            method: "GET",
+            next: { revalidate: 3600 }, // Supports Next.js revalidation
+          }
+        );
 
-        // Check if the response is not OK (status code is not in the range 200-299)
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        // Parse the JSON response to get the jobs data
         const { jobs } = await response.json();
-
-        // Update the state with the fetched jobs data
         setData(jobs);
       } catch (error) {
         // Log any errors that occur during the fetch

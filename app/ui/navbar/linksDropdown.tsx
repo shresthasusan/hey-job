@@ -10,15 +10,11 @@ import Image from "next/image";
 import { signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import NotificationsPage from "../dashboard-components/job-list/notification";
-import useFetch from "@/app/hooks/useFetch";
 
 interface Props {
   isDropdownVisible?: Number;
   isOpen?: Boolean;
   currentMode?: String;
-}
-interface User {
-  profilePicture: string;
 }
 
 const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {

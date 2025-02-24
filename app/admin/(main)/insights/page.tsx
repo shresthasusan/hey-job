@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Card from "@/app/ui/card";
+import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 
 const InsightsPage = () => {
   const [insights, setInsights] = useState({
@@ -17,7 +18,7 @@ const InsightsPage = () => {
   useEffect(() => {
     const fetchUserStats = async () => {
       try {
-        const response = await fetch("/api/admin/stats");
+        const response = await fetchWithAuth("/api/admin/stats");
         const datas = await response.json();
 
         if (response.ok) {

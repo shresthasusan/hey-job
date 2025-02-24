@@ -12,6 +12,7 @@ import { Button } from "../../button";
 import { useRouter } from "next/navigation";
 import TypingAnimation from "../../typingAnimation";
 import { useEffect } from "react";
+import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 
 const WelcomeText = () => {
   const router = useRouter();
@@ -23,7 +24,7 @@ const WelcomeText = () => {
   useEffect(() => {
     if (status !== "authenticated") return;
 
-    fetch("/api/user?fields=roles") // ✅ Fetch only roles from API
+    fetchWithAuth("/api/user?fields=roles") // ✅ Fetch only roles from API
       .then((res) => res.json())
       .then((data) => {
         if (data.roles.freelancer) router.push(`/`);

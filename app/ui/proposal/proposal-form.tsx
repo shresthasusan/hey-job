@@ -9,6 +9,7 @@ import { useSession } from "next-auth/react";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import app from "@/app/lib/firebase";
 import { Button } from "../button";
+import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 
 interface ProposalFormProps {
   jobId: string;
@@ -64,11 +65,14 @@ const ProposalForm = ({ jobId }: ProposalFormProps) => {
         attachments: uploadedFiles,
       };
 
-      const response = await fetch(`/api/submit-proposal/${session?.user.id}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(proposalData),
-      });
+      const response = await fetchWithAuth(
+        `/api/submit-proposal/${session?.user.id}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(proposalData),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to submit proposal");

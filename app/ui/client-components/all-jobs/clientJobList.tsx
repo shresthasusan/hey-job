@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import JobDetailsModal from "../jobdetailsmodal/jobDetailCard";
+import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 
 interface Job {
   id: string;
@@ -26,7 +27,9 @@ const AllJobsList: React.FC<AllJobsListProps> = (userId) => {
       // Fetch jobs posted by the user
       const fetchJobs = async () => {
         try {
-          const response = await fetch(`/api/fetchJobs?userId=${userId}`);
+          const response = await fetchWithAuth(
+            `/api/fetchJobs?userId=${userId}`
+          );
           const data = await response.json();
           setJobs(data.jobs);
         } catch (error) {

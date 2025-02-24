@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../../lib/firebase"; // Firebase storage import
 import clsx from "clsx";
+import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 
 interface ClientFormData {
   userId?: string;
@@ -106,7 +107,7 @@ const ClientForm = () => {
       };
 
       // Send data to API
-      const response = await fetch("/api/clientInfo", {
+      const response = await fetchWithAuth("/api/clientInfo", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(finalFormData),

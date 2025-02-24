@@ -8,9 +8,6 @@ import SkeletonProfileCard from "./skeletons/skeletonProfileCard";
 interface Props {
   mode: string;
 }
-interface User {
-  profilePicture: string;
-}
 
 const ProfileCard = ({ mode }: Props) => {
   // Use the useSession hook to get session data and status

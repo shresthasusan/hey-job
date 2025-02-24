@@ -6,6 +6,7 @@ import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { storage } from "@/app/lib/firebase";
 import Image from "next/image";
 import { Button } from "../../ui/button";
+import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 
 const ProfilePage: React.FC = () => {
   const { data: session } = useSession();
@@ -17,7 +18,7 @@ const ProfilePage: React.FC = () => {
   useEffect(() => {
     if (session?.user) {
       setName(session.user.name || "");
-     /* {setBio(session.user.bio || "");
+      /* {setBio(session.user.bio || "");
       setProfilePicture(session.user.image || "/default-avatar.png");}*/
     }
   }, [session]);
@@ -50,11 +51,11 @@ const ProfilePage: React.FC = () => {
   // Handle Profile Update
   const handleUpdateProfile = async () => {
     try {
-      const response = await fetch("/api/update-profile", {
+      // Create a different file to handle all the fetch methods and attach the headers there. or can create a middleware for the requests as well where you can attach it.
+      const response = await fetchWithAuth("/api/profile-update", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+
         body: JSON.stringify({
-          userId: session?.user.id,
           name,
           bio,
           profilePicture,
@@ -73,7 +74,9 @@ const ProfilePage: React.FC = () => {
 
   return (
     <div className="max-w-lg mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold text-center text-gray-700">Edit Profile</h2>
+      <h2 className="text-2xl font-bold text-center text-gray-700">
+        Edit Profile
+      </h2>
 
       {/* Profile Picture */}
       <div className="flex flex-col items-center my-4">

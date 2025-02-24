@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { fetchWithAuth } from "../lib/fetchWIthAuth";
 
 interface FetchState<T> {
     data: T | null;
@@ -20,7 +21,7 @@ const useFetch = <T>(endpoint: string) => {
             setState({ data: null, loading: true, error: null }); // Reset state
             try {
                 const fullUrl = `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
-                const response = await fetch(fullUrl);
+                const response = await fetchWithAuth(fullUrl);
                 if (!response.ok) {
                     throw new Error(`Failed to fetch data: ${response.statusText}`);
                 }

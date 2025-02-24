@@ -1,5 +1,6 @@
 "use client";
 
+import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 import React, { useEffect, useState } from "react";
 
 const AdminSettingsPage = () => {
@@ -25,7 +26,7 @@ const AdminSettingsPage = () => {
 
   const fetchSettings = async () => {
     try {
-      const res = await fetch("/api/settings");
+      const res = await fetchWithAuth("/api/settings");
       const data = await res.json();
       setSettings((prev) => ({
         ...prev,
@@ -42,7 +43,7 @@ const AdminSettingsPage = () => {
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch("/api/users"); // Assume an API for fetching users
+      const res = await fetchWithAuth("/api/users"); // Assume an API for fetching users
       const data = await res.json();
       setUsers(data);
     } catch (error) {
@@ -60,7 +61,7 @@ const AdminSettingsPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await fetch("/api/adminSettings", {
+      await fetchWithAuth("/api/adminSettings", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(settings),
@@ -117,11 +118,11 @@ const AdminSettingsPage = () => {
             />
           </div>
 
-         
-
           {/* Two-Factor Authentication */}
           <div className="flex items-center justify-between p-3 bg-white shadow rounded-lg">
-            <label className="text-gray-700">Enable Two-Factor Authentication</label>
+            <label className="text-gray-700">
+              Enable Two-Factor Authentication
+            </label>
             <input
               type="checkbox"
               name="twoFactorAuth"

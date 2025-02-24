@@ -8,6 +8,7 @@ import GoogleProvider from "next-auth/providers/google";
 import GithubProvider from "next-auth/providers/github";
 import { type DefaultSession, type DefaultUser } from "next-auth";
 import Admin from "@/models/admin";
+import { SignJWT } from "jose";
 
 // Extend the NextAuth User and Session types
 declare module "next-auth" {
@@ -19,6 +20,7 @@ declare module "next-auth" {
       id: string;
       role: string;
       profilePicture?: string;
+      accessToken?: string;
     };
   }
   interface User extends DefaultUser {
@@ -28,6 +30,7 @@ declare module "next-auth" {
     lastName: string;
     role: string;
     profilePicture?: string;
+    accessToken?: string;
   }
 }
 
@@ -65,12 +68,24 @@ export const authOptions: NextAuthOptions = {
                 admin.password
               );
               if (isPasswordValid) {
+                const secretKey = new TextEncoder().encode(
+                  process.env.ACCCESS_TOKEN_SECRET_KEY
+                );
+                const accessToken = await new SignJWT({
+                  email,
+                  name: admin.name,
+                  lastname: admin.lastName,
+                  id: admin._id.toString(),
+                })
+                  .setProtectedHeader({ alg: "HS256" })
+                  .sign(secretKey);
                 return {
                   name: admin.name,
                   lastName: admin.lastName,
                   email: admin.userName,
                   id: admin._id.toString(),
                   role: "admin",
+                  accessToken,
                 };
               }
             }
@@ -84,13 +99,25 @@ export const authOptions: NextAuthOptions = {
             return null;
           }
 
+          const secretKey = new TextEncoder().encode(
+            process.env.ACCCESS_TOKEN_SECRET_KEY
+          );
+          const accessToken = await new SignJWT({
+            email,
+            name: user.name,
+            lastname: user.lastName,
+            id: user._id.toString(),
+          })
+            .setProtectedHeader({ alg: "HS256" })
+            .sign(secretKey);
           return {
             name: user.name,
-            email: user.email,
             lastName: user.lastName,
-            id: user._id.toString(),
+            email: user.email,
+
             role: "user",
-            profilePicture: user.profilePicture,
+            id: user._id.toString(),
+            accessToken,
           };
         } catch (error) {
           console.error("Authorization error:", error);
@@ -125,74 +152,66 @@ export const authOptions: NextAuthOptions = {
             emailVerified: true,
             oauth: true,
           });
+
+          const secretKey = new TextEncoder().encode(
+            process.env.ACCCESS_TOKEN_SECRET_KEY
+          );
+          const accessToken = await new SignJWT({
+            email: user.email,
+            name: user.name,
+            lastname: user.lastName,
+            id: newUser._id.toString(),
+          })
+            .setProtectedHeader({ alg: "HS256" })
+            .sign(secretKey);
+
           user.id = newUser._id.toString();
           user.name = name;
           user.lastName = lastName;
           user.role = "user";
           user.profilePicture = newUser.profilePicture;
+          user.accessToken = accessToken;
         } else {
+          // Use existing user data
+          const secretKey = new TextEncoder().encode(
+            process.env.ACCCESS_TOKEN_SECRET_KEY
+          );
+          const accessToken = await new SignJWT({
+            email: user.email,
+            name: user.name,
+            lastname: user.lastName,
+            id: existingUser._id.toString(),
+          })
+            .setProtectedHeader({ alg: "HS256" })
+            .sign(secretKey);
+
           user.id = existingUser._id.toString();
           user.name = existingUser.name;
           user.lastName = existingUser.lastName;
           user.email = existingUser.email;
           user.role = "user";
           user.profilePicture = existingUser.profilePicture;
+          user.accessToken = accessToken;
         }
       }
       return true;
     },
 
     async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-        token.name = user.name;
-        token.email = user.email;
-        token.lastName = user.lastName;
-        token.role = user.role;
-        token.picture = user.profilePicture;
-      }
-
-      // console.log("JWT Token in jwt callback:", token);
-
-      // await connectMongoDB();
-      // const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-      // await Session.findOneAndUpdate(
-      //   { token: token.jti }, // Use jti instead of sub
-      //   {
-      //     userId: token.id, // Use token.id instead of user.id since user may not always be present
-      //     token: token.jti,
-      //     expires,
-      //   },
-      //   { upsert: true }
-      // );
-
-      return token;
+      return { ...token, ...user };
     },
 
     async session({ session, token }) {
-      // console.log("JWT Token in session callback:", token);
+      session.user = {
+        id: token.id as string,
+        name: token.name as string,
+        email: token.email as string,
+        lastName: token.lastName as string,
+        role: token.role as string,
+        profilePicture: token.profilePicture as string | undefined,
+        accessToken: token.accessToken as string | undefined,
+      };
 
-      // await connectMongoDB();
-      // const dbSession = await Session.findOne({ token: token.jti }); // Use jti
-
-      // if (!dbSession || dbSession.expires < new Date()) {
-      //   if (dbSession) {
-      //     await Session.deleteOne({ token: token.jti });
-      //   }
-      //   throw new Error("Session expired or invalid");
-      // }
-
-      if (token) {
-        session.user = {
-          ...session.user,
-          id: token.id as string,
-          name: token.name as string,
-          email: token.email as string,
-          lastName: token.lastName as string,
-          role: token.role as string,
-          profilePicture: token.picture || "",
-        };
-      }
       return session;
     },
   },

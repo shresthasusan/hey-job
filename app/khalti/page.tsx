@@ -1,6 +1,7 @@
-'use client'
+"use client";
 import React, { useState, useEffect } from "react";
-import Script from 'next/script';
+import Script from "next/script";
+import { fetchWithAuth } from "../lib/fetchWIthAuth";
 
 function App() {
   const [amount, setAmount] = useState("");
@@ -12,7 +13,7 @@ function App() {
   useEffect(() => {
     const fetchDummyData = async () => {
       try {
-        const response = await fetch("/api/dummy-data?method=khalti");
+        const response = await fetchWithAuth("/api/dummy-data?method=khalti");
         if (!response.ok) {
           throw new Error("Failed to fetch dummy data");
         }
@@ -34,7 +35,7 @@ function App() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/payment", {
+      const response = await fetchWithAuth("/api/payment", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -74,43 +75,92 @@ function App() {
         src="https://khalti.s3.ap-south-1.amazonaws.com/KPG/dist/2020.12.22.0.0.0/khalti-checkout.iffe.js"
         onLoad={() => console.log("Khalti script loaded")}
       />
-      
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
-        <div style={{ width: "100%", maxWidth: "500px", background: "#fff", padding: "20px", borderRadius: "8px", boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)" }}>
+
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+          backgroundColor: "#f5f5f5",
+        }}
+      >
+        <div
+          style={{
+            width: "100%",
+            maxWidth: "500px",
+            background: "#fff",
+            padding: "20px",
+            borderRadius: "8px",
+            boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+          }}
+        >
           <h2 style={{ textAlign: "center" }}>Khalti Payment</h2>
-          <p style={{ textAlign: "center" }}>Enter payment details for Khalti</p>
+          <p style={{ textAlign: "center" }}>
+            Enter payment details for Khalti
+          </p>
           <form onSubmit={handlePayment}>
             <div style={{ marginBottom: "15px" }}>
-              <label htmlFor="amount" style={{ display: "block", marginBottom: "5px" }}>Amount (NPR)</label>
+              <label
+                htmlFor="amount"
+                style={{ display: "block", marginBottom: "5px" }}
+              >
+                Amount (NPR)
+              </label>
               <input
                 id="amount"
                 type="number"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 required
-                style={{ width: "100%", padding: "10px", borderRadius: "5px", border: "1px solid #ccc" }}
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  borderRadius: "5px",
+                  border: "1px solid #ccc",
+                }}
               />
             </div>
             <div style={{ marginBottom: "15px" }}>
-              <label htmlFor="productName" style={{ display: "block", marginBottom: "5px" }}>Product Name</label>
+              <label
+                htmlFor="productName"
+                style={{ display: "block", marginBottom: "5px" }}
+              >
+                Product Name
+              </label>
               <input
                 id="productName"
                 type="text"
                 value={productName}
                 onChange={(e) => setProductName(e.target.value)}
                 required
-                style={{ width: "100%", padding: "10px", borderRadius: "5px", border: "1px solid #ccc" }}
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  borderRadius: "5px",
+                  border: "1px solid #ccc",
+                }}
               />
             </div>
             <div style={{ marginBottom: "15px" }}>
-              <label htmlFor="transactionId" style={{ display: "block", marginBottom: "5px" }}>Transaction ID</label>
+              <label
+                htmlFor="transactionId"
+                style={{ display: "block", marginBottom: "5px" }}
+              >
+                Transaction ID
+              </label>
               <input
                 id="transactionId"
                 type="text"
                 value={transactionId}
                 onChange={(e) => setTransactionId(e.target.value)}
                 required
-                style={{ width: "100%", padding: "10px", borderRadius: "5px", border: "1px solid #ccc" }}
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  borderRadius: "5px",
+                  border: "1px solid #ccc",
+                }}
               />
             </div>
             <div>
