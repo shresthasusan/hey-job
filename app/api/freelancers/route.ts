@@ -12,6 +12,7 @@ export async function GET(req: NextRequest) {
   const bestMatches = searchParams.get("bestMatches");
   const savedFreelancers = searchParams.get("savedFreelancers");
   const params = searchParams.get("talentName");
+  const individualUserId = searchParams.get("userId"); // New parameter for individual freelancer
 
   if (!session) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -22,6 +23,23 @@ export async function GET(req: NextRequest) {
 
   try {
     await connectMongoDB();
+
+    if (individualUserId) {
+      // Fetch individual freelancer data by userId
+      const freelancer = await FreelancerInfo.findOne({ userId: individualUserId });
+      if (freelancer) {
+        const user = await User.findOne({ _id: freelancer.userId });
+        const freelancerWithDetails = {
+          freelancerId: freelancer._id, // Include freelancer ID
+          ...freelancer.toObject(),    // Include freelancer details
+          saved: false,                // Default to false for individual fetch
+          profilePicture: user?.profilePicture || "/images/avatar.png", // Include profile picture
+        };
+        return NextResponse.json({ freelancer: freelancerWithDetails });
+      } else {
+        return NextResponse.json({ message: "Freelancer not found" }, { status: 404 });
+      }
+    }
 
     if (!params) {
       if (bestMatches) {
