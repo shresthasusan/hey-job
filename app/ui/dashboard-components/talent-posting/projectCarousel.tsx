@@ -3,6 +3,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { ClockIcon, CurrencyDollarIcon, MapPinIcon, TagIcon, UserIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { getTimeAgo } from '../../dashboard-components/job-list/jobList';
 import { useSession } from 'next-auth/react';
+import { fetchWithAuth } from '@/app/lib/fetchWIthAuth';
 
 interface Job {
   id: string;
@@ -27,7 +28,7 @@ const ProjectCarousel: React.FC = () => {
       // Fetch jobs posted by the user
       const fetchJobs = async () => {
         try {
-          const response = await fetch(`/api/fetchJobs?userId=${session?.user.id}`);
+          const response = await fetchWithAuth(`/api/fetchJobs?userId=${session?.user.id}`);
           const data = await response.json();
           console.log("Fetched jobs:", data.jobs); // Log the fetched jobs
           // Sort jobs by creation date in descending order
