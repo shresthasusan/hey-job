@@ -16,7 +16,7 @@ export async function middleware(req: NextRequest) {
   // Check if we can create a seperate middleware for the server api requests
   if (pathname.startsWith("/api/") && !isAuthPage) {
     const authTokenMiddleware = await authenticateToken(req);
-    console.log('authResult:', authTokenMiddleware)
+    // console.log('authResult:', authTokenMiddleware)
 
     if (!authTokenMiddleware?.user) {
       return NextResponse.json(
@@ -28,7 +28,7 @@ export async function middleware(req: NextRequest) {
     const requestHeaders = new Headers(req.headers);
     requestHeaders.set("x-user", JSON.stringify(authTokenMiddleware.user));
 
-    console.log("Set x-user header:", authTokenMiddleware.user);
+    // console.log("Set x-user header:", authTokenMiddleware.user);
 
 
     // Pass the modified headers to the next handler

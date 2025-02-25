@@ -14,7 +14,7 @@ export async function authenticateToken(req: Request) {
       process.env.ACCCESS_TOKEN_SECRET_KEY
     );
     const { payload: user } = await jwtVerify(accessToken, secretKey);
-    console.log('decoded', user)
+    // console.log('decoded', user)
     return { error: null, user };
   } catch (err) {
     return { error: "Unauthorized: Invalid token", user: null };
