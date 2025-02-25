@@ -1,25 +1,25 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import JobDetailsModal from "../jobdetailsmodal/jobDetailCard";
+import JobDetailsModal from "@/app/ui/client-components/jobdetailsmodal/jobDetailCard";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 
 interface Job {
-  id: string;
+  _id: string;
   title: string;
   description: string;
+  proposalCount: number;
   fullName: string;
   location: string;
   createdAt: string;
   budget: number;
   tags: string[];
-  proposalCount: number;
 }
 
 interface AllJobsListProps {
   userId: string;
 }
 
-const AllJobsList: React.FC<AllJobsListProps> = (userId) => {
+const AllJobsList: React.FC<AllJobsListProps> = ({ userId }) => {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
@@ -28,9 +28,7 @@ const AllJobsList: React.FC<AllJobsListProps> = (userId) => {
       // Fetch jobs posted by the user
       const fetchJobs = async () => {
         try {
-          const response = await fetchWithAuth(
-            `/api/fetchJobs?userId=${userId}`
-          );
+          const response = await fetchWithAuth(`/api/fetchJobs?userId=${userId}`);
           const data = await response.json();
           setJobs(data.jobs);
         } catch (error) {
@@ -52,7 +50,7 @@ const AllJobsList: React.FC<AllJobsListProps> = (userId) => {
 
   return (
     <div className="container mx-auto p-4">
-      {jobs.length === 0 ? (
+      {jobs?.length === 0 ? (
         <div className="text-center">
           <p className="text-xl">You haven&apos;t posted any job yet.</p>
         </div>
@@ -60,9 +58,9 @@ const AllJobsList: React.FC<AllJobsListProps> = (userId) => {
         <div className="space-y-8">
           <p className="text-xl mb-4">Here are all the jobs you have posted:</p>
           <ul className="space-y-4">
-            {jobs.map((job) => (
+            {jobs?.map((job) => (
               <li
-                key={`${job.id}-${job.title}`}
+                key={job._id}
                 className="border p-6 rounded-full hover:bg-gray-100 shadow hover:shadow-lg transition-shadow duration-300 relative cursor-pointer"
                 onClick={() => handleJobClick(job)}
               >
@@ -76,8 +74,12 @@ const AllJobsList: React.FC<AllJobsListProps> = (userId) => {
           </ul>
         </div>
       )}
+
       {selectedJob && (
-        <JobDetailsModal job={selectedJob} onClose={handleCloseModal} />
+        <JobDetailsModal
+          job={selectedJob}
+          onClose={handleCloseModal}
+        />
       )}
     </div>
   );
