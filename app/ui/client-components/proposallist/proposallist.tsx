@@ -28,6 +28,12 @@ interface Job {
   tags: string[];
 }
 
+interface Freelancer {
+  userId: string;
+  fullName: string;
+  profilePicture: string;
+}
+
 interface AllProposalsListProps {
   jobId: string;
 }
@@ -37,6 +43,7 @@ const AllProposalsList: React.FC<AllProposalsListProps> = ({ jobId }) => {
   const [job, setJob] = useState<Job | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(null);
+  const [freelancers, setFreelancers] = useState<{ [key: string]: Freelancer }>({});
 
   useEffect(() => {
     const fetchJobAndProposals = async () => {
@@ -50,6 +57,22 @@ const AllProposalsList: React.FC<AllProposalsListProps> = ({ jobId }) => {
         const proposalsResponse = await fetchWithAuth(`/api/jobproposal?jobId=${jobId}`);
         const proposalsData = await proposalsResponse.json();
         setProposals(proposalsData.proposals);
+
+        // Fetch freelancer data for each proposal
+        const freelancerData = await Promise.all(
+          proposalsData.proposals.map(async (proposal: Proposal) => {
+            const response = await fetchWithAuth(`/api/freelancers?userId=${proposal.userId}`);
+            const data = await response.json();
+            return { userId: proposal.userId, fullName: data.freelancer.fullName, profilePicture: data.freelancer.profilePicture };
+          })
+        );
+
+        // Store freelancer data in state
+        const freelancerMap: { [key: string]: Freelancer } = {};
+        freelancerData.forEach((freelancer) => {
+          freelancerMap[freelancer.userId] = freelancer;
+        });
+        setFreelancers(freelancerMap);
       } catch (error) {
         console.error("Error fetching job and proposals:", error);
       } finally {
@@ -66,6 +89,22 @@ const AllProposalsList: React.FC<AllProposalsListProps> = ({ jobId }) => {
 
   const handleCloseModal = () => {
     setSelectedProposal(null);
+  };
+
+  const handleHire = () => {
+    if (selectedProposal) {
+      // Add your hire logic here
+      console.log('Hired:', selectedProposal);
+      setSelectedProposal(null);
+    }
+  };
+
+  const handleReject = () => {
+    if (selectedProposal) {
+      // Add your reject logic here
+      console.log('Rejected:', selectedProposal);
+      setSelectedProposal(null);
+    }
   };
 
   return (
@@ -116,12 +155,12 @@ const AllProposalsList: React.FC<AllProposalsListProps> = ({ jobId }) => {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {proposals.map((proposal) => (
                 <div
-                  key={proposal.id}
+                key={`${proposal.id}-${proposal.userId}`}
                   className="border-dotted border-2 border-gray-300 p-4 rounded-lg shadow hover:shadow-lg transition-shadow duration-300 bg-white cursor-pointer"
                   onClick={() => handleProposalClick(proposal)}
                 >
-                  <p className="text-gray-700 mb-2">{proposal.coverLetter}</p>
-                  <p className="text-gray-700 mb-2">Bid Amount: ${proposal.bidAmount}</p>
+                  <p className="text-black-700 mb-2">{proposal.coverLetter}</p>
+                  <p className="text-gray-700 mb-2"> ${proposal.bidAmount}</p>
                   {proposal.attachments && (
                     <div className="flex items-center justify-center text-blue-500 mb-2">
                       <PaperClipIcon className="w-5 h-5 mr-1" />
@@ -130,7 +169,7 @@ const AllProposalsList: React.FC<AllProposalsListProps> = ({ jobId }) => {
                       </a>
                     </div>
                   )}
-                  <p className="text-gray-500 text-sm mb-1">{proposal.userId}</p>
+                  <p className="text-black-500 font-semibold text-sm mb-1">{freelancers[proposal.userId]?.fullName || proposal.userId}</p>
                   <p className="text-gray-500 text-sm">{new Date(proposal.createdAt).toLocaleString()}</p>
                 </div>
               ))}
@@ -138,11 +177,12 @@ const AllProposalsList: React.FC<AllProposalsListProps> = ({ jobId }) => {
           )}
 
           {selectedProposal && (
-            <JobProposalModal proposal={selectedProposal} onClose={handleCloseModal} onHire={function (): void {
-                throw new Error("Function not implemented.");
-              } } onReject={function (): void {
-                throw new Error("Function not implemented.");
-              } } />
+            <JobProposalModal
+              proposal={selectedProposal}
+              onClose={handleCloseModal}
+              onHire={handleHire}
+              onReject={handleReject}
+            />
           )}
         </>
       )}
