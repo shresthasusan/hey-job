@@ -26,9 +26,9 @@ export async function middleware(req: NextRequest) {
     }
     // Clone the request and add the user data as a custom header
     const requestHeaders = new Headers(req.headers);
-    requestHeaders.set("x-user", JSON.stringify(authTokenMiddleware.user));
+    requestHeaders.set("user", JSON.stringify(authTokenMiddleware.user));
 
-    // console.log("Set x-user header:", authTokenMiddleware.user);
+    // console.log("Set user header:", authTokenMiddleware.user);
 
 
     // Pass the modified headers to the next handler
