@@ -2,12 +2,13 @@
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 import { Button } from "@/app/ui/button";
 import Card from "@/app/ui/card";
+import { TrashIcon } from "@heroicons/react/24/outline";
 import React, { useEffect, useState } from "react";
 
 interface Admin {
   _id: string;
   name: string;
-  email: string;
+  userName: string;
   role: string;
 }
 
@@ -18,11 +19,17 @@ const AdminList = () => {
 
   useEffect(() => {
     fetchAdmins();
-  }, []);
+  }, [searchQuery, roleFilter]);
 
   const fetchAdmins = async () => {
     try {
-      const res = await fetchWithAuth("/api/admin/fetch-admin");
+      const queryParams = new URLSearchParams();
+      if (searchQuery) queryParams.append("searchQuery", searchQuery);
+      if (roleFilter) queryParams.append("roleFilter", roleFilter);
+
+      const res = await fetchWithAuth(
+        `/api/admin/fetch-admin?${queryParams.toString()}`
+      );
       const data = await res.json();
       setAdmins(data);
     } catch (error) {
@@ -56,14 +63,6 @@ const AdminList = () => {
     setRoleFilter(e.target.value);
   };
 
-  const filteredAdmins = admins.filter((admin) => {
-    const matchesSearchQuery =
-      admin.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      admin.email.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesRoleFilter = roleFilter ? admin.role === roleFilter : true;
-    return matchesSearchQuery && matchesRoleFilter;
-  });
-
   return (
     <Card>
       <>
@@ -82,8 +81,8 @@ const AdminList = () => {
             className="border rounded-md p-2"
           >
             <option value="">All Roles</option>
-            <option value="admin">Admin</option>
-            <option value="super_admin">Super Admin</option>
+            <option value="us">Admin</option>
+            <option value="superadmin">Super Admin</option>
           </select>
           <Button onClick={fetchAdmins}>Refresh</Button>
         </div>
@@ -105,13 +104,13 @@ const AdminList = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {filteredAdmins.map((admin) => (
+            {admins.map((admin) => (
               <tr key={admin._id} className="hover:bg-gray-50 cursor-pointer">
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                   {admin.name}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {admin.email}
+                  {admin.userName}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span
@@ -124,7 +123,7 @@ const AdminList = () => {
                     {admin.role}
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td className="px-6 py-4 whitespace-nowrap text-sm flex justify-between text-gray-500">
                   {admin.role !== "super_admin" && (
                     <Button
                       onClick={() => handlePromoteToSuperAdmin(admin._id)}
@@ -133,9 +132,9 @@ const AdminList = () => {
                       Promote
                     </Button>
                   )}
-                  <Button onClick={() => handleDeleteAdmin(admin._id)}>
-                    Delete
-                  </Button>
+                  <button onClick={() => handleDeleteAdmin(admin._id)}>
+                    <TrashIcon className="h-5 w-5 text-red-600" />
+                  </button>
                 </td>
               </tr>
             ))}

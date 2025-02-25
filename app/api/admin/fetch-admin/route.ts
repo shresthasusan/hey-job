@@ -2,25 +2,35 @@ import { connectMongoDB } from "@/app/lib/mongodb";
 import Admin from "@/models/admin";
 import { NextRequest, NextResponse } from "next/server";
 
-
 export async function GET(req: NextRequest, res: NextResponse) {
 
+
+    await connectMongoDB();
+
+    const searchQuery = req.nextUrl.searchParams.get('searchQuery');
+    const roleFilter = req.nextUrl.searchParams.get('roleFilter');
+
     try {
-        await connectMongoDB();
+        let query = {};
 
-        // Authenticate the request (optional: restrict access)
+        if (searchQuery) {
+            query = {
+                ...query,
+                $or: [
+                    { name: { $regex: searchQuery, $options: "i" } },
+                    { userName: { $regex: searchQuery, $options: "i" } },
+                ],
+            };
+        }
 
+        if (roleFilter) {
+            query = { ...query, role: roleFilter };
+        }
 
-        // Fetch all admin users except the requesting admin
-        const user = JSON.parse(req.headers.get('user') || '{}');
-        const myEmail = user.email;
-        const admins = await Admin.find(
-            { userName: { $ne: myEmail } },
-            "name email role"
-        ).lean();
-        return NextResponse.json(admins, { status: 200 });
+        const admins = await Admin.find(query);
+        return NextResponse.json(admins);
     } catch (error) {
         console.error("Error fetching admins:", error);
-        return NextResponse.json({ message: "Error fetching admins" }, { status: 500 });
+        return NextResponse.error();
     }
 }

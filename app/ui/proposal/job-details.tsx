@@ -15,19 +15,17 @@ interface JobDetailsProps {
 }
 
 type Data = {
-  job: {
-    _id: string;
-    userId: string;
-    fullName: string;
-    location: string;
-    tags: string[];
-    experience: string;
-    budget: string;
-    description: string;
-    title: string;
-    createdAt: string;
-    fileUrls: string[] | [];
-  };
+  _id: string;
+  userId: string;
+  fullName: string;
+  location: string;
+  tags: string[];
+  experience: string;
+  budget: string;
+  description: string;
+  title: string;
+  createdAt: string;
+  fileUrls: string[] | [];
 };
 
 export function formatPostedDate(createdAt: string) {
@@ -69,34 +67,34 @@ const JobDetails = ({ jobId }: JobDetailsProps) => {
       <p className="font-semibold text-xl">Job Details</p>
       <div className="flex justify-between mt-2">
         <div className="py-5 space-y-8 border-r-[1px] border-gray-300 pr-5 flex-1">
-          <p className="text-xl">{data?.job.title}</p>
+          <p className="text-xl">{data?.title}</p>
           <p className="mt-3">
-            {data?.job.tags.map((tag) => (
+            {data?.tags.map((tag) => (
               <span key={tag} className="bg-gray-200 p-2 rounded-2xl  text-sm ">
                 {tag}
               </span>
             ))}
             <span className=" p-1 mx-1 text-sm text-gray-500">
-              Posted {formatPostedDate(data?.job.createdAt || "")}
+              Posted {formatPostedDate(data?.createdAt || "")}
             </span>
           </p>
-          <p className="text-gray-500 text-sm">{data?.job.description}</p>
+          <p className="text-gray-500 text-sm">{data?.description}</p>
         </div>
         <div className="py-5 m-10 pr-14 text-md">
           <div className="flex flex-col gap-5">
             <div className="flex gap-2 justify-start items-center">
               <TrophyIcon className="w-5 h-5 text-primary-500" />
-              <p className="text-black">{data?.job.experience}</p>
+              <p className="text-black">{data?.experience}</p>
             </div>
             <div className="flex gap-2 justify-start items-center">
               <BanknotesIcon className="w-5 h-5 text-primary-500" />
               <p className="text-black">
-                {""} $ {data?.job.budget}
+                {""} $ {data?.budget}
               </p>
             </div>
             <div className="flex gap-2 justify-start items-center">
               <MapPinIcon className="w-5 h-5 text-primary-500" />
-              <p className="text-black">{data?.job.location}</p>
+              <p className="text-black">{data?.location}</p>
             </div>
           </div>
         </div>
@@ -104,8 +102,8 @@ const JobDetails = ({ jobId }: JobDetailsProps) => {
       <p className="font-medium text-xl border-t-[1px] py-5 border-gray-300 mt-14">
         Attachments
         <div className="flex gap-5 mt-2">
-          {data.job.fileUrls?.length > 0 &&
-            data?.job.fileUrls.map((url, index) => (
+          {data.fileUrls?.length > 0 &&
+            data?.fileUrls.map((url, index) => (
               <Link
                 key={index}
                 className="text-primary-500 text-sm hover:underline"
