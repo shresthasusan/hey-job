@@ -2,7 +2,7 @@ import React from "react";
 
 interface CardProps {
   children: React.ReactNode; // Correct type for children
-  className: string;
+  className?: string;
 }
 
 const Card = ({ children, className }: CardProps) => {
