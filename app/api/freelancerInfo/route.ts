@@ -22,10 +22,10 @@ interface UserRequestBody {
 export async function POST(req: NextRequest) {
   try {
     // Extract user from custom header
-    const userData = req.headers.get("x-user");
+    const userData = req.headers.get("user");
     const user = userData ? JSON.parse(userData) : null;
 
-    console.log("req.user in API (from x-user):", user);
+    console.log("req.user in API (from user):", user);
 
     if (!user || !user.id) {
       return NextResponse.json({ message: "Unauthorized: No user data" }, { status: 401 });
