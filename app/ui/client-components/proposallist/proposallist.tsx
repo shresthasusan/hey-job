@@ -1,15 +1,18 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
-import { ClockIcon, CurrencyDollarIcon, MapPinIcon, TagIcon, UserIcon } from "@heroicons/react/24/outline";
+import { ClockIcon, CurrencyDollarIcon, MapPinIcon, TagIcon, UserIcon, PaperClipIcon } from "@heroicons/react/24/outline";
 import { getTimeAgo } from "../../dashboard-components/job-list/jobList";
+import JobProposalModal from "@/app/ui/client-components/jobproposalmodal/jobproposalmodal";
 
 interface Proposal {
   id: string;
   jobId: string;
   userId: string;
   clientId: string;
+  attachments: string;
   coverLetter: string;
+  bidAmount: number;
   createdAt: string;
 }
 
@@ -33,6 +36,7 @@ const AllProposalsList: React.FC<AllProposalsListProps> = ({ jobId }) => {
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [job, setJob] = useState<Job | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(null);
 
   useEffect(() => {
     const fetchJobAndProposals = async () => {
@@ -55,6 +59,14 @@ const AllProposalsList: React.FC<AllProposalsListProps> = ({ jobId }) => {
 
     fetchJobAndProposals();
   }, [jobId]);
+
+  const handleProposalClick = (proposal: Proposal) => {
+    setSelectedProposal(proposal);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedProposal(null);
+  };
 
   return (
     <div className="container mx-auto p-4">
@@ -101,18 +113,36 @@ const AllProposalsList: React.FC<AllProposalsListProps> = ({ jobId }) => {
               <p className="text-xl">No proposals found.</p>
             </div>
           ) : (
-            <div className="flex overflow-x-auto space-x-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {proposals.map((proposal) => (
                 <div
                   key={proposal.id}
-                  className="border-dotted border-2 border-gray-300 p-4 rounded-lg shadow hover:shadow-lg transition-shadow duration-300 bg-white min-w-[250px] flex-shrink-0"
+                  className="border-dotted border-2 border-gray-300 p-4 rounded-lg shadow hover:shadow-lg transition-shadow duration-300 bg-white cursor-pointer"
+                  onClick={() => handleProposalClick(proposal)}
                 >
                   <p className="text-gray-700 mb-2">{proposal.coverLetter}</p>
+                  <p className="text-gray-700 mb-2">Bid Amount: ${proposal.bidAmount}</p>
+                  {proposal.attachments && (
+                    <div className="flex items-center justify-center text-blue-500 mb-2">
+                      <PaperClipIcon className="w-5 h-5 mr-1" />
+                      <a href={proposal.attachments} target="_blank" rel="noopener noreferrer">
+                        View Attachment
+                      </a>
+                    </div>
+                  )}
                   <p className="text-gray-500 text-sm mb-1">{proposal.userId}</p>
                   <p className="text-gray-500 text-sm">{new Date(proposal.createdAt).toLocaleString()}</p>
                 </div>
               ))}
             </div>
+          )}
+
+          {selectedProposal && (
+            <JobProposalModal proposal={selectedProposal} onClose={handleCloseModal} onHire={function (): void {
+                throw new Error("Function not implemented.");
+              } } onReject={function (): void {
+                throw new Error("Function not implemented.");
+              } } />
           )}
         </>
       )}
