@@ -4,16 +4,23 @@ import mongoose, { Document, Model, Schema } from "mongoose";
 interface IAdmin extends Document {
     _id: string;
     userName: string;
+    email: string;
     name: string;
     lastName: string;
     password: string;
-
+    role: "useradmin" | "superadmin";
+    isFirstLogin: boolean;
+    createdAt: Date;
 }
 
 // Define the schema corresponding to the document interface.
-const userSchema = new Schema<IAdmin>(
+const adminSchema = new Schema<IAdmin>(
     {
         userName: {
+            type: String,
+            required: true,
+        },
+        email: {
             type: String,
             required: true,
         },
@@ -23,19 +30,31 @@ const userSchema = new Schema<IAdmin>(
         },
         name: {
             type: String,
-            required: true
+            required: true,
         },
         lastName: {
             type: String,
-            required: true
-        }
+            required: true,
+        },
+        role: {
+            type: String,
+            required: true,
+            enum: ["useradmin", "superadmin"], // Enum for role field
+        },
+        isFirstLogin: {
+            type: Boolean,
+            default: true,
+        },
+        createdAt: {
+            type: Date,
+            default: Date.now,
+        },
     },
-
     { timestamps: true }
 );
 
 // Create the model type with generics.
 const Admin: Model<IAdmin> =
-    mongoose.models.Admin || mongoose.model<IAdmin>("Admin", userSchema);
+    mongoose.models.Admin || mongoose.model<IAdmin>("Admin", adminSchema);
 
 export default Admin;

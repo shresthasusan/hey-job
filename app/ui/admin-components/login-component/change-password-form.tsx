@@ -6,11 +6,11 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
-import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 
-const LoginForm = () => {
-  const [userName, setUserName] = useState("");
-  const [password, setPassword] = useState("");
+const ChangePasswordForm = () => {
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -20,41 +20,33 @@ const LoginForm = () => {
     e.preventDefault();
     setError("");
 
-    if (userName === "" || password === "") {
-      setError("Please fill in all fields");
+    if (newPassword !== confirmPassword) {
+      setError("New passwords do not match");
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      const res = await signIn("credentials", {
-        email: userName,
-        password,
-        redirect: false,
+      const res = await fetch("/api/admin/change-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ currentPassword, newPassword }),
       });
 
-      if (res?.error) {
-        setError("Invalid Credentials");
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.message || "Error changing password");
         setIsSubmitting(false);
         return;
       }
 
-      // Fetch user data to check isFirstLogin
-      const userRes = await fetchWithAuth(
-        `/api/admin/fetch-admin?userName=${userName}`
-      );
-      const userData = await userRes.json();
-      console.log(userData);
-
-      if (userData.isFirstLogin) {
-        router.push("/admin/change-password");
-      } else {
-        router.push("/admin");
-      }
+      alert("Password changed successfully");
+      router.push("/admin");
     } catch (err) {
       setError("An unexpected error occurred");
-    } finally {
       setIsSubmitting(false);
     }
   };
@@ -64,11 +56,11 @@ const LoginForm = () => {
       <div className="relative">
         <AtSymbolIcon className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
         <input
-          type="userName"
+          type="password"
           className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md"
-          placeholder="UserName"
-          value={userName}
-          onChange={(e) => setUserName(e.target.value)}
+          placeholder="currentPassword"
+          value={currentPassword}
+          onChange={(e) => setCurrentPassword(e.target.value)}
         />
       </div>
       <div className="relative">
@@ -76,9 +68,19 @@ const LoginForm = () => {
         <input
           type="password"
           className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          placeholder="newPassword"
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+        />
+      </div>
+      <div className="relative">
+        <KeyIcon className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+        <input
+          type="password"
+          className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md"
+          placeholder="confirmPassword"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
         />
       </div>
       {error && <p className="text-red-500 text-sm">{error}</p>}
@@ -96,4 +98,4 @@ const LoginForm = () => {
   );
 };
 
-export default LoginForm;
+export default ChangePasswordForm;

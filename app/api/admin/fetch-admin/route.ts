@@ -3,15 +3,14 @@ import Admin from "@/models/admin";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest, res: NextResponse) {
-
-
     await connectMongoDB();
 
     const searchQuery = req.nextUrl.searchParams.get('searchQuery');
     const roleFilter = req.nextUrl.searchParams.get('roleFilter');
+    const userName = req.nextUrl.searchParams.get('userName');
 
     try {
-        let query = {};
+        let query: any = {};
 
         if (searchQuery) {
             query = {
@@ -25,6 +24,10 @@ export async function GET(req: NextRequest, res: NextResponse) {
 
         if (roleFilter) {
             query = { ...query, role: roleFilter };
+        }
+
+        if (userName) {
+            query = { ...query, userName: { $regex: userName, $options: "i" } };
         }
 
         const admins = await Admin.find(query);

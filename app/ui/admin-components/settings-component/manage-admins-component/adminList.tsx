@@ -115,7 +115,7 @@ const AdminList = () => {
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span
                     className={`px-3 py-1 text-sm rounded-lg font-semibold ${
-                      admin.role === "super_admin"
+                      admin.role === "superadmin"
                         ? "bg-green-500 text-white"
                         : "bg-yellow-400 text-black"
                     }`}
@@ -124,7 +124,7 @@ const AdminList = () => {
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm flex justify-between text-gray-500">
-                  {admin.role !== "super_admin" && (
+                  {admin.role !== "superadmin" && (
                     <Button
                       onClick={() => handlePromoteToSuperAdmin(admin._id)}
                       className="mr-2"

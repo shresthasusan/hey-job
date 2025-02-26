@@ -7,15 +7,20 @@ import React, { useState } from "react";
 
 const AddAdminsForm = () => {
   const [name, setName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("user_admin");
+  const [userName, setUserName] = useState("");
+  const [role, setRole] = useState("useradmin");
 
   const handleAddAdmin = async () => {
     try {
-      await fetchWithAuth("/api/admins");
-
-      setName("");
-      setEmail("");
+      const res = await fetchWithAuth("/api/admin/add-admin", {
+        method: "POST",
+        body: JSON.stringify({ name, lastName, userName, role, email }),
+      });
+      if (res.ok) {
+        alert("Admin added successfully");
+      } else alert("Error adding admin");
     } catch (error) {
       console.error("Error adding admin", error);
     }
@@ -36,7 +41,19 @@ const AddAdminsForm = () => {
             className="border rounded p-2 "
           />
           <input
-            placeholder="Email"
+            placeholder="lastName"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            className="border rounded p-2 "
+          />
+          <input
+            placeholder="userName"
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
+            className="border rounded p-2"
+          />
+          <input
+            placeholder="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="border rounded p-2"
