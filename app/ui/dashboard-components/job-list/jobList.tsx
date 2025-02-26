@@ -4,7 +4,6 @@ import { HeartIcon as Unliked, MapPinIcon } from "@heroicons/react/24/outline";
 import { useState, useEffect, use, useContext } from "react";
 import SaveButton from "../../saveButton";
 import { Appcontext } from "@/app/context/appContext";
-import { set } from "mongoose";
 import PostingSkeleton from "../skeletons/postingSkeleton";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 
@@ -38,6 +37,7 @@ export interface Job {
   fileUrls: string[];
   status: string;
 }
+
 
 export const getTimeAgo = (dateString: string) => {
   const units = [
@@ -188,15 +188,18 @@ const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
                 {job.status !== "active" && (
                   <p className="text-red-500 text-sm mt-2">
                     This job is no longer active
+
                   </p>
                 )}
               </div>
             </div>
             <SaveButton itemId={job.jobId} saved={job.saved} itemType={"job"} />
           </div>
+          
         ))
       )}
     </div>
+    
   );
 };
 

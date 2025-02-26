@@ -152,7 +152,12 @@ const AllProposalsList: React.FC<AllProposalsListProps> = ({ jobId }) => {
               <p className="text-xl">No proposals found.</p>
             </div>
           ) : (
+            <div> 
+            <p className="text-semibold text-2xl">The proposals for the job are below:</p>
+            <p className="font-extralight text-gray-500 ">Click on a proposal to view more details.</p>
+          
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              
               {proposals.map((proposal) => (
                 <div
                 key={`${proposal.id}-${proposal.userId}`}
@@ -173,6 +178,7 @@ const AllProposalsList: React.FC<AllProposalsListProps> = ({ jobId }) => {
                   <p className="text-gray-500 text-sm">{new Date(proposal.createdAt).toLocaleString()}</p>
                 </div>
               ))}
+            </div>
             </div>
           )}
 
