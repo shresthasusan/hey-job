@@ -7,9 +7,6 @@ export async function GET(req: NextRequest, res: NextResponse) {
     const userData = req.headers.get("user");
     const user = userData ? JSON.parse(userData) : null;
 
-    if (user.role !== 'superadmin') {
-        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
 
 
     const searchQuery = req.nextUrl.searchParams.get('searchQuery');
