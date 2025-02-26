@@ -76,6 +76,7 @@ export const authOptions: NextAuthOptions = {
                   name: admin.name,
                   lastname: admin.lastName,
                   id: admin._id.toString(),
+                  role: admin.role,
                 })
                   .setProtectedHeader({ alg: "HS256" })
                   .sign(secretKey);

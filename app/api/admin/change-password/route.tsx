@@ -2,7 +2,6 @@ import { connectMongoDB } from "@/app/lib/mongodb";
 import Admin from "@/models/admin";
 import bcrypt from "bcryptjs";
 import { getServerSession } from "next-auth";
-import { getSession } from "next-auth/react";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest, res: NextResponse) {
@@ -24,6 +23,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
       { status: 401 }
     );
   }
+
   try {
     const admin = await Admin.findOne({ userName: user?.email });
     if (!admin) {
@@ -39,9 +39,13 @@ export async function POST(req: NextRequest, res: NextResponse) {
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    admin.password = hashedPassword;
-    admin.isFirstLogin = false;
-    await admin.save();
+    await Admin.updateOne(
+      { _id: admin._id },
+      {
+        $set: { password: hashedPassword },
+        $unset: { isFirstLogin: "" },
+      }
+    );
 
     return NextResponse.json(
       { message: "Password changed successfully" },

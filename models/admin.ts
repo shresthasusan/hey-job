@@ -43,7 +43,6 @@ const adminSchema = new Schema<IAdmin>(
         },
         isFirstLogin: {
             type: Boolean,
-            default: true,
         },
         createdAt: {
             type: Date,
