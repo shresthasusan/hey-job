@@ -23,7 +23,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
 
         if (currentUser) {
 
-            const admins = await Admin.findOne({ _id: user._id });
+            const admins = await Admin.findOne({ _id: user.id });
             return NextResponse.json(admins);
         }
 
