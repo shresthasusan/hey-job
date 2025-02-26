@@ -9,9 +9,11 @@ import {
   CurrencyRupeeIcon,
   UserIcon,
   KeyIcon,
+  ArrowLeftStartOnRectangleIcon,
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
+import { signOut } from "next-auth/react";
 
 interface NavItemProps {
   href: string;
@@ -47,8 +49,8 @@ const SettingsSidebar: React.FC = () => {
           "/api/admin/fetch-admin?currentUser=true"
         );
         const data = await res.json();
-        if (data && data.role) {
-          setAdminRole(data.role);
+        if (data && data[0].role) {
+          setAdminRole(data[0].role);
         }
       } catch (error) {
         console.error("Error fetching admin info:", error);
@@ -57,6 +59,19 @@ const SettingsSidebar: React.FC = () => {
 
     fetchAdminInfo();
   }, []);
+
+  const handleDeleteAccount = async () => {
+    try {
+      const res = await fetchWithAuth("/api/admin/delete-account", {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        signOut();
+      }
+    } catch (error) {
+      console.error("Error deleting account:", error);
+    }
+  };
 
   return (
     <div className="left-0 top-0 h-screen px-5 w-1/6 bg-white shadow-md text-black">
@@ -121,9 +136,18 @@ const SettingsSidebar: React.FC = () => {
         </ul>
 
         {/* Logout Button */}
-        <div className="mt-auto">
+
+        <div className="mt-auto space-y-3">
           <button
-            // onClick={() => signOut()}
+            onClick={() => signOut()}
+            className={`flex items-center space-x-4 p-3 w-full rounded-lg transition
+              hover:bg-yellow-400 hover:text-black`}
+          >
+            <ArrowLeftStartOnRectangleIcon className="h-6 w-6" />
+            <span className="text-sm font-medium">Logout</span>
+          </button>
+          <button
+            onClick={() => handleDeleteAccount()}
             className={`flex items-center text-red-600 space-x-4 p-3 w-full rounded-lg transition
               hover:bg-red-600 hover:text-white`}
           >

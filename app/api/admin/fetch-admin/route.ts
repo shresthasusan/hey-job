@@ -45,7 +45,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
         }
         if (currentUser) {
 
-            query = { ...query, _id: user._id };
+            query = { ...query, _id: user.id };
         }
         const admins = await Admin.find(query);
         return NextResponse.json(admins);

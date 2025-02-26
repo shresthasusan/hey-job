@@ -100,11 +100,12 @@ export async function middleware(req: NextRequest) {
   }
 
   // 6. Prevent access to /admin/settings/manage-admins if user.role is not superadmin
-  if (
-    pathname === "/admin/settings/manage-admins" &&
-    token?.role !== "superadmin"
-  ) {
-    return NextResponse.redirect(new URL("/admin", req.url));
+  if (pathname === "/admin/settings/manage-admins") {
+    const authTokenMiddleware = await authenticateToken(req);
+    console.log(authTokenMiddleware?.user?.role);
+    if (!authTokenMiddleware?.user || authTokenMiddleware.user.role !== "superadmin") {
+      return NextResponse.redirect(new URL("/admin", req.url));
+    }
   }
 
 
