@@ -6,6 +6,7 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
+import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 
 const ChangePasswordForm = () => {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -28,7 +29,7 @@ const ChangePasswordForm = () => {
     setIsSubmitting(true);
 
     try {
-      const res = await fetch("/api/admin/change-password", {
+      const res = await fetchWithAuth("/api/admin/change-password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

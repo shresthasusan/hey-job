@@ -31,7 +31,7 @@ const LoginForm = () => {
       const res = await signIn("credentials", {
         email: userName,
         password,
-        redirect: false,
+        redirect: false, // Prevents automatic redirection
       });
 
       if (res?.error) {
@@ -40,17 +40,34 @@ const LoginForm = () => {
         return;
       }
 
-      // Fetch user data to check isFirstLogin
+      // ✅ Fetch user data
       const userRes = await fetchWithAuth(
         `/api/admin/fetch-admin?userName=${userName}`
       );
-      const userData = await userRes.json();
-      console.log(userData);
+      const userDataArray = await userRes.json();
 
+      console.log("Fetched User Data:", userDataArray); // Debugging
+
+      // ✅ Extract the first object from the array
+      const userData = userDataArray[0];
+
+      if (!userData) {
+        setError("User data not found");
+        setIsSubmitting(false);
+        return;
+      }
+
+      console.log("isFirstLogin Value:", userData.isFirstLogin);
+
+      // ✅ Check if user needs to change password
       if (userData.isFirstLogin) {
-        router.push("/admin/change-password");
+        console.log("Redirecting to change password...");
+        await new Promise((resolve) => setTimeout(resolve, 100)); // Ensure state updates
+        router.replace("/admin/change-password"); // ✅ Use `replace()` for forced navigation
       } else {
-        router.push("/admin");
+        console.log("Redirecting to admin panel...");
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        router.replace("/admin");
       }
     } catch (err) {
       setError("An unexpected error occurred");

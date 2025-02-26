@@ -22,7 +22,6 @@ export async function POST(req: NextRequest) {
     const userData = req.headers.get("user");
     const user = userData ? JSON.parse(userData) : null;
 
-    console.log("req.user in API (from user):", user);
 
     if (!user || !user.id) {
       return NextResponse.json({ message: "Unauthorized: No user data" }, { status: 401 });

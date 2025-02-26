@@ -15,9 +15,17 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
   const body = await req.json();
   const { currentPassword, newPassword } = body;
+  const userString = req.headers.get("user");
+  const user = userString ? JSON.parse(userString) : null;
 
+  if (!user || !user.id) {
+    return NextResponse.json(
+      { message: "Unauthorized: No user data" },
+      { status: 401 }
+    );
+  }
   try {
-    const admin = await Admin.findOne({ email: session.user.email });
+    const admin = await Admin.findOne({ userName: user?.email });
     if (!admin) {
       return NextResponse.json({ message: "Admin not found" }, { status: 404 });
     }
