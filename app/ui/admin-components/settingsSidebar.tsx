@@ -49,8 +49,8 @@ const SettingsSidebar: React.FC = () => {
           "/api/admin/fetch-admin?currentUser=true"
         );
         const data = await res.json();
-        if (data && data[0].role) {
-          setAdminRole(data[0].role);
+        if (data && data.role) {
+          setAdminRole(data.role);
         }
       } catch (error) {
         console.error("Error fetching admin info:", error);

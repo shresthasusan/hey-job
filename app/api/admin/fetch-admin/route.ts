@@ -20,35 +20,39 @@ export async function GET(req: NextRequest, res: NextResponse) {
 
 
     try {
-        let query: any = {};
+
+        if (currentUser) {
+
+            const admins = await Admin.findOne({ _id: user._id });
+            return NextResponse.json(admins);
+        }
+
+        // Build query with filters
+        let query: any = { _id: { $ne: user._id } }; // Exclude the current user
 
         if (searchQuery) {
-            query = {
-                ...query,
-                $or: [
-                    { name: { $regex: searchQuery, $options: "i" } },
-                    { userName: { $regex: searchQuery, $options: "i" } },
-                ],
-            };
+            query.$or = [
+                { name: { $regex: searchQuery, $options: "i" } },
+                { userName: { $regex: searchQuery, $options: "i" } },
+            ];
         }
 
         if (roleFilter) {
-            query = { ...query, role: roleFilter };
+            query.role = roleFilter;
         }
 
         if (userName) {
-            query = { ...query, userName: { $regex: userName, $options: "i" } };
+            query.userName = { $regex: userName, $options: "i" };
         }
 
         if (userId) {
-            query = { ...query, _id: userId };
+            query._id = userId; // This will override exclusion if both exist
         }
-        if (currentUser) {
 
-            query = { ...query, _id: user.id };
-        }
         const admins = await Admin.find(query);
+
         return NextResponse.json(admins);
+
     } catch (error) {
         console.error("Error fetching admins:", error);
         return NextResponse.error();

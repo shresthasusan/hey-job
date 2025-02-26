@@ -21,7 +21,7 @@ const AddAdminsForm = () => {
           "/api/admin/fetch-admin?currentUser=true"
         );
         const data = await res.json();
-        if (data[0].role !== "superadmin") {
+        if (data.role !== "superadmin") {
           router.push("/admin");
         }
       } catch (error) {
