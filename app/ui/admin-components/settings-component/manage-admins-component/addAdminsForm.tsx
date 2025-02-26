@@ -3,7 +3,8 @@
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 import { Button } from "@/app/ui/button";
 import Card from "@/app/ui/card";
-import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 
 const AddAdminsForm = () => {
   const [name, setName] = useState("");
@@ -11,6 +12,26 @@ const AddAdminsForm = () => {
   const [email, setEmail] = useState("");
   const [userName, setUserName] = useState("");
   const [role, setRole] = useState("useradmin");
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkUserRole = async () => {
+      try {
+        const res = await fetchWithAuth(
+          "/api/admin/fetch-admin?currentUser=true"
+        );
+        const data = await res.json();
+        if (data[0].role !== "superadmin") {
+          router.push("/admin");
+        }
+      } catch (error) {
+        console.error("Error fetching user role:", error);
+        router.push("/admin");
+      }
+    };
+
+    checkUserRole();
+  }, [router]);
 
   const handleAddAdmin = async () => {
     try {

@@ -1,7 +1,7 @@
 "use client";
 
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 const AdminSettingsPage = () => {
   const [settings, setSettings] = useState({
@@ -14,42 +14,6 @@ const AdminSettingsPage = () => {
     selectedUserId: "",
     selectedRole: "",
   });
-
-  const [users, setUsers] = useState<
-    { _id: string; name: string; role: string }[]
-  >([]);
-
-  useEffect(() => {
-    fetchSettings();
-    fetchUsers();
-  }, []);
-
-  const fetchSettings = async () => {
-    try {
-      const res = await fetchWithAuth("/api/settings");
-      const data = await res.json();
-      setSettings((prev) => ({
-        ...prev,
-        maintenanceMode: data.maintenanceMode,
-        darkMode: data.darkMode,
-        autoBackup: data.autoBackup,
-        twoFactorAuth: data.twoFactorAuth,
-        apiKey: data.apiKey,
-      }));
-    } catch (error) {
-      console.error("Error fetching settings:", error);
-    }
-  };
-
-  const fetchUsers = async () => {
-    try {
-      const res = await fetchWithAuth("/api/users"); // Assume an API for fetching users
-      const data = await res.json();
-      setUsers(data);
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    }
-  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -148,33 +112,6 @@ const AdminSettingsPage = () => {
           </div>
 
           {/* User Role Management */}
-          <div className="p-3 bg-white shadow rounded-lg">
-            <label className="block text-gray-700">Manage User Roles</label>
-            <select
-              name="selectedUserId"
-              value={settings.selectedUserId}
-              onChange={handleChange}
-              className="w-full p-2 border rounded mt-2 bg-white"
-            >
-              <option value="">Select User</option>
-              {users.map((user) => (
-                <option key={user._id} value={user._id}>
-                  {user.name} ({user.role})
-                </option>
-              ))}
-            </select>
-            <select
-              name="selectedRole"
-              value={settings.selectedRole}
-              onChange={handleChange}
-              className="w-full p-2 border rounded mt-2 bg-white"
-            >
-              <option value="">Select Role</option>
-              <option value="admin">Admin</option>
-              <option value="freelancer">Freelancer</option>
-              <option value="client">Client</option>
-            </select>
-          </div>
 
           {/* Submit Button */}
           <button
