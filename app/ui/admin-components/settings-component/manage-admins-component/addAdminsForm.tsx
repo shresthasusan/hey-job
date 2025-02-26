@@ -63,8 +63,8 @@ const AddAdminsForm = () => {
             value={role}
             onChange={(e) => setRole(e.target.value)}
           >
-            <option value="user_admin">User Admin</option>
-            <option value="super_admin">Super Admin</option>
+            <option value="useradmin">User Admin</option>
+            <option value="superadmin">Super Admin</option>
           </select>
         </div>
         <Button className="mt-4" onClick={handleAddAdmin}>
