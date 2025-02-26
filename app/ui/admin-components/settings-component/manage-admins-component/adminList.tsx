@@ -3,7 +3,7 @@ import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 import { Button } from "@/app/ui/button";
 import Card from "@/app/ui/card";
 import { TrashIcon } from "@heroicons/react/24/outline";
-import React, { useEffect, useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 
 interface Admin {
   _id: string;
@@ -17,11 +17,7 @@ const AdminList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
 
-  useEffect(() => {
-    fetchAdmins();
-  }, [searchQuery, roleFilter]);
-
-  const fetchAdmins = async () => {
+  const fetchAdmins = useCallback(async () => {
     try {
       const queryParams = new URLSearchParams();
       if (searchQuery) queryParams.append("searchQuery", searchQuery);
@@ -30,12 +26,19 @@ const AdminList = () => {
       const res = await fetchWithAuth(
         `/api/admin/fetch-admin?${queryParams.toString()}`
       );
+      if (!res.ok) {
+        throw new Error("Error fetching admins");
+      }
       const data = await res.json();
       setAdmins(data);
     } catch (error) {
       console.error("Error fetching admins", error);
     }
-  };
+  }, [searchQuery, roleFilter]);
+
+  useEffect(() => {
+    fetchAdmins();
+  }, [fetchAdmins]);
 
   const handlePromoteToSuperAdmin = async (adminId: string) => {
     try {
@@ -104,40 +107,53 @@ const AdminList = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {admins.map((admin) => (
-              <tr key={admin._id} className="hover:bg-gray-50 cursor-pointer">
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  {admin.name}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {admin.userName}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span
-                    className={`px-3 py-1 text-sm rounded-lg font-semibold ${
-                      admin.role === "superadmin"
-                        ? "bg-green-500 text-white"
-                        : "bg-yellow-400 text-black"
-                    }`}
+            {admins.length > 0 ? (
+              <>
+                {admins.map((admin) => (
+                  <tr
+                    key={admin._id}
+                    className="hover:bg-gray-50 cursor-pointer"
                   >
-                    {admin.role}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm flex justify-between text-gray-500">
-                  {admin.role !== "superadmin" && (
-                    <Button
-                      onClick={() => handlePromoteToSuperAdmin(admin._id)}
-                      className="mr-2"
-                    >
-                      Promote
-                    </Button>
-                  )}
-                  <button onClick={() => handleDeleteAdmin(admin._id)}>
-                    <TrashIcon className="h-5 w-5 text-red-600" />
-                  </button>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {admin.name}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {admin.userName}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`px-3 py-1 text-sm rounded-lg font-semibold ${
+                          admin.role === "superadmin"
+                            ? "bg-green-500 text-white"
+                            : "bg-yellow-400 text-black"
+                        }`}
+                      >
+                        {admin.role}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm flex justify-between text-gray-500">
+                      {admin.role !== "superadmin" && (
+                        <Button
+                          onClick={() => handlePromoteToSuperAdmin(admin._id)}
+                          className="mr-2"
+                        >
+                          Promote
+                        </Button>
+                      )}
+                      <button onClick={() => handleDeleteAdmin(admin._id)}>
+                        <TrashIcon className="h-5 w-5 text-red-600" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </>
+            ) : (
+              <tr>
+                <td colSpan={4} className="text-center py-4">
+                  No admins found
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </>

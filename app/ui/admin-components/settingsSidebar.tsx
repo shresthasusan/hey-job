@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   ServerIcon,
   BoltIcon,
@@ -11,6 +11,7 @@ import {
   KeyIcon,
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
+import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 
 interface NavItemProps {
   href: string;
@@ -37,6 +38,25 @@ const NavItem: React.FC<NavItemProps> = ({ href, icon, label, isActive }) => (
 
 const SettingsSidebar: React.FC = () => {
   const pathname = usePathname(); // Get current route
+  const [adminRole, setAdminRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchAdminInfo = async () => {
+      try {
+        const res = await fetchWithAuth(
+          "/api/admin/fetch-admin?currentUser=true"
+        );
+        const data = await res.json();
+        if (data && data.role) {
+          setAdminRole(data.role);
+        }
+      } catch (error) {
+        console.error("Error fetching admin info:", error);
+      }
+    };
+
+    fetchAdminInfo();
+  }, []);
 
   return (
     <div className="left-0 top-0 h-screen px-5 w-1/6 bg-white shadow-md text-black">
@@ -70,14 +90,16 @@ const SettingsSidebar: React.FC = () => {
             href="/admin/settings/account"
             icon={<UserIcon className="w-6 h-6" />}
             label="Account Settings"
-            isActive={pathname === "/admin"}
+            isActive={pathname === "/admin/settings/account"}
           />
-          <NavItem
-            href="/admin/settings/manage-admins"
-            icon={<KeyIcon className="w-6 h-6" />}
-            label="Manage Admins"
-            isActive={pathname === "/admin/manage-admins"}
-          />
+          {adminRole === "superadmin" && (
+            <NavItem
+              href="/admin/settings/manage-admins"
+              icon={<KeyIcon className="w-6 h-6" />}
+              label="Manage Admins"
+              isActive={pathname === "/admin/settings/manage-admins"}
+            />
+          )}
           <NavItem
             href="/admin/settings/#"
             icon={<ServerIcon className="w-6 h-6" />}

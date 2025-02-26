@@ -13,10 +13,9 @@ export async function middleware(req: NextRequest) {
     pathname === "/signup" ||
     pathname === "/api/register";
 
-  // Check if we can create a seperate middleware for the server api requests
+  // Check if we can create a separate middleware for the server API requests
   if (pathname.startsWith("/api/") && !isAuthPage) {
     const authTokenMiddleware = await authenticateToken(req);
-    // console.log('authResult:', authTokenMiddleware)
 
     if (!authTokenMiddleware?.user) {
       return NextResponse.json(
@@ -24,12 +23,21 @@ export async function middleware(req: NextRequest) {
         { status: 401 }
       );
     }
+
+    // Check for superadmin role for specific APIs
+    const SUPER_ADMIN_ROUTES = pathname === "/api/admin/promote-superadmin" || pathname === "/api/admin/delete-admin" || pathname === "/api/admin/change-password" || pathname === "/api/admin/update-admin/:id" || pathname === "/api/admin/add-admin";
+
+    if (SUPER_ADMIN_ROUTES && authTokenMiddleware.user.role !== "superadmin") {
+      return NextResponse.json(
+        { error: "Unauthorized: Superadmin role required" },
+        { status: 403 }
+      );
+    }
+
+
     // Clone the request and add the user data as a custom header
     const requestHeaders = new Headers(req.headers);
     requestHeaders.set("user", JSON.stringify(authTokenMiddleware.user));
-
-    // console.log("Set user header:", authTokenMiddleware.user);
-
 
     // Pass the modified headers to the next handler
     return NextResponse.next({
@@ -37,14 +45,7 @@ export async function middleware(req: NextRequest) {
         headers: requestHeaders,
       },
     });
-
   }
-
-
-
-  // https://nextjs.org/docs/app/building-your-application/authentication#creating-a-data-access-layer-dal
-  // better way for authorization rather than using the middleware
-  // check this and remove it all from here
 
   const isAdminAuthPage =
     pathname === "/admin/login" || pathname === "/api/admin/register";
@@ -90,7 +91,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/admin", req.url));
   }
 
-  // // 5. Handle API routes
+  // 5. Handle API routes
   if (pathname.startsWith("/api/admin") && (!token || token.role !== "admin")) {
     return new NextResponse(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
@@ -98,7 +99,16 @@ export async function middleware(req: NextRequest) {
     });
   }
 
-  // 6. If none of the above conditions are met, proceed with the request
+  // 6. Prevent access to /admin/settings/manage-admins if user.role is not superadmin
+  if (
+    pathname === "/admin/settings/manage-admins" &&
+    token?.role !== "superadmin"
+  ) {
+    return NextResponse.redirect(new URL("/admin", req.url));
+  }
+
+
+  // 7. If none of the above conditions are met, proceed with the request
   return NextResponse.next();
 }
 
