@@ -24,10 +24,9 @@ export async function middleware(req: NextRequest) {
       );
     }
 
-    // Check for superadmin role for specific APIs
-    const SUPER_ADMIN_ROUTES = pathname === "/api/admin/promote-superadmin" || pathname === "/api/admin/delete-admin" || pathname === "/api/admin/change-password" || pathname === "/api/admin/update-admin/:id" || pathname === "/api/admin/add-admin";
 
-    if (SUPER_ADMIN_ROUTES && authTokenMiddleware.user.role !== "superadmin") {
+
+    if (pathname.startsWith('/api/admin/super-admin') && authTokenMiddleware.user.role !== "superadmin") {
       return NextResponse.json(
         { error: "Unauthorized: Superadmin role required" },
         { status: 403 }

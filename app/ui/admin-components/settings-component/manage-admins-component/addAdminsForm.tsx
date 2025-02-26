@@ -35,7 +35,7 @@ const AddAdminsForm = () => {
 
   const handleAddAdmin = async () => {
     try {
-      const res = await fetchWithAuth("/api/admin/add-admin", {
+      const res = await fetchWithAuth("/api/admin/super-admin/add-admin", {
         method: "POST",
         body: JSON.stringify({ name, lastName, userName, role, email }),
       });

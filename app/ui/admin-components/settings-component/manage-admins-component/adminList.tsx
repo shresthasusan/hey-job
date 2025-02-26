@@ -42,7 +42,10 @@ const AdminList = () => {
 
   const handlePromoteToSuperAdmin = async (adminId: string) => {
     try {
-      await fetchWithAuth(`/api/admins/${adminId}`);
+      await fetchWithAuth(`/api/admin/super-admin/promote-admin`, {
+        method: "PATCH",
+        body: JSON.stringify({ adminId }),
+      });
       fetchAdmins();
     } catch (error) {
       console.error("Error promoting admin", error);
@@ -51,7 +54,12 @@ const AdminList = () => {
 
   const handleDeleteAdmin = async (adminId: string) => {
     try {
-      await fetchWithAuth(`/api/admins/${adminId}`);
+      await fetchWithAuth(
+        `/api/admin/super-admin/delete-admin?adminId=${adminId}`,
+        {
+          method: "DELETE",
+        }
+      );
       fetchAdmins();
     } catch (error) {
       console.error("Error deleting admin", error);
@@ -89,7 +97,7 @@ const AdminList = () => {
           </select>
           <Button onClick={fetchAdmins}>Refresh</Button>
         </div>
-        <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+        <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden table-fixed">
           <thead className="bg-gray-100">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -101,7 +109,7 @@ const AdminList = () => {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Role
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 w-1/12 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
@@ -131,11 +139,11 @@ const AdminList = () => {
                         {admin.role}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm flex justify-between text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm flex  justify-end text-gray-500 ">
                       {admin.role !== "superadmin" && (
                         <Button
                           onClick={() => handlePromoteToSuperAdmin(admin._id)}
-                          className="mr-2"
+                          className="mr-8 right-0 "
                         >
                           Promote
                         </Button>
