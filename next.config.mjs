@@ -11,7 +11,8 @@ const nextConfig = {
   },
   images: {
     domains: ["firebasestorage.googleapis.com", "lh3.googleusercontent.com"],
-  }
+  },
+  swcMinify: false, // Disable SWC minification
 };
 
 export default nextConfig;

@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "name": "hey-job",
   "version": "0.1.0",
   "private": true,
@@ -11,6 +12,7 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.1.4",
+    "@next/font": "^14.2.15",
     "bcryptjs": "^2.4.3",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.5",
@@ -21,7 +23,7 @@
     "jspdf": "^2.5.2",
     "jspdf-autotable": "^3.8.4",
     "mongoose": "^8.5.2",
-    "next": "^14.2.5",
+    "next": "14.2.0",
     "next-auth": "^4.24.7",
     "nodemailer": "^6.10.0",
     "react": "^18",
@@ -37,7 +39,6 @@
     "@types/nodemailer": "^6.4.17",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "bcrypt": "^5.1.1",
     "eslint": "^8",
     "eslint-config-next": "14.2.4",
     "postcss": "^8.4.49",
