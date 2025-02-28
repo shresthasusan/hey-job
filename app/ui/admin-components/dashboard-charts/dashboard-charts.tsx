@@ -3,13 +3,14 @@ import React, { useState } from "react";
 import Card from "../../card";
 import AccountGrowthChart from "./user-count";
 import Link from "next/link";
+import KYCChart from "./kyc-count";
 
 const Charts = () => {
   const [timeframe, setTimeframe] = useState<string>("monthly"); // Default to monthly
   const [chartSelected, setChartSelected] = useState<string>("Account-Growth");
 
   return (
-    <div className="flex w-1/2">
+    <div className="flex lg:w-1/2 w-full">
       <Card className="flex flex-col gap-2 p-6 shadow-lg rounded-lg border border-primary-500 bg-white">
         {/* User Growth Chart */}
         <div className="flex justify-between items-center">
@@ -38,13 +39,25 @@ const Charts = () => {
                 : "text-gray-500"
             }`}
           >
-            Account growth
+            Account
+          </Link>
+          <Link
+            onClick={() => setChartSelected("KYC-Growth")}
+            href={""}
+            className={`relative text-gray-700 font-medium transition-colors ${
+              chartSelected === "KYC-Growth"
+                ? "before:absolute before:bottom-0 before:left-0 before:w-full before:h-[2px] before:bg-primary-500 before:rounded-full"
+                : "text-gray-500"
+            }`}
+          >
+            KYC
           </Link>
         </div>
 
         {chartSelected === "Account-Growth" && (
           <AccountGrowthChart timeframe={timeframe} />
         )}
+        {chartSelected === "KYC-Growth" && <KYCChart timeframe={timeframe} />}
       </Card>
     </div>
   );

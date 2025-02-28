@@ -13,22 +13,22 @@ interface ChartProps {
   timeframe: string;
 }
 
-const AccountGrowthChart = ({ timeframe }: ChartProps) => {
-  const [userGrowth, setUserGrowth] = useState<ChartData[]>([]);
+const KYCChart = ({ timeframe }: ChartProps) => {
+  const [KYC, setKYC] = useState<ChartData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    async function fetchUserGrowth() {
+    async function KYC() {
       setLoading(true);
       const res = await fetchWithAuth(
-        `/api/admin/user-growth?timeframe=${timeframe}`
+        `/api/admin/kyc-growth?timeframe=${timeframe}`
       );
       const data: ChartData[] = await res.json();
-      setUserGrowth(data);
+      setKYC(data);
       setLoading(false);
     }
 
-    fetchUserGrowth();
+    KYC();
   }, [timeframe]);
   return (
     <>
@@ -51,12 +51,16 @@ const AccountGrowthChart = ({ timeframe }: ChartProps) => {
         >
           {/* Area Chart */}
           <AreaChart
-            data={userGrowth}
-            categories={["totalUsers", "freelancers", "clients"]}
+            data={KYC}
+            categories={["submittedKYC", "rejected", "approved"]}
             index="date"
-            colors={["blue", "emerald", "amber"]}
+            colors={["blue", "amber", "emerald"]}
             yAxisWidth={50}
+            showXAxis={true} // ✅ Ensures X-axis is visible
             // animation={{ duration: 1000 }} // Smooth animation for charts
+            xAxisLabel="Date"
+            yAxisLabel="KYC Count"
+            title="KYC Growth"
           />
         </motion.div>
       )}
@@ -64,4 +68,4 @@ const AccountGrowthChart = ({ timeframe }: ChartProps) => {
   );
 };
 
-export default AccountGrowthChart;
+export default KYCChart;
