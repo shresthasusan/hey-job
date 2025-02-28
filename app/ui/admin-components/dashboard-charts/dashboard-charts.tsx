@@ -13,7 +13,7 @@ const Charts = () => {
       <Card className="flex flex-col gap-2 p-6 shadow-lg rounded-lg border border-primary-500 bg-white">
         {/* User Growth Chart */}
         <div className="flex justify-between items-center">
-          <h1 className="px-8 font-medium text-gray-700 text-lg">
+          <h1 className="px-8 font-medium text-primary-600 text-lg">
             User Analytics
           </h1>
           {/* Dropdown for Time Frame Selection */}
@@ -28,9 +28,17 @@ const Charts = () => {
             <option value="yearly">Yearly</option>
           </select>
         </div>
-        <div className="flex gap-5">
-          <Link onClick={() => setChartSelected("Account-Growth")} href={""}>
-            User account growth chart
+        <div className="flex gap-5 px-8 py-5 ">
+          <Link
+            onClick={() => setChartSelected("Account-Growth")}
+            href={""}
+            className={`relative text-gray-700 font-medium transition-colors ${
+              chartSelected === "Account-Growth"
+                ? "before:absolute before:bottom-0 before:left-0 before:w-full before:h-[2px] before:bg-primary-500 before:rounded-full"
+                : "text-gray-500"
+            }`}
+          >
+            Account growth
           </Link>
         </div>
 
