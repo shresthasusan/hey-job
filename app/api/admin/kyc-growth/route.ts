@@ -30,8 +30,8 @@ export async function GET(
         let dateFormatter: (d: any) => string;
 
         if (timeframe === "daily") {
-            groupByCreatedAt = { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } };
-            groupByUpdatedAt = { $dateToString: { format: "%Y-%m-%d", date: "$updatedAt" } };
+            groupByCreatedAt = { $dateToString: { format: "%m-%d", date: "$createdAt" } };
+            groupByUpdatedAt = { $dateToString: { format: "%m-%d", date: "$updatedAt" } };
             dateFormatter = (d: any) => d._id; // Format YYYY-MM-DD
         } else if (timeframe === "yearly") {
             groupByCreatedAt = { $year: "$createdAt" };
