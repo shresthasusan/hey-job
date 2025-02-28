@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
         // Fetch proposals based on filter
         const proposals = await Proposal.find(filter);
 
-        console.log("Proposals fetched successfully", { jobId });
+
         return NextResponse.json({ proposals }, { status: 200 });
 
     } catch (error) {

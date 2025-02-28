@@ -11,7 +11,6 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     try {
         const session = await getServerSession(); // Get user session
         if (!session || !session.user) {
-            console.log("Session Data:", session);
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
@@ -31,7 +30,6 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
         // Check if a proposal already exists for this job and user
         const existingProposal = await Proposal.find({ jobId: jobId, userId: id });
-        console.log("Existing Proposal Check:", existingProposal);
 
         if (existingProposal.length > 0) {
             return NextResponse.json({ error: "You have already submitted a proposal for this job" }, { status: 409 });

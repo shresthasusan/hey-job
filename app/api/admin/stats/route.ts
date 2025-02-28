@@ -19,7 +19,7 @@ export async function GET() {
     const pendingKyc = await KYC.countDocuments({ status: 'pending' });
     const rejectedKyc = await KYC.countDocuments({ status: 'rejected' });
 
-    console.log("Total users:", totalUsers, "Freelancers:", freelancers, "Clients:", clients);
+
 
     return NextResponse.json({ totalUsers, freelancers, clients, totalKyc, approvedKyc, pendingKyc, rejectedKyc });
   } catch (error) {

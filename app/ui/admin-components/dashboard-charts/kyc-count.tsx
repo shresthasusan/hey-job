@@ -8,6 +8,9 @@ import { AreaChart } from "../../tremorChart-components/area-chart";
 interface ChartData {
   date: string;
   count: number;
+  approvedCount: number;
+  rejectedCount: number;
+  pendingCount: number;
 }
 interface ChartProps {
   timeframe: string;
@@ -62,6 +65,20 @@ const KYCChart = ({ timeframe }: ChartProps) => {
             yAxisLabel="KYC Count"
             title="KYC Growth"
           />
+          <p className="text-center flex gap-4 mt-6 text-sm">
+            <span className="text-blue-500">
+              total submittedKYC: {KYC[0].count}{" "}
+            </span>
+            <span className="text-danger-600">
+              rejected docs: {KYC[0].rejectedCount}
+            </span>
+            <span className="text-sucess-600">
+              approved docs: {KYC[0].approvedCount}
+            </span>{" "}
+            <span className="text-primary-500">
+              pending docs: {KYC[0].pendingCount}
+            </span>
+          </p>
         </motion.div>
       )}
     </>

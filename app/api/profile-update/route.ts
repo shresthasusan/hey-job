@@ -27,7 +27,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Unauthorized: No user data" }, { status: 401 });
     }
     const userId = user.id;
-    console.log("Extracted userId:", userId); // Confirm userId is set
 
     const {
       dob,
@@ -40,16 +39,6 @@ export async function POST(req: NextRequest) {
       profilePicture,
     }: RequestBody = await req.json();
 
-    console.log("Request Body:", {
-      dob,
-      country,
-      streetAddress,
-      city,
-      state,
-      zipPostalCode,
-      phone,
-      profilePicture,
-    });
 
     await connectMongoDB();
 
@@ -63,7 +52,6 @@ export async function POST(req: NextRequest) {
     if (phone) fieldsToUpdate.phone = phone;
     if (profilePicture) fieldsToUpdate.profilePicture = profilePicture;
 
-    console.log("Fields to Update:", fieldsToUpdate);
 
     const updatedUser = await User.findOneAndUpdate(
       { _id: userId },
@@ -71,7 +59,6 @@ export async function POST(req: NextRequest) {
       { new: true, runValidators: true, strict: false }
     );
 
-    console.log("Updated User:", updatedUser);
 
     if (!updatedUser) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });

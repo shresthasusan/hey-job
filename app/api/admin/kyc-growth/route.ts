@@ -70,6 +70,11 @@ export async function GET(
             ...approvedKYC.map(d => d._id)
         ]);
 
+        const count = await KYC.countDocuments();
+        const rejectedCount = await KYC.countDocuments({ status: "rejected" });
+        const approvedCount = await KYC.countDocuments({ status: "approved" });
+        const pendingCount = count - (rejectedCount + approvedCount);
+
         const mergedData = Array.from(allDates).sort().map(date => {
             const submittedData = submittedKYC.find(d => d._id === date) || { submittedKYC: 0 };
             const rejectedData = rejectedKYC.find(d => d._id === date) || { totalRejected: 0 };
@@ -79,7 +84,13 @@ export async function GET(
                 date: dateFormatter({ _id: date }),
                 submittedKYC: submittedData.submittedKYC,
                 rejected: rejectedData.totalRejected,
-                approved: approvedData.totalApproved
+                approved: approvedData.totalApproved,
+                pendingCount: pendingCount,
+                count: count,
+                rejectedCount: rejectedCount,
+                approvedCount: approvedCount
+
+
             };
         });
 

@@ -38,7 +38,6 @@ async function sendEmail(email: string, token: string) {
   };
 
   await transporter.sendMail(mailOptions);
-  console.log("✅ Email sent to:", email);
 }
 
 export async function POST(req: NextRequest) {
@@ -62,15 +61,12 @@ export async function POST(req: NextRequest) {
     // Create new user and retrieve `_id`
     const newUser = await User.create({ email, name, lastName, password: hashedPassword });
 
-    console.log("✅ User Created:", newUser._id);
 
     // Generate email verification token
     const token = await createVerificationToken(email) as string;
-    console.log("✅ Verification Token Created:", token);
 
     // Send email verification
     await sendEmail(email, token);
-    console.log("✅ Email Sent:", email);
 
     // Return user _id along with success message
     return NextResponse.json({

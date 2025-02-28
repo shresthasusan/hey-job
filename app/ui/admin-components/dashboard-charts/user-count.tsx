@@ -8,6 +8,10 @@ import { AreaChart } from "../../tremorChart-components/area-chart";
 interface ChartData {
   date: string;
   count: number;
+  totalUsers: number;
+  totalfreelancers: number;
+  users: number;
+  totalclients: number;
 }
 interface ChartProps {
   timeframe: string;
@@ -52,12 +56,26 @@ const AccountGrowthChart = ({ timeframe }: ChartProps) => {
           {/* Area Chart */}
           <AreaChart
             data={userGrowth}
-            categories={["totalUsers", "freelancers", "clients"]}
+            categories={["users", "freelancers", "clients"]}
             index="date"
             colors={["blue", "emerald", "amber"]}
             yAxisWidth={50}
             // animation={{ duration: 1000 }} // Smooth animation for charts
+            title="User Growth"
+            xAxisLabel="Date"
+            yAxisLabel="Users"
           />
+          <p className="text-center flex gap-4 mt-6 text-sm">
+            <span className="text-blue-500">
+              total users: {userGrowth[0].totalUsers}
+            </span>
+            <span className="text-sucess-600">
+              total freelancers: {userGrowth[0].totalfreelancers}
+            </span>{" "}
+            <span className="text-primary-500">
+              total clients: {userGrowth[0].totalclients}
+            </span>
+          </p>
         </motion.div>
       )}
     </>

@@ -59,6 +59,10 @@ export async function GET(
             { $sort: { "_id": 1 } }
         ]);
 
+        const totalUsers = await User.countDocuments();
+        const totalFreelancers = await FreelancerInfo.countDocuments();
+        const totalClients = await ClientInfo.countDocuments();
+
         // Merge user, freelancer, and client growth data
         const mergedData = userGrowth.map(userData => {
             const freelancerData = freelancerGrowth.find(d => d._id === userData._id) || { freelancers: 0 };
@@ -66,9 +70,12 @@ export async function GET(
 
             return {
                 date: dateFormatter(userData),
-                totalUsers: userData.totalUsers,
+                users: userData.totalUsers,
                 freelancers: freelancerData.freelancers,
-                clients: clientData.clients
+                clients: clientData.clients,
+                totalUsers,
+                totalFreelancers,
+                totalClients
             };
         });
 

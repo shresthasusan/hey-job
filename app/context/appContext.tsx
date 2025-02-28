@@ -115,7 +115,6 @@ const Appcontextprovider: React.FC<Props> = ({ children }) => {
           });
         }
       }, 6000);
-      console.log("loadUserData function called");
       // Clear the interval when the component unmounts
       clearInterval(intervalId);
     } catch (error) {

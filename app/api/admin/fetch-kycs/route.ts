@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
         // Fetch KYC data based on filter
         const kycs = await KYC.find(filter);
 
-        console.log("KYC data fetched successfully", { status, search });
+
         return NextResponse.json(kycs, { status: 200 });
 
     } catch (error) {

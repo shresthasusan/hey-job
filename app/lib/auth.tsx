@@ -91,7 +91,6 @@ export const authOptions: NextAuthOptions = {
                 };
               }
             }
-            console.log("User not found:", email);
             return null;
           }
 

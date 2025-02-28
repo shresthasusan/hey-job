@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     const userData = req.headers.get("user");
     const user = userData ? JSON.parse(userData) : null;
 
-    console.log("req.user in API (from user):", user);
+
 
     if (!user || !user.id) {
       return NextResponse.json({ message: "Unauthorized: No user data" }, { status: 401 });
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
     const userId = user.id;
     const fullName = user.name + " " + user.lastName;
     const email = user.email;
-    console.log("Extracted userId:", userId); // Confirm userId is set
+
 
     const {
       location,

@@ -12,7 +12,6 @@ interface Props {
 
 const page = ({ searchParams }: Props) => {
   const query = searchParams?.title || "";
-  console.log(query);
   return (
     <Suspense fallback={<Loading />}>
       <FreelancerList query={query} savedFreelancers={true} />
