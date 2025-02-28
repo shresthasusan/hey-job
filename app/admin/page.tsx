@@ -1,7 +1,7 @@
 import React from "react";
 import Sidebar from "../ui/admin-components/sidebar";
 import "../ui/globals.css";
-import Charts from "../ui/admin-components/dashboard-charts";
+import Charts from "../ui/admin-components/dashboard-charts/dashboard-charts";
 
 const Page = () => {
   return (
