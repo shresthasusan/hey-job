@@ -43,7 +43,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
         }
 
         if (userId) {
-            query._id = userId; // This will override exclusion if both exist
+            query._id = { $regex: userId, $options: "i" }; // This will override exclusion if both exist
         }
 
         const admins = await Admin.find(query);

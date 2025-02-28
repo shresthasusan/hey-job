@@ -1,8 +1,7 @@
 import React from "react";
 import Sidebar from "../ui/admin-components/sidebar";
-import Comp from "../ui/admin-components/cards";
 import "../ui/globals.css";
-import OrderCard from "../ui/dashboard-components/orderCard";
+import Charts from "../ui/admin-components/dashboard-charts";
 
 const Page = () => {
   return (
@@ -11,18 +10,17 @@ const Page = () => {
       <Sidebar />
 
       {/* Main Content */}
-      <div className="flex p-6 flex-col md:p-10">
+      <div className="flex p-6 flex-col md:p-10 w-full">
         {/* Header */}
         <h1 className="text-4xl text-black-400 text-center md:text-left">
           Admin Dashboard
         </h1>
 
         {/* Content Section */}
-        <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-10">
+        <div className="mt-10  md:grid-cols-2 gap-10">
           {/* Left Column - Cards */}
-          <div className="flex flex-col gap-6">
-            <Comp />
-          </div>
+
+          <Charts />
 
           {/* Right Column - Additional Components */}
           <div className="flex flex-col gap-6"></div>
