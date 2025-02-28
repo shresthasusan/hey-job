@@ -19,7 +19,7 @@ const ProfilePage: React.FC = () => {
     if (session?.user) {
       setName(session.user.name || "");
       /* {setBio(session.user.bio || "");
-      setProfilePicture(session.user.image || "/default-avatar.png");}*/
+      setProfilePicture(session.user.image || "/images/image1.png");}*/
     }
   }, [session]);
 
@@ -81,7 +81,7 @@ const ProfilePage: React.FC = () => {
       {/* Profile Picture */}
       <div className="flex flex-col items-center my-4">
         <Image
-          src={profilePicture || "/default-avatar.png"}
+          src={profilePicture || "/images/image1.png"}
           width={100}
           height={100}
           className="rounded-full border"

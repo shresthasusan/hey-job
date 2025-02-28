@@ -61,13 +61,21 @@ const Sidebar: React.FC = () => {
 
         {/* Admin Profile Section */}
         <div className="flex flex-col items-center px-4 py-4 border-b">
-          <Image
-            src="/image1.png" // Change this to the admin's actual avatar URL
+          {/* <Image
+            src="/images/placeholder-614" // Change this to the admin's actual avatar URL
             alt="Admin Avatar"
             className="w-14 h-14 rounded-full border-2 border-gray-300"
             width={50}
             height={50}
+          /> */}
+          <Image
+            src="/images/placeholder-614"
+            alt="Admin Avatar"
+            width={50}
+            height={50}
+            className="w-14 h-14 rounded-full border-2 border-gray-300"
           />
+
           <span className="mt-2 font-semibold text-sm">John Doe</span>
         </div>
 

@@ -78,7 +78,7 @@ const ProfileUploadForm = () => {
 
   const handleRemoveFile = () => {
     setFile(null);
-    setPreview("/image1.png");
+    setPreview("/images/image1.png");
     if (preview.startsWith("blob:")) {
       URL.revokeObjectURL(preview); // Clean up blob URL
     }

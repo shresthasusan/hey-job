@@ -203,7 +203,7 @@ const ChatList: React.FC = () => {
                 >
                   <div className="w-1/4">
                     <Image
-                      src={user.avatar || "/default-avatar.png"}
+                      src={user.avatar || "/images/image1.png"}
                       className="object-cover h-12 w-12 rounded-full"
                       alt={user.username}
                       width={48}
@@ -223,7 +223,7 @@ const ChatList: React.FC = () => {
                 >
                   <div className="w-1/4">
                     <Image
-                      src={item.userData.avatar || "/default-avatar.png"}
+                      src={item.userData.avatar || "/images/image1.png"}
                       className="object-cover h-12 w-12 rounded-full"
                       alt={item.userData.username}
                       width={48}
