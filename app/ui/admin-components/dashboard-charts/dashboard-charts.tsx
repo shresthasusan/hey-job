@@ -4,6 +4,8 @@ import Card from "../../card";
 import AccountGrowthChart from "./user-count";
 import Link from "next/link";
 import KYCChart from "./kyc-count";
+import JobProposalModal from "../../client-components/jobproposalmodal/jobproposalmodal";
+import JobsProposalChart from "./jobs-insights-chart";
 
 const Charts = () => {
   const [timeframe, setTimeframe] = useState<string>("monthly"); // Default to monthly
@@ -51,6 +53,17 @@ const Charts = () => {
             }`}
           >
             KYC
+          </Link>{" "}
+          <Link
+            onClick={() => setChartSelected("jobProposal")}
+            href={""}
+            className={`relative text-gray-700 font-medium transition-colors ${
+              chartSelected === "jobProposal"
+                ? "before:absolute before:bottom-0 before:left-0 before:w-full before:h-[2px] before:bg-primary-500 before:rounded-full"
+                : "text-gray-500"
+            }`}
+          >
+            Jobs & Proposals
           </Link>
         </div>
 
@@ -58,6 +71,9 @@ const Charts = () => {
           <AccountGrowthChart timeframe={timeframe} />
         )}
         {chartSelected === "KYC-Growth" && <KYCChart timeframe={timeframe} />}
+        {chartSelected === "jobProposal" && (
+          <JobsProposalChart timeframe={timeframe} />
+        )}
       </Card>
     </div>
   );

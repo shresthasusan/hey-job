@@ -1,5 +1,11 @@
 import mongoose, { Schema, Document } from "mongoose";
 
+interface StatusHistory {
+    status: string;
+    changedAt: Date;
+}
+
+
 export interface IProposal extends Document {
     jobId: mongoose.Types.ObjectId;
     userId: mongoose.Types.ObjectId;
@@ -9,6 +15,7 @@ export interface IProposal extends Document {
     bidAmount: number;
     duration: 'less than 1 month' | "1 to 3 months" | "3 to 6 months" | "more than 6 months";
     status: "pending" | "shortlisted" | "accepted" | "rejected" | "withdrawn" | "canceled";
+    statusHistory: StatusHistory[];
     createdAt: Date;
     updatedAt: Date;
 }
@@ -29,7 +36,13 @@ const ProposalSchema: Schema = new Schema(
             type: String,
             enum: ["pending", "shortlisted", "accepted", "rejected", "withdrawn", "canceled"],
             default: "pending"
-        }
+        },
+        statusHistory: [
+            {
+                status: { type: String, required: true, default: "pending" },
+                changedAt: { type: Date, default: Date.now }
+            }
+        ]
     },
     { timestamps: true }
 );

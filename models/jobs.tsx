@@ -1,8 +1,13 @@
 import mongoose, { Document, Schema, Model } from "mongoose";
 
-// Define an interface representing the FreelancerInfo document
+// Define an interface representing the Jobs document
+interface StatusHistory {
+  status: string;
+  changedAt: Date;
+}
+
 interface IJobs extends Document {
-  userId: mongoose.Schema.Types.ObjectId; // Reference to User's _id
+  userId: mongoose.Schema.Types.ObjectId;
   fullName: string;
   title: string;
   type: string;
@@ -12,17 +17,19 @@ interface IJobs extends Document {
   tags: string[];
   location: string;
   fileUrls: string[];
-  status: string;
+  status: "active" | "in-progress" | "completed" | "canceled";
+  statusHistory: StatusHistory[];
+  createdAt: Date;
+  modifiedAt: Date;
 }
 
-// Define the FreelancerInfo schema
+// Define the Jobs schema
 const jobsSchema = new Schema<IJobs>(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      unique: false,
     },
     fullName: {
       type: String,
@@ -33,7 +40,7 @@ const jobsSchema = new Schema<IJobs>(
       required: true,
     },
     tags: {
-      type: [String], // Array of strings
+      type: [String],
       required: true,
     },
     experience: {
@@ -62,13 +69,24 @@ const jobsSchema = new Schema<IJobs>(
     },
     status: {
       type: String,
-      required: true,
+      enum: ["in-progress", "active", "completed", "canceled"],
+      default: "active",
     },
+    statusHistory: [
+      {
+        status: { type: String, required: true, default: "active" },
+        changedAt: { type: Date, default: Date.now },
+      },
+    ],
   },
   { timestamps: true }
 );
 
-// Create the model for FreelancerInfo
+// ✅ Indexing for optimized queries
+jobsSchema.index({ createdAt: 1 });
+jobsSchema.index({ "statusHistory.changedAt": 1 });
+
+// Create the model
 const Jobs: Model<IJobs> =
   mongoose.models.Jobs || mongoose.model<IJobs>("Jobs", jobsSchema);
 

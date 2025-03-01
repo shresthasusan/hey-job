@@ -9,9 +9,9 @@ interface ChartData {
   date: string;
   count: number;
   totalUsers: number;
-  totalfreelancers: number;
+  totalFreelancers: number;
   users: number;
-  totalclients: number;
+  totalClients: number;
 }
 interface ChartProps {
   timeframe: string;
@@ -70,10 +70,10 @@ const AccountGrowthChart = ({ timeframe }: ChartProps) => {
               total users: {userGrowth[0].totalUsers}
             </span>
             <span className="text-sucess-600">
-              total freelancers: {userGrowth[0].totalfreelancers}
+              total freelancers: {userGrowth[0].totalFreelancers}
             </span>{" "}
             <span className="text-primary-500">
-              total clients: {userGrowth[0].totalclients}
+              total clients: {userGrowth[0].totalClients}
             </span>
           </p>
         </motion.div>
