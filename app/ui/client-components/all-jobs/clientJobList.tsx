@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import JobDetailsModal from "@/app/ui/client-components/jobdetailsmodal/jobDetailCard";
+import JobDetailsModal from "@/app/ui/client-components/jobdetailsmodal/jobdetailscard";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 
 interface Job {

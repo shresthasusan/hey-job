@@ -23,10 +23,9 @@ interface JobProposalModalProps {
   proposal: Proposal;
   onClose: () => void;
   onHire: () => void;
-  onReject: () => void;
 }
 
-const JobProposalModal: React.FC<JobProposalModalProps> = ({ proposal, onClose, onHire, onReject }) => {
+const JobProposalModal: React.FC<JobProposalModalProps> = ({ proposal, onClose, onHire }) => {
   const [freelancer, setFreelancer] = useState<Freelancer | null>(null);
 
   useEffect(() => {
@@ -75,13 +74,7 @@ const JobProposalModal: React.FC<JobProposalModalProps> = ({ proposal, onClose, 
             <p className="text-lg"><strong>Created Time:</strong> {new Date(proposal.createdAt).toLocaleString()}</p>
           </div>
         </div>
-        <div className="mt-6 flex justify-between space-x-4">
-          <button
-            onClick={onReject}
-            className="px-6 py-3 bg-red-400 text-white rounded-full hover:bg-red-700 transition-colors duration-300"
-          >
-            Reject
-          </button>
+        <div className="mt-6 justify-centre space-x-4">
           <button
             onClick={onHire}
             className="px-6 py-3 bg-green-400 text-white rounded-full hover:bg-green-700 transition-colors duration-300"

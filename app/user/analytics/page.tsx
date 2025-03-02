@@ -29,9 +29,7 @@ const AnalyticsPage: React.FC = () => {
                     <p className="text-gray-600 mt-2">Total Revenue: <span className="font-bold text-gray-800">$5,000</span></p>
                 </div>
 
-                <div>
-                   
-                </div>
+               
             </div>
         </div>
     );
