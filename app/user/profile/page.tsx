@@ -12,14 +12,19 @@ const ProfilePage: React.FC = () => {
   const { data: session } = useSession();
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
+  const [dob, setDob] = useState("");
+  const [country, setCountry] = useState("");
+  const [streetAddress, setStreetAddress] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [zipPostalCode, setZipPostalCode] = useState("");
+  const [phone, setPhone] = useState("");
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (session?.user) {
       setName(session.user.name || "");
-      /* {setBio(session.user.bio || "");
-      setProfilePicture(session.user.image || "/images/image1.png");}*/
     }
   }, [session]);
 
@@ -51,13 +56,20 @@ const ProfilePage: React.FC = () => {
   // Handle Profile Update
   const handleUpdateProfile = async () => {
     try {
-      // Create a different file to handle all the fetch methods and attach the headers there. or can create a middleware for the requests as well where you can attach it.
       const response = await fetchWithAuth("/api/profile-update", {
         method: "POST",
-
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
-          name,
-          bio,
+          userId: session?.user.id,
+          dob,
+          country,
+          streetAddress,
+          city,
+          state,
+          zipPostalCode,
+          phone,
           profilePicture,
         }),
       });
@@ -108,6 +120,83 @@ const ProfilePage: React.FC = () => {
         <textarea
           value={bio}
           onChange={(e) => setBio(e.target.value)}
+          className="w-full border p-2 rounded-md"
+        />
+      </div>
+
+      {/* Date of Birth */}
+      <div className="my-3">
+        <label className="block text-gray-600 font-medium">Date of Birth</label>
+        <input
+          type="date"
+          value={dob}
+          onChange={(e) => setDob(e.target.value)}
+          className="w-full border p-2 rounded-md"
+        />
+      </div>
+
+      {/* Country */}
+      <div className="my-3">
+        <label className="block text-gray-600 font-medium">Country</label>
+        <input
+          type="text"
+          value={country}
+          onChange={(e) => setCountry(e.target.value)}
+          className="w-full border p-2 rounded-md"
+        />
+      </div>
+
+      {/* Street Address */}
+      <div className="my-3">
+        <label className="block text-gray-600 font-medium">Street Address</label>
+        <input
+          type="text"
+          value={streetAddress}
+          onChange={(e) => setStreetAddress(e.target.value)}
+          className="w-full border p-2 rounded-md"
+        />
+      </div>
+
+      {/* City */}
+      <div className="my-3">
+        <label className="block text-gray-600 font-medium">City</label>
+        <input
+          type="text"
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
+          className="w-full border p-2 rounded-md"
+        />
+      </div>
+
+      {/* State */}
+      <div className="my-3">
+        <label className="block text-gray-600 font-medium">State</label>
+        <input
+          type="text"
+          value={state}
+          onChange={(e) => setState(e.target.value)}
+          className="w-full border p-2 rounded-md"
+        />
+      </div>
+
+      {/* ZIP/Postal Code */}
+      <div className="my-3">
+        <label className="block text-gray-600 font-medium">ZIP/Postal Code</label>
+        <input
+          type="text"
+          value={zipPostalCode}
+          onChange={(e) => setZipPostalCode(e.target.value)}
+          className="w-full border p-2 rounded-md"
+        />
+      </div>
+
+      {/* Phone */}
+      <div className="my-3">
+        <label className="block text-gray-600 font-medium">Phone</label>
+        <input
+          type="text"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
           className="w-full border p-2 rounded-md"
         />
       </div>

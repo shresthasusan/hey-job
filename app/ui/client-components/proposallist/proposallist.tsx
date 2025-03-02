@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 import { ClockIcon, CurrencyDollarIcon, MapPinIcon, TagIcon, UserIcon, PaperClipIcon } from "@heroicons/react/24/outline";
 import { getTimeAgo } from "../../dashboard-components/job-list/jobList";
-import JobProposalModal from "@/app/ui/client-components/jobproposalmodal/jobproposalmodal";
+import JobProposalModal from "@/app/ui/client-components/joblist-client/joblistmodal";
 
 interface Proposal {
   id: string;
@@ -91,21 +91,34 @@ const AllProposalsList: React.FC<AllProposalsListProps> = ({ jobId }) => {
     setSelectedProposal(null);
   };
 
-  const handleHire = () => {
+  const handleHire = async () => {
     if (selectedProposal) {
-      // Add your hire logic here
-      console.log('Hired:', selectedProposal);
-      setSelectedProposal(null);
+      try {
+        const response = await fetch('/api/hireProposal', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            proposalId: selectedProposal.id,
+            freelancerId: selectedProposal.userId,
+            jobId: selectedProposal.jobId,
+          }),
+        });
+
+        if (response.ok) {
+          console.log('Hired:', selectedProposal);
+          setSelectedProposal(null);
+        } else {
+          console.error('Error hiring freelancer');
+        }
+      } catch (error) {
+        console.error('Error hiring freelancer:', error);
+      }
     }
   };
 
-  const handleReject = () => {
-    if (selectedProposal) {
-      // Add your reject logic here
-      console.log('Rejected:', selectedProposal);
-      setSelectedProposal(null);
-    }
-  };
+ 
 
   return (
     <div className="container mx-auto p-4">
@@ -187,7 +200,6 @@ const AllProposalsList: React.FC<AllProposalsListProps> = ({ jobId }) => {
               proposal={selectedProposal}
               onClose={handleCloseModal}
               onHire={handleHire}
-              onReject={handleReject}
             />
           )}
         </>
