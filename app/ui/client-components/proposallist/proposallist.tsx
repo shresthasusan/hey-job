@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 import { ClockIcon, CurrencyDollarIcon, MapPinIcon, TagIcon, UserIcon, PaperClipIcon } from "@heroicons/react/24/outline";
 import { getTimeAgo } from "../../dashboard-components/job-list/jobList";
-import JobProposalModal from "@/app/ui/client-components/joblist-client/joblistmodal";
+import JobProposalModal from "@/app/ui/client-components/joblist-client/joblistpopupmodal";
 
 interface Proposal {
   id: string;
