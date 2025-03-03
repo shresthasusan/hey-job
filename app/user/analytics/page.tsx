@@ -1,6 +1,6 @@
-"use client";
 
 import { UsersIcon, ClockIcon, CurrencyDollarIcon } from "@heroicons/react/24/solid";
+import Charts from "@/app/ui/admin-components/dashboard-charts/dashboard-charts";
 
 const AnalyticsPage: React.FC = () => {
     return (
@@ -28,6 +28,8 @@ const AnalyticsPage: React.FC = () => {
                     <h2 className="text-xl font-semibold mt-3">Revenue</h2>
                     <p className="text-gray-600 mt-2">Total Revenue: <span className="font-bold text-gray-800">$5,000</span></p>
                 </div>
+
+               
             </div>
         </div>
     );

@@ -4,7 +4,7 @@ import Card from "../../card";
 import AccountGrowthChart from "./user-count";
 import Link from "next/link";
 import KYCChart from "./kyc-count";
-import JobProposalModal from "../../client-components/jobproposalmodal/jobproposalmodal";
+import JobProposalModal from "../../client-components/joblist-client/joblistmodal";
 import JobsProposalChart from "./jobs-insights-chart";
 import PopularIndustriesChart from "./popular-chart";
 
