@@ -7,6 +7,7 @@ interface IFreelancerInfo extends Document {
   email: string;
   location: string;
   skills: string[];
+  industries: string[];
   workExperience?: {
     jobTitle: string;
     company: string;
@@ -90,6 +91,11 @@ const freelancerInfoSchema = new Schema<IFreelancerInfo>(
     rate: {
       type: String,
       required: true,
+    },
+    industries: {
+      type: [String],
+      required: true,
+      default: [],
     },
   },
   { timestamps: true }

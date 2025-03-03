@@ -4,7 +4,7 @@ interface IClientInfo extends mongoose.Document {
     userId: mongoose.Schema.Types.ObjectId;
     fullName: string;
     isCompany: boolean;
-    industry: string;
+    industry: string[];
     companySize?: string;
     averageBudget: number;
     preferredSkills: string[];
@@ -29,21 +29,9 @@ const clientInfoSchema = new mongoose.Schema<IClientInfo>(
             required: true, // True if the client is a company, False if an individual
         },
         industry: {
-            type: String,
+            type: [String],
             required: true,
-            enum: [
-                "Technology",
-                "Finance",
-                "Healthcare",
-                "Education",
-                "Marketing",
-                "E-commerce",
-                "Construction",
-                "Automotive",
-                "Legal",
-                "Entertainment",
-                "Other",
-            ],
+            default: [],
         },
 
         companySize: {

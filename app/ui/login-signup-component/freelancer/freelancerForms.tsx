@@ -82,6 +82,7 @@ const MultiStepForm = () => {
   // Define initial form data using the FormData type
   const initialFormData: FormData = {
     location: "",
+    industries: [],
     skills: [],
     workExperience: [],
     projectPortfolio: [],

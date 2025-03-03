@@ -4,16 +4,19 @@ import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Button } from "@/app/ui/button";
 import { useRouter } from "next/navigation";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { storage } from "../../../lib/firebase"; // Firebase storage import
 import clsx from "clsx";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
+import {
+  jobCategories,
+  skills as predefinedSkills,
+  languageTags,
+} from "@/app/lib/data";
 
 interface ClientFormData {
   userId?: string;
   fullName: string;
   isCompany: boolean;
-  industry: string;
+  industry: string[];
   companySize?: "Startup" | "Small" | "Medium" | "Large";
   location: string;
   preferredSkills: string[];
@@ -44,7 +47,7 @@ const ClientForm = () => {
     userId: "",
     fullName: "",
     isCompany: false,
-    industry: "",
+    industry: [],
     companySize: undefined,
     location: "",
     preferredSkills: [],
@@ -55,6 +58,11 @@ const ClientForm = () => {
   const [formData, setFormData] = useState<ClientFormData>(initialFormData);
   const [companyLogo, setCompanyLogo] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  // Tag input states
+  const [tagInput, setTagInput] = useState<{ [key: string]: string }>({
+    industry: "",
+    preferredSkills: "",
+  });
 
   useEffect(() => {
     if (session) {
@@ -65,6 +73,47 @@ const ClientForm = () => {
       }));
     }
   }, [session]);
+
+  // Handles adding tags dynamically
+  const handleTagChange = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    field: "industry" | "preferredSkills"
+  ) => {
+    if (e.key === "Enter" && tagInput[field].trim()) {
+      e.preventDefault();
+      if (!formData[field].includes(tagInput[field].trim())) {
+        setFormData((prev) => ({
+          ...prev,
+          [field]: [...(prev[field] as string[]), tagInput[field].trim()],
+        }));
+      }
+      setTagInput((prev) => ({ ...prev, [field]: "" }));
+    }
+  };
+
+  // Removes a selected tag
+  const removeTag = (field: "industry" | "preferredSkills", tag: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: Array.isArray(prev[field])
+        ? prev[field].filter((t) => t !== tag)
+        : prev[field],
+    }));
+  };
+
+  // Filters recommendations based on input
+  const filteredRecommendations = {
+    industry: jobCategories.filter(
+      (industry) =>
+        industry.toLowerCase().includes(tagInput.industry.toLowerCase()) &&
+        !formData.industry.includes(industry)
+    ),
+    preferredSkills: predefinedSkills.filter(
+      (skill) =>
+        skill.toLowerCase().includes(tagInput.preferredSkills.toLowerCase()) &&
+        !formData.preferredSkills.includes(skill)
+    ),
+  };
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -79,13 +128,6 @@ const ClientForm = () => {
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
-  };
-
-  const handleSkillsChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      preferredSkills: e.target.value.split(",").map((skill) => skill.trim()),
-    });
   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -160,25 +202,6 @@ const ClientForm = () => {
         </label>
       </div>
 
-      {/* Industry */}
-      <div className="mt-3">
-        <label className="block font-medium">Industry</label>
-        <select
-          name="industry"
-          value={formData.industry}
-          onChange={handleChange}
-          required
-          className="w-full border rounded-md p-2"
-        >
-          <option value="">Select an industry</option>
-          {industries.map((ind) => (
-            <option key={ind} value={ind}>
-              {ind}
-            </option>
-          ))}
-        </select>
-      </div>
-
       {/* Company Size (if Company) */}
       {formData.isCompany && (
         <div className="mt-3">
@@ -211,16 +234,104 @@ const ClientForm = () => {
         />
       </div>
 
-      {/* Preferred Skills */}
+      {/* Industry Selection with Tags */}
+      <div className="mt-3">
+        <label className="block font-medium">Preferred Industry</label>
+        <div className="flex flex-wrap gap-2 border rounded-md p-2 min-h-[40px]">
+          {formData.industry.map((industry, index) => (
+            <span
+              key={index}
+              className="bg-blue-200 text-blue-800 px-2 py-1 rounded-md text-sm cursor-pointer"
+              onClick={() => removeTag("industry", industry)}
+            >
+              {industry} ✕
+            </span>
+          ))}
+          <input
+            type="text"
+            value={tagInput.industry}
+            onChange={(e) =>
+              setTagInput({ ...tagInput, industry: e.target.value })
+            }
+            onKeyDown={(e) => handleTagChange(e, "industry")}
+            className="border-none outline-none flex-grow"
+            placeholder="Type an industry and press Enter..."
+          />
+        </div>
+
+        {/* Recommended industries dropdown */}
+        {tagInput.industry && filteredRecommendations.industry.length > 0 && (
+          <div className="border rounded-md mt-2 p-2 bg-white shadow-md max-h-40 overflow-y-auto">
+            {filteredRecommendations.industry.map((industry, index) => (
+              <div
+                key={index}
+                className="p-1 cursor-pointer hover:bg-gray-200"
+                onClick={() => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    industry: [...prev.industry, industry],
+                  }));
+                  setTagInput({ ...tagInput, industry: "" });
+                }}
+              >
+                {industry}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Preferred Skills Selection with Tags */}
       <div className="mt-3">
         <label className="block font-medium">Preferred Skills</label>
-        <input
-          type="text"
-          name="preferredSkills"
-          onChange={handleSkillsChange}
-          className="w-full border rounded-md p-2"
-          placeholder="Enter skills separated by commas"
-        />
+        <div className="flex flex-wrap gap-2 border rounded-md p-2 min-h-[40px]">
+          {formData.preferredSkills.map((skill, index) => (
+            <span
+              key={index}
+              className="bg-green-200 text-green-800 px-2 py-1 rounded-md text-sm cursor-pointer"
+              onClick={() => removeTag("preferredSkills", skill)}
+            >
+              {skill} ✕
+            </span>
+          ))}
+          <input
+            type="text"
+            value={tagInput.preferredSkills}
+            onChange={(e) =>
+              setTagInput({ ...tagInput, preferredSkills: e.target.value })
+            }
+            onKeyDown={(e) => handleTagChange(e, "preferredSkills")}
+            className="border-none outline-none flex-grow"
+            placeholder="Type a skill and press Enter..."
+          />
+        </div>
+
+        {/* Recommended industries dropdown */}
+        {tagInput.preferredSkills &&
+          filteredRecommendations.preferredSkills.length > 0 && (
+            <div className="border rounded-md mt-2 p-2 bg-white shadow-md max-h-40 overflow-y-auto">
+              {filteredRecommendations.preferredSkills.map(
+                (preferredSkills, index) => (
+                  <div
+                    key={index}
+                    className="p-1 cursor-pointer hover:bg-gray-200"
+                    onClick={() => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        preferredSkills: [
+                          ...prev.preferredSkills,
+                          preferredSkills,
+                        ],
+                      }));
+                      setTagInput({ ...tagInput, preferredSkills: "" });
+                    }}
+                  >
+                    {preferredSkills}
+                  </div>
+                )
+              )}
+            </div>
+          )}
       </div>
 
       {/* Average Budget */}
