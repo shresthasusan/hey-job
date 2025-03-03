@@ -1,6 +1,5 @@
 "use client";
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
+import { ChangeEvent, FormEvent, useState } from "react";
 import { Button } from "@/app/ui/button";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../../lib/firebase"; // Import Firebase storage
@@ -8,6 +7,8 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import clsx from "clsx";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
+import { jobCategories, skills as predefinedSkills } from "@/app/lib/data";
+import { languageTags } from "@/app/lib/data";
 
 export type project = {
   projectTitle: string;
@@ -31,17 +32,15 @@ export type institution = {
 };
 
 type FormData = {
-  userId?: string;
-  fullName?: string;
-  email?: string;
   location: string;
   skills: string[];
+  industries: string[];
   workExperience?: work[];
   projectPortfolio?: project[];
   education?: institution[];
   bio: string;
   languages: string[];
-  rate: string;
+  rate: number;
 };
 
 const defaultPortfolioItem = {
@@ -66,32 +65,92 @@ const defaultEducationItem = {
 };
 
 const MultiStepForm = () => {
+  // Define initial form data using the FormData type
+  const initialFormData: FormData = {
+    location: "",
+    skills: [],
+    industries: [],
+    workExperience: [],
+    projectPortfolio: [],
+    education: [],
+    bio: "",
+    languages: [],
+    rate: 0,
+  };
+  const [formData, setFormData] = useState<FormData>(initialFormData);
   const router = useRouter();
   const [step, setStep] = useState(0);
-  const { data: session } = useSession();
   const [uploading, setUploading] = useState<boolean>(false);
   const [files, setFiles] = useState<{ [key: number]: File[] }>([]); // Store file data
+  // State to handle input for tag fields (skills, languages, etc.)
+  const [tagInput, setTagInput] = useState<{ [key: string]: string }>({
+    skills: "",
+    languages: "",
+    industries: "",
+  });
 
+  /**
+   * Handles adding/removing tags dynamically
+   * @param e - Keyboard event (for Enter key)
+   * @param field - Field name (skills, languages, etc.)
+   */
+  const handleTagChange = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    field: "skills" | "languages" | "industries"
+  ) => {
+    if (e.key === "Enter" && tagInput[field].trim()) {
+      e.preventDefault();
+      if (!formData[field].includes(tagInput[field].trim())) {
+        setFormData((prev) => ({
+          ...prev,
+          [field]: [...prev[field], tagInput[field].trim()],
+        }));
+      }
+      setTagInput((prev) => ({ ...prev, [field]: "" }));
+    }
+  };
+
+  /**
+   * Handles removing tags from any tag field (skills, languages)
+   * @param field - Field name (skills, languages, etc.)
+   * @param tag - Tag to remove
+   */
+  const removeTag = (
+    field: "skills" | "languages" | "industries",
+    tag: string
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: prev[field].filter((t) => t !== tag),
+    }));
+  };
+
+  // Filters recommendations for skills and languages
+  const filteredRecommendations = {
+    skills: predefinedSkills.filter(
+      (skill) =>
+        skill.toLowerCase().includes(tagInput.skills.toLowerCase()) &&
+        !formData.skills.includes(skill)
+    ),
+    languages: languageTags.filter(
+      (language) =>
+        language.toLowerCase().includes(tagInput.languages.toLowerCase()) &&
+        !formData.languages.includes(language)
+    ),
+    industries: jobCategories.filter(
+      (industry) =>
+        industry.toLowerCase().includes(tagInput.industries.toLowerCase()) &&
+        !formData.industries.includes(industry)
+    ),
+  };
+
+  // Function to add an item to an array field files
   const handleAddItem = (field: ArrayFieldKey, defaultItem: any) => {
     setFormData((prevState) => ({
       ...prevState,
       [field]: [...(prevState[field] || []), defaultItem],
     }));
   };
-
-  // Define initial form data using the FormData type
-  const initialFormData: FormData = {
-    location: "",
-    industries: [],
-    skills: [],
-    workExperience: [],
-    projectPortfolio: [],
-    education: [],
-    bio: "",
-    languages: [],
-    rate: "",
-  };
-  const [formData, setFormData] = useState<FormData>(initialFormData);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -146,20 +205,6 @@ const MultiStepForm = () => {
         ...prevState,
         [field]: updatedArray,
       };
-    });
-  };
-
-  const handleArrayChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    const Array = value
-      .split(",")
-      .map((item: any) => item.trim())
-      .filter((item: any) => item);
-    setFormData({
-      ...formData,
-      [name]: Array,
     });
   };
 
@@ -252,32 +297,157 @@ const MultiStepForm = () => {
               name="location"
             />
           </div>
+          {/* Skills Input */}
           <div>
             <label className="block">
-              Skills
-              <span className="text-red-500">*</span>
+              Skills <span className="text-red-500">*</span>
             </label>
-            <input
-              type="text"
-              onChange={handleArrayChange}
-              className="w-full border rounded-md p-2"
-              name="skills"
-              placeholder="Enter skills separated by commas"
-            />
+            <div className="flex flex-wrap gap-2 border rounded-md p-2 min-h-[40px]">
+              {formData.skills.map((skill, index) => (
+                <span
+                  key={index}
+                  className="bg-blue-200 text-blue-800 px-2 py-1 rounded-md text-sm cursor-pointer"
+                  onClick={() => removeTag("skills", skill)}
+                >
+                  {skill} ✕
+                </span>
+              ))}
+              <input
+                type="text"
+                value={tagInput.skills}
+                onChange={(e) =>
+                  setTagInput({ ...tagInput, skills: e.target.value })
+                }
+                onKeyDown={(e) => handleTagChange(e, "skills")}
+                className="border-none outline-none flex-grow"
+                placeholder="Type a skill and press Enter..."
+              />
+            </div>
+
+            {/* Recommended skills dropdown */}
+            {tagInput.skills && filteredRecommendations.skills.length > 0 && (
+              <div className="border rounded-md mt-2 p-2 bg-white shadow-md max-h-40 overflow-y-auto">
+                {filteredRecommendations.skills.map((skill, index) => (
+                  <div
+                    key={index}
+                    className="p-1 cursor-pointer hover:bg-gray-200"
+                    onClick={() => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        skills: [...prev.skills, skill],
+                      }));
+                      setTagInput({ ...tagInput, skills: "" });
+                    }}
+                  >
+                    {skill}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
+
+          {/* Industries Input */}
           <div>
             <label className="block">
-              Languages
-              <span className="text-red-500">*</span>
+              Industries <span className="text-red-500">*</span>
             </label>
-            <input
-              type="text"
-              onChange={handleArrayChange}
-              className="w-full border rounded-md p-2"
-              name="languages"
-              placeholder="Enter skills separated by commas"
-            />
+            <div className="flex flex-wrap gap-2 border rounded-md p-2 min-h-[40px]">
+              {formData.industries.map((industries, index) => (
+                <span
+                  key={index}
+                  className="bg-blue-200 text-blue-800 px-2 py-1 rounded-md text-sm cursor-pointer"
+                  onClick={() => removeTag("industries", industries)}
+                >
+                  {industries} ✕
+                </span>
+              ))}
+              <input
+                type="text"
+                value={tagInput.industries}
+                onChange={(e) =>
+                  setTagInput({ ...tagInput, industries: e.target.value })
+                }
+                onKeyDown={(e) => handleTagChange(e, "industries")}
+                className="border-none outline-none flex-grow"
+                placeholder="Type a industries and press Enter..."
+              />
+            </div>
+
+            {/* Recommended industries dropdown */}
+            {tagInput.industries &&
+              filteredRecommendations.industries.length > 0 && (
+                <div className="border rounded-md mt-2 p-2 bg-white shadow-md max-h-40 overflow-y-auto">
+                  {filteredRecommendations.industries.map(
+                    (industries, index) => (
+                      <div
+                        key={index}
+                        className="p-1 cursor-pointer hover:bg-gray-200"
+                        onClick={() => {
+                          setFormData((prev) => ({
+                            ...prev,
+                            industries: [...prev.industries, industries],
+                          }));
+                          setTagInput({ ...tagInput, industries: "" });
+                        }}
+                      >
+                        {industries}
+                      </div>
+                    )
+                  )}
+                </div>
+              )}
           </div>
+
+          {/* Languages Input */}
+          <div>
+            <label className="block">
+              Languages <span className="text-red-500">*</span>
+            </label>
+            <div className="flex flex-wrap gap-2 border rounded-md p-2 min-h-[40px]">
+              {formData.languages.map((language, index) => (
+                <span
+                  key={index}
+                  className="bg-green-200 text-green-800 px-2 py-1 rounded-md text-sm cursor-pointer"
+                  onClick={() => removeTag("languages", language)}
+                >
+                  {language} ✕
+                </span>
+              ))}
+              <input
+                type="text"
+                value={tagInput.languages}
+                onChange={(e) =>
+                  setTagInput({ ...tagInput, languages: e.target.value })
+                }
+                onKeyDown={(e) => handleTagChange(e, "languages")}
+                className="border-none outline-none flex-grow"
+                placeholder="Type a language and press Enter..."
+              />
+            </div>
+
+            {/* Recommended languages dropdown */}
+            {tagInput.languages &&
+              filteredRecommendations.languages.length > 0 && (
+                <div className="border rounded-md mt-2 p-2 bg-white shadow-md max-h-40 overflow-y-auto">
+                  {filteredRecommendations.languages.map((language, index) => (
+                    <div
+                      key={index}
+                      className="p-1 cursor-pointer hover:bg-gray-200"
+                      onClick={() => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          languages: [...prev.languages, language],
+                        }));
+                        setTagInput({ ...tagInput, languages: "" });
+                      }}
+                    >
+                      {language}
+                    </div>
+                  ))}
+                </div>
+              )}
+          </div>
+
           <div>
             <label className="block">
               Rate
