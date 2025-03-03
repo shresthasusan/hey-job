@@ -8,7 +8,7 @@ interface ClientRequestBody {
     userId: string;
     fullName: string;
     isCompany: boolean;
-    industry: string;
+    industry: string[];
     companySize?: "Startup" | "Small" | "Medium" | "Large";
     location: string;
     preferredSkills: string[];

@@ -6,9 +6,10 @@ import Link from "next/link";
 import KYCChart from "./kyc-count";
 import JobProposalModal from "../../client-components/jobproposalmodal/jobproposalmodal";
 import JobsProposalChart from "./jobs-insights-chart";
+import PopularIndustriesChart from "./popular-chart";
 
 const Charts = () => {
-  const [timeframe, setTimeframe] = useState<string>("monthly"); // Default to monthly
+  const [querySelect, setQuerySelect] = useState<string>("monthly"); // Default to monthly
   const [chartSelected, setChartSelected] = useState<string>("Account-Growth");
 
   return (
@@ -21,14 +22,23 @@ const Charts = () => {
           </h1>
           {/* Dropdown for Time Frame Selection */}
           <select
-            value={timeframe}
-            onChange={(e) => setTimeframe(e.target.value)}
-            className="border border-gray-300 bg-gray-50 rounded-md px-8 py-1 shadow-sm text-gray-700 focus:ring focus:ring-blue-300"
-            name="timeframe"
+            value={querySelect}
+            onChange={(e) => setQuerySelect(e.target.value)}
+            className={`border border-gray-300 bg-gray-50 rounded-md px-8 py-1 shadow-sm text-gray-700 focus:ring focus:ring-blue-300`}
+            name="querySelect"
           >
-            <option value="daily">Daily</option>
-            <option value="monthly">Monthly</option>
-            <option value="yearly">Yearly</option>
+            {chartSelected === "popularIndustries" ? (
+              <>
+                <option value="client">client</option>
+                <option value="freelancer">freelancer</option>
+              </>
+            ) : (
+              <>
+                <option value="daily">Daily</option>
+                <option value="monthly">Monthly</option>
+                <option value="yearly">Yearly</option>
+              </>
+            )}
           </select>
         </div>
         <div className="flex gap-5 px-8 py-5 ">
@@ -65,14 +75,28 @@ const Charts = () => {
           >
             Jobs & Proposals
           </Link>
+          <Link
+            onClick={() => setChartSelected("popularIndustries")}
+            href={""}
+            className={`relative text-gray-700 font-medium transition-colors ${
+              chartSelected === "popularIndustries"
+                ? "before:absolute before:bottom-0 before:left-0 before:w-full before:h-[2px] before:bg-primary-500 before:rounded-full"
+                : "text-gray-500"
+            }`}
+          >
+            Popular Industries
+          </Link>
         </div>
 
         {chartSelected === "Account-Growth" && (
-          <AccountGrowthChart timeframe={timeframe} />
+          <AccountGrowthChart timeframe={querySelect} />
         )}
-        {chartSelected === "KYC-Growth" && <KYCChart timeframe={timeframe} />}
+        {chartSelected === "KYC-Growth" && <KYCChart timeframe={querySelect} />}
         {chartSelected === "jobProposal" && (
-          <JobsProposalChart timeframe={timeframe} />
+          <JobsProposalChart timeframe={querySelect} />
+        )}
+        {chartSelected === "popularIndustries" && (
+          <PopularIndustriesChart accountType={querySelect} />
         )}
       </Card>
     </div>

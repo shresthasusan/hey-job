@@ -11,12 +11,13 @@ interface UserRequestBody {
   email: string;
   location: string;
   skills: string[];
+  industries?: string[];
   workExperience?: work[];
   projectPortfolio?: project[];
   education?: institution[];
   bio: string;
   languages: string[];
-  rate: string;
+  rate: number;
 }
 
 export async function POST(req: NextRequest) {
@@ -38,6 +39,7 @@ export async function POST(req: NextRequest) {
     const {
       location,
       skills,
+      industries,
       workExperience,
       projectPortfolio,
       education,
@@ -54,6 +56,7 @@ export async function POST(req: NextRequest) {
       email,
       location,
       skills,
+      industries,
       workExperience,
       projectPortfolio,
       education,
