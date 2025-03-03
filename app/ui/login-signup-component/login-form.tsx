@@ -11,7 +11,7 @@ const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false); // Add this state
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const router = useRouter();
 
@@ -24,7 +24,7 @@ const LoginForm = () => {
       return;
     }
 
-    setIsSubmitting(true); // Disable the button when form submission starts
+    setIsSubmitting(true);
 
     try {
       const res = await signIn("credentials", {
@@ -35,14 +35,18 @@ const LoginForm = () => {
 
       if (res?.error) {
         setError("Invalid Credentials");
-        setIsSubmitting(false); // Re-enable the button if there's an error
+        setIsSubmitting(false);
         return;
       }
       router.push("/");
     } catch (err) {
       setError("An unexpected error occurred");
-      setIsSubmitting(false); // Re-enable the button if there's an error
+      setIsSubmitting(false);
     }
+  };
+
+  const handleSocialLogin = (provider: string) => {
+    signIn(provider, { callbackUrl: "/" });
   };
 
   return (
@@ -68,7 +72,6 @@ const LoginForm = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
       </div>
-      
 
       {error && <p className="text-red-500 text-sm">{error}</p>}
 
@@ -76,20 +79,25 @@ const LoginForm = () => {
         type="submit"
         className={clsx("w-full text-white", {
           "bg-slate-100  border-2 border-primary-600 cursor-not-allowed":
-            isSubmitting == true,
+            isSubmitting,
         })}
         disabled={isSubmitting}
       >
-        {isSubmitting ? "Loging in..." : "Log In"}
+        {isSubmitting ? "Logging in..." : "Log In"}
       </Button>
-      <button onClick={()=> signIn("google")} className="w-full / bg-white  justify-center border-2 border-primary-600 text-primary-600 rounded-xl hover:bg-gray-50 mt-5 text-center p-2"
-        >
-          Log in with Google
-        </button> <br/>
-        <button onClick={()=> signIn("github")} className="w-full / bg-white  justify-center border-2 border-primary-600 text-primary-600 rounded-xl hover:bg-gray-50 mt-5 text-center p-2"
-        >
-          Log in with Github
-        </button>
+      <button
+        onClick={() => handleSocialLogin("google")}
+        className="w-full bg-white justify-center border-2 border-primary-600 text-primary-600 rounded-xl hover:bg-gray-50 mt-5 text-center p-2"
+      >
+        Log in with Google
+      </button>
+      <br />
+      <button
+        onClick={() => handleSocialLogin("github")}
+        className="w-full bg-white justify-center border-2 border-primary-600 text-primary-600 rounded-xl hover:bg-gray-50 mt-5 text-center p-2"
+      >
+        Log in with Github
+      </button>
     </form>
   );
 };
