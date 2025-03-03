@@ -217,8 +217,8 @@ const ChatWindow: React.FC<uId> = ({ uId }) => {
                         <Image
                           src={
                             msg.sId === userData?.id
-                              ? userData.avatar || "/images/image1.png"
-                              : chatUser.avatar || "/images/image1.png"
+                              ? userData.avatar || "/images/image.png"
+                              : chatUser.avatar || "/images/image.png"
                           }
                           className="object-cover h-8 w-8 rounded-full"
                           alt="User avatar"
@@ -267,7 +267,7 @@ const ChatWindow: React.FC<uId> = ({ uId }) => {
                   </div>
                   <span className="w-48 h-48 overflow-hidden rounded-full">
                     <Image
-                      src={chatUser.avatar || "/images/image1.png"}
+                      src={chatUser.avatar || "/images/image.png"}
                       className="object-cover rounded-full"
                       alt="Group image"
                       width={200}

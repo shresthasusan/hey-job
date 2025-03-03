@@ -106,7 +106,7 @@ export const authOptions: NextAuthOptions = {
           const accessToken = await new SignJWT({
             email,
             name: user.name,
-            lastname: user.lastName,
+            lastName: user.lastName,
             id: user._id.toString(),
           })
             .setProtectedHeader({ alg: "HS256" })

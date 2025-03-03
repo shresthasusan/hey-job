@@ -114,7 +114,7 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
                      h-24 w-24"
             >
               <Image
-                src={session?.user?.profilePicture || "/images/image1.png"}
+                src={session?.user?.profilePicture || "/images/image.png"}
                 alt="profile"
                 width={150}
                 height={150}

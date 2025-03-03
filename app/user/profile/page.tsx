@@ -81,7 +81,7 @@ const ProfilePage: React.FC = () => {
       {/* Profile Picture */}
       <div className="flex flex-col items-center my-4">
         <Image
-          src={profilePicture || "/images/image1.png"}
+          src={profilePicture || "/images/image.png"}
           width={100}
           height={100}
           className="rounded-full border"

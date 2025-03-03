@@ -69,7 +69,7 @@ const Sidebar: React.FC = () => {
             height={50}
           /> */}
           <Image
-            src="/images/placeholder-614"
+            src="/images/image.png"
             alt="Admin Avatar"
             width={50}
             height={50}

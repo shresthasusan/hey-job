@@ -7,7 +7,7 @@ import { Button } from "../../ui/button";
 const SettingsPage: React.FC = () => {
   const [name, setName] = useState("John Doe");
   const [bio, setBio] = useState("Web Developer | Freelancer");
-  const [profilePicture, setProfilePicture] = useState("/images/image1.png");
+  const [profilePicture, setProfilePicture] = useState("/images/image.png");
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [smsNotifications, setSmsNotifications] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("paypal");
