@@ -13,7 +13,7 @@ import {
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 interface NavItemProps {
   href: string;
@@ -39,6 +39,7 @@ const NavItem: React.FC<NavItemProps> = ({ href, icon, label, isActive }) => (
 );
 
 const SettingsSidebar: React.FC = () => {
+  const { data: session } = useSession(); // Get session data
   const pathname = usePathname(); // Get current route
   const [adminRole, setAdminRole] = useState<string | null>(null);
 
@@ -96,7 +97,9 @@ const SettingsSidebar: React.FC = () => {
             width={50}
             height={50}
           />
-          <span className="mt-2 font-semibold text-sm">John Doe</span>
+          <span className="mt-2 font-semibold text-sm">
+            {session?.user.name} {session?.user.lastName}
+          </span>
         </div>
 
         {/* Navigation Menu */}

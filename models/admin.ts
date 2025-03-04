@@ -6,6 +6,7 @@ interface IAdmin extends Document {
     userName: string;
     email: string;
     name: string;
+    profilePicture?: string;
     lastName: string;
     password: string;
     role: "useradmin" | "superadmin";
@@ -19,6 +20,10 @@ const adminSchema = new Schema<IAdmin>(
         userName: {
             type: String,
             required: true,
+        },
+        profilePicture: {
+            type: String,
+
         },
         email: {
             type: String,

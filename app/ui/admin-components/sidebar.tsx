@@ -12,7 +12,7 @@ import {
   ArrowLeftStartOnRectangleIcon,
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 interface NavItemProps {
   href: string;
@@ -39,11 +39,7 @@ const NavItem: React.FC<NavItemProps> = ({ href, icon, label, isActive }) => (
 
 const Sidebar: React.FC = () => {
   const pathname = usePathname(); // Get current route
-
-  const handleLogout = () => {
-    // Here you would typically handle the logout logic, such as clearing session or making an API call
-    console.log("Logging out");
-  };
+  const { data: session } = useSession(); // Get session data
 
   return (
     <div className="left-0 top-0 h-screen px-5 w-1/6 bg-white shadow-md text-black">
@@ -76,7 +72,9 @@ const Sidebar: React.FC = () => {
             className="w-14 h-14 rounded-full border-2 border-gray-300"
           />
 
-          <span className="mt-2 font-semibold text-sm">John Doe</span>
+          <span className="mt-2 font-semibold text-sm">
+            {session?.user.name} {session?.user.lastName}
+          </span>
         </div>
 
         {/* Navigation Menu */}

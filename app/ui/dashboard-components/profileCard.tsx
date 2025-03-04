@@ -36,7 +36,7 @@ const ProfileCard = ({ mode }: Props) => {
       {/* Profile image section */}
       <div className="bg-yellow-400 rounded-full absolute translate-y-[50%] overflow-hidden translate-x-1/2 right-[50%] h-24 w-24">
         <Image
-          src={session?.user?.profilePicture || "//images/image.png"}
+          src={session?.user?.profilePicture || "/images/image.png"}
           alt="profile"
           width={150}
           height={150}

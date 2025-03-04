@@ -93,7 +93,7 @@ const ChangePasswordForm = () => {
         })}
         disabled={isSubmitting}
       >
-        {isSubmitting ? "Logging in..." : "Log In"}
+        {isSubmitting ? "Submiting Password" : "Change Password"}
       </Button>
     </form>
   );

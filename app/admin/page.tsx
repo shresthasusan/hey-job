@@ -17,13 +17,14 @@ const Page = () => {
         </h1>
 
         {/* Content Section */}
-        <div className="mt-10  md:grid-cols-2 gap-10">
+        <div className="mt-10 flex gap-10">
           {/* Left Column - Cards */}
 
           <Charts />
 
+          <Charts />
           {/* Right Column - Additional Components */}
-          <div className="flex flex-col gap-6"></div>
+          <div className="flex flex-col gap-6"> </div>
         </div>
       </div>
     </div>

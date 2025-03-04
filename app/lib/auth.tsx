@@ -115,7 +115,7 @@ export const authOptions: NextAuthOptions = {
             name: user.name,
             lastName: user.lastName,
             email: user.email,
-
+            profilePicture: user.profilePicture,
             role: "user",
             id: user._id.toString(),
             accessToken,
