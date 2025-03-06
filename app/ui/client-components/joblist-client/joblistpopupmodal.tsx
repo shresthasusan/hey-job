@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { XMarkIcon } from '@heroicons/react/24/outline';
+import React, { useEffect, useState } from "react";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
+import Link from "next/link";
 
 interface Proposal {
   id: string;
@@ -22,16 +23,20 @@ interface Freelancer {
 interface JobProposalModalProps {
   proposal: Proposal;
   onClose: () => void;
-  onHire: () => void;
 }
 
-const JobProposalModal: React.FC<JobProposalModalProps> = ({ proposal, onClose, onHire }) => {
+const JobProposalModal: React.FC<JobProposalModalProps> = ({
+  proposal,
+  onClose,
+}) => {
   const [freelancer, setFreelancer] = useState<Freelancer | null>(null);
 
   useEffect(() => {
     const fetchFreelancer = async () => {
       try {
-        const response = await fetchWithAuth(`/api/freelancers?userId=${proposal.userId}`);
+        const response = await fetchWithAuth(
+          `/api/freelancers?userId=${proposal.userId}`
+        );
         const data = await response.json();
         setFreelancer(data.freelancer);
       } catch (error) {
@@ -51,36 +56,55 @@ const JobProposalModal: React.FC<JobProposalModalProps> = ({ proposal, onClose, 
         >
           <XMarkIcon className="w-6 h-6" />
         </button>
-        <h2 className="text-3xl font-bold text-yellow-500 mb-6">Proposal Details</h2>
+        <h2 className="text-3xl font-bold text-yellow-500 mb-6">
+          Proposal Details
+        </h2>
         <div className="space-y-4">
           <div className="border-b border-dotted pb-4">
-            <p className="text-lg"><strong>Cover Letter:</strong> {proposal.coverLetter}</p>
+            <p className="text-lg">
+              <strong>Cover Letter:</strong> {proposal.coverLetter}
+            </p>
           </div>
           <div className="border-b border-dotted pb-4">
-            <p className="text-lg"><strong>Bid Amount:</strong> ${proposal.bidAmount}</p>
+            <p className="text-lg">
+              <strong>Bid Amount:</strong> ${proposal.bidAmount}
+            </p>
           </div>
           {proposal.attachments && (
             <div className="border-b border-dotted pb-4">
-              <p className="text-lg"><strong>Attachments:</strong></p>
-              <a href={proposal.attachments} target="_blank" rel="noopener noreferrer" className="text-blue-500 ml-2">
+              <p className="text-lg">
+                <strong>Attachments:</strong>
+              </p>
+              <a
+                href={proposal.attachments}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 ml-2"
+              >
                 View Attachment
               </a>
             </div>
           )}
           <div className="border-b border-dotted pb-4">
-            <p className="text-lg"><strong>Freelancer Name:</strong> {freelancer ? freelancer.fullName : "Loading..."}</p>
+            <p className="text-lg">
+              <strong>Freelancer Name:</strong>{" "}
+              {freelancer ? freelancer.fullName : "Loading..."}
+            </p>
           </div>
           <div className="border-b border-dotted pb-4">
-            <p className="text-lg"><strong>Created Time:</strong> {new Date(proposal.createdAt).toLocaleString()}</p>
+            <p className="text-lg">
+              <strong>Created Time:</strong>{" "}
+              {new Date(proposal.createdAt).toLocaleString()}
+            </p>
           </div>
         </div>
         <div className="mt-6 justify-centre space-x-4">
-          <button
-            onClick={onHire}
+          <Link
             className="px-6 py-3 bg-green-400 text-white rounded-full hover:bg-green-700 transition-colors duration-300"
+            href={`/client/job-proposal/${proposal.jobId}/offer/${proposal.userId}/new`}
           >
             Hire
-          </button>
+          </Link>
         </div>
       </div>
     </div>

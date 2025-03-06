@@ -1,7 +1,14 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
-import { ClockIcon, CurrencyDollarIcon, MapPinIcon, TagIcon, UserIcon, PaperClipIcon } from "@heroicons/react/24/outline";
+import {
+  ClockIcon,
+  CurrencyDollarIcon,
+  MapPinIcon,
+  TagIcon,
+  UserIcon,
+  PaperClipIcon,
+} from "@heroicons/react/24/outline";
 import { getTimeAgo } from "../../dashboard-components/job-list/jobList";
 import JobProposalModal from "@/app/ui/client-components/joblist-client/joblistpopupmodal";
 
@@ -42,28 +49,42 @@ const AllProposalsList: React.FC<AllProposalsListProps> = ({ jobId }) => {
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [job, setJob] = useState<Job | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(null);
-  const [freelancers, setFreelancers] = useState<{ [key: string]: Freelancer }>({});
+  const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(
+    null
+  );
+  const [freelancers, setFreelancers] = useState<{ [key: string]: Freelancer }>(
+    {}
+  );
 
   useEffect(() => {
     const fetchJobAndProposals = async () => {
       try {
         // Fetch job details
-        const jobResponse = await fetchWithAuth(`/api/fetchJobs?jobId=${jobId}`);
+        const jobResponse = await fetchWithAuth(
+          `/api/fetchJobs?jobId=${jobId}`
+        );
         const jobData = await jobResponse.json();
         setJob(jobData);
 
         // Fetch proposals
-        const proposalsResponse = await fetchWithAuth(`/api/jobproposal?jobId=${jobId}`);
+        const proposalsResponse = await fetchWithAuth(
+          `/api/jobproposal?jobId=${jobId}`
+        );
         const proposalsData = await proposalsResponse.json();
         setProposals(proposalsData.proposals);
 
         // Fetch freelancer data for each proposal
         const freelancerData = await Promise.all(
           proposalsData.proposals.map(async (proposal: Proposal) => {
-            const response = await fetchWithAuth(`/api/freelancers?userId=${proposal.userId}`);
+            const response = await fetchWithAuth(
+              `/api/freelancers?userId=${proposal.userId}`
+            );
             const data = await response.json();
-            return { userId: proposal.userId, fullName: data.freelancer.fullName, profilePicture: data.freelancer.profilePicture };
+            return {
+              userId: proposal.userId,
+              fullName: data.freelancer.fullName,
+              profilePicture: data.freelancer.profilePicture,
+            };
           })
         );
 
@@ -94,10 +115,10 @@ const AllProposalsList: React.FC<AllProposalsListProps> = ({ jobId }) => {
   const handleHire = async () => {
     if (selectedProposal) {
       try {
-        const response = await fetch('/api/hireProposal', {
-          method: 'POST',
+        const response = await fetch("/api/hire-freelancer", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             proposalId: selectedProposal.id,
@@ -107,18 +128,16 @@ const AllProposalsList: React.FC<AllProposalsListProps> = ({ jobId }) => {
         });
 
         if (response.ok) {
-          console.log('Hired:', selectedProposal);
+          console.log("Hired:", selectedProposal);
           setSelectedProposal(null);
         } else {
-          console.error('Error hiring freelancer');
+          console.error("Error hiring freelancer");
         }
       } catch (error) {
-        console.error('Error hiring freelancer:', error);
+        console.error("Error hiring freelancer:", error);
       }
     }
   };
-
- 
 
   return (
     <div className="container mx-auto p-4">
@@ -150,7 +169,10 @@ const AllProposalsList: React.FC<AllProposalsListProps> = ({ jobId }) => {
                 </div>
                 <div className="flex justify-center gap-2 mt-4 mb-4">
                   {job.tags.map((tag, index) => (
-                    <span key={index} className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full flex items-center">
+                    <span
+                      key={index}
+                      className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full flex items-center"
+                    >
                       <TagIcon className="w-4 h-4 mr-1" />
                       {tag}
                     </span>
@@ -165,33 +187,47 @@ const AllProposalsList: React.FC<AllProposalsListProps> = ({ jobId }) => {
               <p className="text-xl">No proposals found.</p>
             </div>
           ) : (
-            <div> 
-            <p className="text-semibold text-2xl">The proposals for the job are below:</p>
-            <p className="font-extralight text-gray-500 ">Click on a proposal to view more details.</p>
-          
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              
-              {proposals.map((proposal) => (
-                <div
-                key={`${proposal.id}-${proposal.userId}`}
-                  className="border-dotted border-2 border-gray-300 p-4 rounded-lg shadow hover:shadow-lg transition-shadow duration-300 bg-white cursor-pointer"
-                  onClick={() => handleProposalClick(proposal)}
-                >
-                  <p className="text-black-700 mb-2">{proposal.coverLetter}</p>
-                  <p className="text-gray-700 mb-2"> ${proposal.bidAmount}</p>
-                  {proposal.attachments && (
-                    <div className="flex items-center justify-center text-blue-500 mb-2">
-                      <PaperClipIcon className="w-5 h-5 mr-1" />
-                      <a href={proposal.attachments} target="_blank" rel="noopener noreferrer">
-                        View Attachment
-                      </a>
-                    </div>
-                  )}
-                  <p className="text-black-500 font-semibold text-sm mb-1">{freelancers[proposal.userId]?.fullName || proposal.userId}</p>
-                  <p className="text-gray-500 text-sm">{new Date(proposal.createdAt).toLocaleString()}</p>
-                </div>
-              ))}
-            </div>
+            <div>
+              <p className="text-semibold text-2xl">
+                The proposals for the job are below:
+              </p>
+              <p className="font-extralight text-gray-500 ">
+                Click on a proposal to view more details.
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {proposals.map((proposal) => (
+                  <div
+                    key={`${proposal.id}-${proposal.userId}`}
+                    className="border-dotted border-2 border-gray-300 p-4 rounded-lg shadow hover:shadow-lg transition-shadow duration-300 bg-white cursor-pointer"
+                    onClick={() => handleProposalClick(proposal)}
+                  >
+                    <p className="text-black-700 mb-2">
+                      {proposal.coverLetter}
+                    </p>
+                    <p className="text-gray-700 mb-2"> ${proposal.bidAmount}</p>
+                    {proposal.attachments && (
+                      <div className="flex items-center justify-center text-blue-500 mb-2">
+                        <PaperClipIcon className="w-5 h-5 mr-1" />
+                        <a
+                          href={proposal.attachments}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          View Attachment
+                        </a>
+                      </div>
+                    )}
+                    <p className="text-black-500 font-semibold text-sm mb-1">
+                      {freelancers[proposal.userId]?.fullName ||
+                        proposal.userId}
+                    </p>
+                    <p className="text-gray-500 text-sm">
+                      {new Date(proposal.createdAt).toLocaleString()}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
@@ -199,7 +235,6 @@ const AllProposalsList: React.FC<AllProposalsListProps> = ({ jobId }) => {
             <JobProposalModal
               proposal={selectedProposal}
               onClose={handleCloseModal}
-              onHire={handleHire}
             />
           )}
         </>
