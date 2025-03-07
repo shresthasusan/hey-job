@@ -4,7 +4,7 @@ import React from "react";
 const ChatRoom = ({ params }: { params: { id: string } }) => {
   const { id } = params;
 
-  return <ChatWindow uId={id} />;
+  return <ChatWindow />;
 };
 
 export default ChatRoom;
