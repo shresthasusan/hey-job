@@ -8,23 +8,9 @@ const ContractsFilter = () => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
-  const [status, setStatus] = useState<string>(
-    searchParams.get("status") || ""
-  );
-  const [paymentType, setPaymentType] = useState<string>(
-    searchParams.get("paymentType") || ""
-  );
-  const [appliedFilters, setAppliedFilters] = useState({
-    status: searchParams.get("status") || "",
-    paymentType: searchParams.get("paymentType") || "",
-  });
-  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
 
-  const [filters, setFilters] = useState<{
-    search: string;
-    contractType: string;
-    status: string;
-  }>({
+  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
+  const [filters, setFilters] = useState({
     search: searchParams.get("search") || "",
     contractType: searchParams.get("contractType") || "",
     status: searchParams.get("status") || "",
@@ -56,19 +42,15 @@ const ContractsFilter = () => {
       const params = new URLSearchParams(searchParams);
 
       if (key === "status") {
-        let currentStatuses = new Set(
-          (prev.status || "").split(",").filter(Boolean)
-        );
+        let currentStatuses = new Set(prev.status.split(",").filter(Boolean));
         currentStatuses.has(value)
           ? currentStatuses.delete(value)
           : currentStatuses.add(value);
 
         const statusValue = Array.from(currentStatuses).join(",");
-        if (statusValue) {
-          params.set("status", statusValue);
-        } else {
-          params.delete("status");
-        }
+        statusValue
+          ? params.set("status", statusValue)
+          : params.delete("status");
         return { ...prev, status: statusValue };
       } else if (key === "contractType") {
         let currentTypes = new Set(
@@ -91,12 +73,19 @@ const ContractsFilter = () => {
       .filter(([_, value]) => value)
       .map(([key, value]) => `${key}=${value}`)
       .join("&");
-    setAppliedFilters({
-      status,
-      paymentType,
-    });
+
     replace(`${pathname}${queryString ? `?${queryString}` : ""}`);
     setIsFilterOpen(false);
+  };
+
+  const handleRemoveFilter = (key: keyof typeof filters) => {
+    setFilters((prev) => {
+      const updatedFilters = { ...prev, [key]: "" };
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete(key);
+      replace(`?${params.toString()}`);
+      return updatedFilters;
+    });
   };
 
   return (
@@ -108,9 +97,7 @@ const ContractsFilter = () => {
             id="search"
             type="text"
             value={filters.search}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              updateURLParams("search", e.target.value);
-            }}
+            onChange={(e) => updateURLParams("search", e.target.value)}
             className="border rounded-lg px-10 py-2 w-64 focus:outline-none focus:ring-2 focus:ring-primary-500"
             placeholder="Search contracts..."
           />
@@ -159,55 +146,53 @@ const ContractsFilter = () => {
         }`}
       >
         <form
-          onSubmit={(e: FormEvent<HTMLFormElement>) => {
+          onSubmit={(e) => {
             e.preventDefault();
             handleApplyFilters();
           }}
           className="flex flex-col md:flex-row gap-6 py-4"
         >
-          {/* Contract Type (Checkboxes) */}
+          {/* Contract Type */}
           <fieldset className="flex-1">
             <legend className="font-medium text-gray-700 mb-3">
               Contract Type
             </legend>
             <div className="space-y-3">
-              {(["fixed", "hourly"] as const).map((type) => (
+              {["fixed", "hourly"].map((type) => (
                 <label key={type} className="flex items-center">
                   <input
                     type="checkbox"
                     checked={filters.contractType.split(",").includes(type)}
                     onChange={() => handleFilterChange("contractType", type)}
-                    className="h-5 w-5 text-primary-500  border-primary-500 rounded  "
+                    className="h-5 w-5 text-primary-500 border-primary-500 rounded"
                   />
-                  <span className="ml-2 text-gray-600">
-                    {type.charAt(0).toUpperCase() + type.slice(1)}
-                  </span>
+                  <span className="ml-2 text-gray-600 capitalize">{type}</span>
                 </label>
               ))}
             </div>
           </fieldset>
 
-          {/* Contract Status (Checkboxes) */}
+          {/* Contract Status */}
           <fieldset className="flex-1">
             <legend className="font-medium text-gray-700 mb-3">
               Contract Status
             </legend>
             <div className="space-y-3">
-              {(
-                ["pending", "active", "ended", "canceled", "rejected"] as const
-              ).map((status) => (
-                <label key={status} className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={filters.status.split(",").includes(status)}
-                    onChange={() => handleFilterChange("status", status)}
-                    className="h-5 w-5 text-primary-500 border border-primary-500 rounded focus:outline-white "
-                  />
-                  <span className="ml-2 text-gray-600">
-                    {status.charAt(0).toUpperCase() + status.slice(1)}
-                  </span>
-                </label>
-              ))}
+              {["pending", "active", "ended", "canceled", "rejected"].map(
+                (status) => (
+                  <label key={status} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={filters.status.split(",").includes(status)}
+                      onChange={() => handleFilterChange("status", status)}
+                      className="h-5 w-5 text-primary-500 border-primary-500 rounded"
+                    />
+                    <span className="ml-2 text-gray-600 capitalize">
+                      {status}
+                    </span>
+                  </label>
+                )
+              )}
             </div>
           </fieldset>
 
@@ -215,7 +200,7 @@ const ContractsFilter = () => {
           <div className="flex items-end">
             <Button
               type="submit"
-              className="w-full md:w-auto text-white px-4 py-2 rounded-lg transition-colors duration-200"
+              className="w-full md:w-auto text-white px-4 py-2 rounded-lg"
             >
               Apply Filters
             </Button>
@@ -223,25 +208,50 @@ const ContractsFilter = () => {
         </form>
       </div>
 
-      {(appliedFilters.status || appliedFilters.paymentType) && (
+      {/* Applied Filters Section */}
+      {filters.status || filters.contractType ? (
         <div className="mt-4 pt-3 border-t">
           <h4 className="text-sm font-medium text-gray-700 mb-2">
             Applied Filters:
           </h4>
           <div className="flex flex-wrap gap-2">
-            {appliedFilters.status && (
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                Status: {appliedFilters.status}
-              </span>
-            )}
-            {appliedFilters.paymentType && (
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                Payment: {appliedFilters.paymentType}
-              </span>
-            )}
+            {filters.status
+              .split(",")
+              .filter(Boolean)
+              .map((status) => (
+                <span
+                  key={status}
+                  className="flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full"
+                >
+                  Status: {status.charAt(0).toUpperCase() + status.slice(1)}
+                  <button
+                    onClick={() => handleRemoveFilter("status")}
+                    className="text-blue-600 hover:text-blue-800"
+                  >
+                    ✕
+                  </button>
+                </span>
+              ))}
+            {filters.contractType
+              .split(",")
+              .filter(Boolean)
+              .map((type) => (
+                <span
+                  key={type}
+                  className="flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full"
+                >
+                  Contract: {type.charAt(0).toUpperCase() + type.slice(1)}
+                  <button
+                    onClick={() => handleRemoveFilter("contractType")}
+                    className="text-blue-600 hover:text-blue-800"
+                  >
+                    ✕
+                  </button>
+                </span>
+              ))}
           </div>
         </div>
-      )}
+      ) : null}
     </div>
   );
 };
