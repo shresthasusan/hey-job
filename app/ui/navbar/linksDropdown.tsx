@@ -35,6 +35,9 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
                 <li className=" p-3 hover:bg-slate-100">
                   <Link href={"/user/saved-jobs"}>Saved Jobs</Link>
                 </li>
+                <li className=" p-3 hover:bg-slate-100">
+                  <Link href={"/user/saved-jobs"}>Proposal & Offers</Link>
+                </li>
               </>
             )}
             {(currentMode?.startsWith("/client") ||

@@ -173,7 +173,7 @@ const ChatWindow: React.FC = () => {
       <div className="w-full p-5">
         <div className="flex flex-row gap-5 justify-between bg-white">
           {/* Chat list container */}
-          <div className="w-1/3 h-[calc(100vh-120px)] rounded-3xl shadow-[0_10px_20px_rgba(228,228,228,_0.7)] overflow-hidden">
+          <div className="w-1/3 h-[calc(100vh-120px)] relative rounded-3xl shadow-[0_10px_20px_rgba(228,228,228,_0.7)] overflow-hidden">
             {/* Suspense wrapper for lazy loading the ChatList component */}
             <Suspense>
               <ChatList />
@@ -183,9 +183,9 @@ const ChatWindow: React.FC = () => {
           {/* Chat messages container */}
           {chatUser.id !== "0" ? (
             <>
-              <div className="w-full rounded-3xl overflow-scroll relative h-[calc(100vh-120px)] shadow-[0_10px_20px_rgba(228,228,228,_0.7)] px-5 flex flex-col justify-between">
+              <div className=" w-full rounded-3xl overflow-scroll h-[calc(100vh-120px)] shadow-[0_10px_20px_rgba(228,228,228,_0.7)] flex flex-col justify-between">
                 {/* Messages section */}
-                <div className="flex flex-col-reverse mt-5">
+                <div className="flex break-words flex-col-reverse mt-5">
                   {messages?.map(
                     (
                       msg: {
@@ -198,14 +198,14 @@ const ChatWindow: React.FC = () => {
                     ) => (
                       <div
                         key={index}
-                        className={`flex  mb-4 items-center ${
+                        className={`flex mb-4 items-center ${
                           msg.sId === userData?.id
                             ? `justify-end `
                             : `justify-end flex-row-reverse`
                         } `}
                       >
                         <div
-                          className={`py-3 w-2/3 px-4 rounded-tl-3xl rounded-tr-xl  text-white  ${
+                          className={`py-3 px-4 max-w-md rounded-tl-3xl rounded-tr-xl  text-white  ${
                             msg.sId === userData?.id
                               ? `bg-primary-500 mr-2 rounded-bl-3xl`
                               : `bg-gray-300 ml-2 rounded-br-3xl`
@@ -242,7 +242,7 @@ const ChatWindow: React.FC = () => {
                 </div>
 
                 {/* Input field for typing new messages */}
-                <div className="py-5  flex items-center bottom-0 sticky bg-white w-full">
+                <div className="py-5  flex items-center bottom-0 sticky bg-white w-full px-5">
                   <input
                     className="w-full bg-gray-200 py-5 px-3 rounded-xl"
                     onChange={(e) => setInput(e.target.value)}
