@@ -154,7 +154,13 @@ const ChatWindow: React.FC = () => {
         unSub();
       };
     }
-  }, [messagesId, chatUser]);
+  }, [messagesId, chatUser, setMessages]);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      sendMessage();
+    }
+  };
 
   console.log("userData", userData);
 
@@ -179,7 +185,7 @@ const ChatWindow: React.FC = () => {
             <>
               <div className="w-full rounded-3xl overflow-scroll relative h-[calc(100vh-120px)] shadow-[0_10px_20px_rgba(228,228,228,_0.7)] px-5 flex flex-col justify-between">
                 {/* Messages section */}
-                <div className="flex  flex-col-reverse mt-5">
+                <div className="flex flex-col-reverse mt-5">
                   {messages?.map(
                     (
                       msg: {
@@ -199,7 +205,7 @@ const ChatWindow: React.FC = () => {
                         } `}
                       >
                         <div
-                          className={`py-3 px-4 rounded-tl-3xl rounded-tr-xl  text-white  ${
+                          className={`py-3 w-2/3 px-4 rounded-tl-3xl rounded-tr-xl  text-white  ${
                             msg.sId === userData?.id
                               ? `bg-primary-500 mr-2 rounded-bl-3xl`
                               : `bg-gray-300 ml-2 rounded-br-3xl`
@@ -213,7 +219,7 @@ const ChatWindow: React.FC = () => {
                               alt={"msg-image"}
                             />
                           ) : (
-                            <p className="msg">{msg.text}</p>
+                            <p className="msg  break-words">{msg.text}</p>
                           )}
                         </div>
                         <Image
@@ -241,6 +247,7 @@ const ChatWindow: React.FC = () => {
                     className="w-full bg-gray-200 py-5 px-3 rounded-xl"
                     onChange={(e) => setInput(e.target.value)}
                     value={input}
+                    onKeyDown={handleKeyDown}
                     type="text"
                     placeholder="Type your message here..."
                   />

@@ -233,11 +233,12 @@ const ChatList: React.FC = () => {
                   <div className="w-[80%] relative">
                     <div className="text-lg font-medium">
                       {item.userData.username}
-                      {!item.messageSeen && (
-                        <span className="absolute top-0 right-0 h-3 w-3">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 "></span>
-                        </span>
-                      )}
+                      {!item.messageSeen &&
+                        item.rId === item.lastMessageSender && (
+                          <span className="absolute top-0 right-0 h-3 w-3">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 "></span>
+                          </span>
+                        )}
                     </div>
                     <div
                       className={`text-sm w-[80%] overflow-hidden text-gray-500 ${!item.messageSeen ? "font-bold" : ""}`}
