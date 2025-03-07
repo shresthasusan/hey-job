@@ -1,5 +1,3 @@
-// app/api/contracts/route.js
-
 import { connectMongoDB } from '@/app/lib/mongodb';
 import Contract from '@/models/contract';
 import Jobs from '@/models/jobs';
@@ -36,23 +34,51 @@ export async function GET(req: NextRequest) {
         }
 
         // Determine which data to populate based on the user's role
-        const isClient = clientId != null;
-        const isFreelancer = freelancerId != null;
+        const isClient = !!clientId;
+        const isFreelancer = !!freelancerId;
 
-        let populateFields: { path: string, model: string }[] = [];
-        if (isClient) {
-            // Case 1: Client needs job, freelancer, and contract details
-            populateFields = [{ path: 'freelancerId', model: 'FreelancerInfo' }];
-        } else if (isFreelancer) {
-            // Case 2: Freelancer needs job, client, and contract details
-            populateFields = [{ path: 'clientId', model: 'ClientInfo' }];
-        }
+        let populateFields = [];
 
         // Fetch contracts with the necessary fields populated
         const contracts = await Contract.find(query)
-            .populate({ path: 'jobId', model: 'Jobs' })
-            .populate(populateFields)
+            .populate({ path: 'jobId', model: 'Jobs', select: "title budget description" }) // Populate job details
             .exec();
+
+
+        if (isClient) {
+            // Fetch freelancer details for each contract
+            const contractsWithFreelancerDetails = await Promise.all(
+                contracts.map(async (contract) => {
+                    if (contract.freelancerId) {
+                        const freelancerDetails = await FreelancerInfo.findOne({
+                            userId: contract.freelancerId,
+                        }).select("fullName location rate industries");
+                        return { ...contract.toObject(), freelancerDetails };
+                    } else {
+                        return contract.toObject(); // Return original contract if no freelancerId
+                    }
+                })
+            );
+            return NextResponse.json({ success: true, data: contractsWithFreelancerDetails });
+        }
+
+        if (isFreelancer) {
+            // Fetch freelancer details for each contract
+            const contractsWithClientDetails = await Promise.all(
+                contracts.map(async (contract) => {
+                    if (contract.clientId) {
+                        const clientDetails = await ClientInfo.findOne({
+                            userId: contract.clientId,
+                        }).select("fullName location rate industries");
+                        return { ...contract.toObject(), clientDetails };
+                    } else {
+                        return contract.toObject(); // Return original contract if no freelancerId
+                    }
+                })
+            );
+            return NextResponse.json({ success: true, data: contractsWithClientDetails });
+        }
+
 
         return NextResponse.json({ success: true, data: contracts });
     } catch (error) {

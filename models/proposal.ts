@@ -22,7 +22,7 @@ export interface IProposal extends Document {
 
 const ProposalSchema: Schema = new Schema(
     {
-        jobId: { type: Schema.Types.ObjectId, ref: "Job", required: true },
+        jobId: { type: Schema.Types.ObjectId, ref: "Jobs", required: true },
         userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
         clientId: { type: Schema.Types.ObjectId, ref: "User", required: true },
         coverLetter: { type: String, required: true },

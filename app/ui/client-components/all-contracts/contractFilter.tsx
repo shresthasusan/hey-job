@@ -8,6 +8,16 @@ const ContractsFilter = () => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
+  const [status, setStatus] = useState<string>(
+    searchParams.get("status") || ""
+  );
+  const [paymentType, setPaymentType] = useState<string>(
+    searchParams.get("paymentType") || ""
+  );
+  const [appliedFilters, setAppliedFilters] = useState({
+    status: searchParams.get("status") || "",
+    paymentType: searchParams.get("paymentType") || "",
+  });
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
 
   const [filters, setFilters] = useState<{
@@ -19,6 +29,19 @@ const ContractsFilter = () => {
     contractType: searchParams.get("contractType") || "",
     status: searchParams.get("status") || "",
   });
+
+  // Update URL when filter values change
+  const updateURLParams = (key: string, value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (value) {
+      params.set(key, value);
+    } else {
+      params.delete(key);
+    }
+
+    replace(`?${params.toString()}`);
+  };
 
   useEffect(() => {
     setFilters({
@@ -58,14 +81,8 @@ const ContractsFilter = () => {
         params.delete("contractType");
         currentTypes.forEach((type) => params.append("contractType", type));
         return { ...prev, contractType: Array.from(currentTypes).join(",") };
-      } else {
-        if (value) {
-          params.set(key, value);
-        } else {
-          params.delete(key);
-        }
-        return { ...prev, [key]: value };
       }
+      return prev;
     });
   };
 
@@ -74,6 +91,10 @@ const ContractsFilter = () => {
       .filter(([_, value]) => value)
       .map(([key, value]) => `${key}=${value}`)
       .join("&");
+    setAppliedFilters({
+      status,
+      paymentType,
+    });
     replace(`${pathname}${queryString ? `?${queryString}` : ""}`);
     setIsFilterOpen(false);
   };
@@ -87,9 +108,9 @@ const ContractsFilter = () => {
             id="search"
             type="text"
             value={filters.search}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              handleFilterChange("search", e.target.value)
-            }
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              updateURLParams("search", e.target.value);
+            }}
             className="border rounded-lg px-10 py-2 w-64 focus:outline-none focus:ring-2 focus:ring-primary-500"
             placeholder="Search contracts..."
           />
@@ -201,6 +222,26 @@ const ContractsFilter = () => {
           </div>
         </form>
       </div>
+
+      {(appliedFilters.status || appliedFilters.paymentType) && (
+        <div className="mt-4 pt-3 border-t">
+          <h4 className="text-sm font-medium text-gray-700 mb-2">
+            Applied Filters:
+          </h4>
+          <div className="flex flex-wrap gap-2">
+            {appliedFilters.status && (
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                Status: {appliedFilters.status}
+              </span>
+            )}
+            {appliedFilters.paymentType && (
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                Payment: {appliedFilters.paymentType}
+              </span>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
