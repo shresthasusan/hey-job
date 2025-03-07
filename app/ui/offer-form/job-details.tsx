@@ -47,16 +47,6 @@ export function formatPostedDate(createdAt: string) {
 }
 
 const JobDetails = ({ jobId }: JobDetailsProps) => {
-  // useEffect(()=>{  const response = await fetch(`/api/fetchJobs?jobId=${jobId}`, {
-  //     method: "GET",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     next: {
-  //       revalidate: 3600, // Revalidate the data every 1 hour
-  //     },
-  //   });}
-  // )
   const { data } = useFetch<Data>(`/fetchJobs?jobId=${jobId}`);
   if (!data) {
     return;

@@ -3,104 +3,104 @@
 import React, { useState } from "react";
 import JobDetails from "./job-details";
 import Terms from "./term";
-import Duration from "./duration";
+import Expiration from "./expiration";
+import Deadline from "./deadline";
 import { useSession } from "next-auth/react";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import app from "@/app/lib/firebase";
 import { Button } from "../button";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
+import FreelancerDetail from "./freelancer-details";
+import Alert from "../alert";
 
 interface OfferFormProps {
   jobId: string;
+  freelancerId: string;
 }
 
-const OfferForm = ({ jobId }: OfferFormProps) => {
-  const { data: session } = useSession();
+const OfferForm = ({ jobId, freelancerId }: OfferFormProps) => {
+  const [pricingType, setPricingType] = useState<string>(""); // Pricing Model
   const [bidAmount, setBidAmount] = useState<string>("");
-  const [coverLetter, setCoverLetter] = useState<string>("");
-  const [duration, setDuration] = useState<string>("");
-  const [files, setFiles] = useState<File[]>([]);
+  const [deadline, setDeadline] = useState<string>("");
+  const [expiration, setExpiration] = useState("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
-
-  const storage = getStorage(app); // Firebase Storage reference
-
-  // Upload files to Firebase Storage
-  const uploadFiles = async () => {
-    if (files.length === 0) return [];
-
-    const uploadPromises = files.map(async (file) => {
-      const fileRef = ref(
-        storage,
-        `proposals/${jobId}/${session?.user?.id}/${file.name}`
-      );
-      await uploadBytes(fileRef, file);
-      return getDownloadURL(fileRef);
-    });
-
-    return Promise.all(uploadPromises);
-  };
+  const [alert, setAlert] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
 
   // Handle form submission
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setIsSubmitting(true);
     setIsSubmitted(true);
+    setAlert(null); // Reset alerts
 
-    if (!bidAmount.trim() || !coverLetter.trim() || !duration) {
-      console.error("Form validation failed!");
+    if (!bidAmount.trim() || !deadline) {
+      setAlert({ type: "error", message: "Please fill all required fields!" });
       setIsSubmitting(false);
       return;
     }
 
     try {
-      const uploadedFiles = await uploadFiles();
-
       const proposalData = {
         jobId,
+        freelancerId,
         bidAmount,
-        coverLetter,
-        duration,
-        attachments: uploadedFiles,
+        deadline,
+        pricingType,
+        expiration,
       };
 
-      const response = await fetchWithAuth(
-        `/api/submit-proposal/${session?.user.id}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(proposalData),
-        }
-      );
+      const response = await fetchWithAuth(`/api/submit-offer`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(proposalData),
+      });
 
       if (!response.ok) {
-        throw new Error("Failed to submit proposal");
+        throw new Error(await response.text());
       }
 
-      console.log("Proposal submitted successfully");
-
-      setFiles([]); // Clear selected files after submission
-    } catch (error) {
-      console.error("Error uploading files:", error);
+      setAlert({
+        type: "success",
+        message: "Offer send successfully!",
+      });
+    } catch (error: any) {
+      setAlert({
+        type: "error",
+        message: error.message || "Failed to submit proposal",
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
-
   return (
     <div className="w-full flex gap-10 flex-col">
-      <p className="text-left text-4xl font-medium">Submit a Proposal</p>
+      <p className="text-left text-4xl font-medium">Make an Offer</p>
+      {alert && <Alert type={alert.type} message={alert.message} />}{" "}
+      {/* Display alert */}
+      <FreelancerDetail freelancerId={freelancerId} />
       <JobDetails jobId={jobId} />
       <form onSubmit={handleSubmit} className="flex gap-10 flex-col">
         <Terms
           bidAmount={bidAmount}
           setBidAmount={setBidAmount}
           isSubmitted={isSubmitted}
+          pricingType={pricingType}
+          setPricingType={setPricingType}
         />
 
-        <Duration
-          duration={duration}
-          setDuration={setDuration}
+        <Deadline
+          deadline={deadline}
+          setDeadline={setDeadline}
+          isSubmitted={false}
+        />
+
+        <Expiration
+          expiration={expiration}
+          setExpiration={setExpiration}
           isSubmitted={isSubmitted}
         />
 

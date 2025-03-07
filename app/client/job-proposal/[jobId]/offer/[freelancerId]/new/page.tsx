@@ -10,7 +10,7 @@ const page = ({
   const { jobId, freelancerId } = params;
   return (
     <div className="flex max-w-screen-xl w-full py-14 mx-auto">
-      <OfferForm jobId={jobId} />
+      <OfferForm jobId={jobId} freelancerId={freelancerId} />
     </div>
   );
 };
