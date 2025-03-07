@@ -12,20 +12,27 @@ import {
   getDoc,
   onSnapshot,
 } from "firebase/firestore";
-import { PaperAirplaneIcon, PhotoIcon } from "@heroicons/react/24/outline";
+import {
+  PaperAirplaneIcon,
+  PhotoIcon,
+  ShareIcon,
+} from "@heroicons/react/24/outline";
 import UserProfileLoader from "@/app/lib/userProfileLoader";
 
-interface uId {
-  uId: string;
-}
+const ChatWindow: React.FC = () => {
+  const {
+    userData,
+    messagesId,
+    chatUser,
+    messages,
+    chatData,
+    setMessages,
+    chatVisual,
+  } = useContext(Appcontext);
 
-const ChatWindow: React.FC<uId> = ({ uId }) => {
-  const { userData, messagesId, chatUser, messages, setMessages, chatVisual } =
-    useContext(Appcontext);
+  // console.log('data',userData);
 
   const [input, setInput] = useState("");
-
-  const { loadUserData } = useContext(Appcontext);
 
   const sendMessage = async () => {
     try {
@@ -108,7 +115,6 @@ const ChatWindow: React.FC<uId> = ({ uId }) => {
       console.error(error);
     }
   };
-
   const convertTimestamp = (timestamp: any) => {
     let date;
     if (!timestamp) {
@@ -135,7 +141,6 @@ const ChatWindow: React.FC<uId> = ({ uId }) => {
       return hour + ":" + minute + "AM";
     }
   };
-
   useEffect(() => {
     if (messagesId) {
       const unSub = onSnapshot(doc(db, "messages", messagesId), (res) => {
@@ -149,15 +154,12 @@ const ChatWindow: React.FC<uId> = ({ uId }) => {
         unSub();
       };
     }
-  }, [messagesId, chatUser, setMessages]);
+  }, [messagesId, chatUser]);
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      sendMessage();
-    }
-  };
-  // loadUserData(uId);
+  console.log("userData", userData);
 
+  // console.log("chatData", chatData);
+  console.log("CHATuSE", chatUser);
   return (
     <>
       <UserProfileLoader />
@@ -217,8 +219,8 @@ const ChatWindow: React.FC<uId> = ({ uId }) => {
                         <Image
                           src={
                             msg.sId === userData?.id
-                              ? userData.avatar || "/images/image.png"
-                              : chatUser.avatar || "/images/image.png"
+                              ? userData.avatar || "/default-avatar.png"
+                              : chatUser.avatar || "/default-avatar.png"
                           }
                           className="object-cover h-8 w-8 rounded-full"
                           alt="User avatar"
@@ -235,12 +237,12 @@ const ChatWindow: React.FC<uId> = ({ uId }) => {
 
                 {/* Input field for typing new messages */}
                 <div className="py-5  flex items-center bottom-0 sticky bg-white w-full">
-                  <textarea
-                    className="w-full bg-gray-200 py-5 px-3 rounded-xl h-32  overflow-y-auto"
+                  <input
+                    className="w-full bg-gray-200 py-5 px-3 rounded-xl"
                     onChange={(e) => setInput(e.target.value)}
                     value={input}
+                    type="text"
                     placeholder="Type your message here..."
-                    onKeyDown={handleKeyDown}
                   />
                   <input
                     onChange={sendImage}
@@ -255,25 +257,25 @@ const ChatWindow: React.FC<uId> = ({ uId }) => {
                   <span onClick={sendMessage}>
                     <PaperAirplaneIcon className="w-8 h-8 top-0 " />
                   </span>
+                  {/* hereee */}
                 </div>
               </div>
 
               {/* Group info section */}
+
               <div className="w-2/5 border-l-2 px-5">
                 <div className="flex flex-col">
                   {/* Group title */}
                   <div className="font-semibold text-xl py-4 ">
                     {chatUser.username}
                   </div>
-                  <span className="w-48 h-48 overflow-hidden rounded-full">
-                    <Image
-                      src={chatUser.avatar || "/images/image.png"}
-                      className="object-cover rounded-full"
-                      alt="Group image"
-                      width={200}
-                      height={200}
-                    />
-                  </span>
+                  <Image
+                    src={chatUser.avatar || "/default-avatar.png"}
+                    className="object-cover rounded-full"
+                    alt="Group image"
+                    width={200}
+                    height={200}
+                  />
                   <div className="font-semibold py-4  text-neutral-400">
                     Last seen {convertTimestamp(chatUser.lastSeen)}
                   </div>
