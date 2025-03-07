@@ -10,11 +10,8 @@ export async function POST(req: NextRequest) {
         // Ensure database connection
         await connectMongoDB();
 
-        // Authenticate user session
-        const session = await getServerSession();
-        if (!session?.user) {
-            return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-        }
+        const userData = req.headers.get("user");
+        const user = userData ? JSON.parse(userData) : null;
 
         // Parse request body
         const { jobId, freelancerId, bidAmount, deadline, pricingType, expiration } = await req.json();
@@ -43,9 +40,9 @@ export async function POST(req: NextRequest) {
 
         // Create and save the Contract
         const newContract = await Contract.create({
-            jobId: new mongoose.Types.ObjectId(jobId),
-            freelancerId: new mongoose.Types.ObjectId(freelancerId),
-            clientId: new mongoose.Types.ObjectId(session.user.id),
+            jobId: jobId,
+            freelancerId: freelancerId,
+            clientId: user.id,
             paymentType: pricingType || "fixed",
             price,
             deadline: deadlineDate,

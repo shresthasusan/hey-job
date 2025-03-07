@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { Button } from "../../../ui/button";
+import { Button } from "../../../../ui/button";
 import AllJobsList from "@/app/ui/client-components/all-jobs/clientJobList";
 
 const YourJobsPage = ({ params }: { params: { id: string } }) => {

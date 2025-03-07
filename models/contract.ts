@@ -15,9 +15,9 @@ export interface IContract extends Document {
 
 const ContractSchema: Schema = new Schema(
     {
-        jobId: { type: mongoose.Schema.Types.ObjectId, ref: 'Job', required: true },
-        clientId: { type: mongoose.Schema.Types.ObjectId, ref: 'Client', required: true },
-        freelancerId: { type: mongoose.Schema.Types.ObjectId, ref: 'Freelancer', required: true },
+        jobId: { type: mongoose.Schema.Types.ObjectId, ref: 'Jobs', required: true },
+        clientId: { type: mongoose.Schema.Types.ObjectId, ref: 'ClientInfo', required: true },
+        freelancerId: { type: mongoose.Schema.Types.ObjectId, ref: 'FreelancerInfo', required: true },
         paymentType: { type: String, enum: ['fixed', 'hourly', 'milestone'], default: 'fixed' },
         price: { type: Number, required: true },
         deadline: { type: Date, required: true },
