@@ -2,9 +2,10 @@
 
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 import { useSession } from "next-auth/react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { debounce } from "@/app/lib/debounce"; // Import the debounce function
 
 // Updated interfaces to include more relevant information
 interface Job {
@@ -51,14 +52,13 @@ const ContractsList: React.FC<ContractsListProps> = () => {
   const paymentType = searchParams.get("paymentType") || "";
   const search = searchParams.get("search") || "";
 
-  useEffect(() => {
-    const fetchContracts = async () => {
-      if (!session?.user?.id) return;
-
+  // Debounced fetch function
+  const debouncedFetchContracts = useCallback(
+    async (clientId: string, status: string, paymentType: string) => {
       setLoading(true);
       try {
         const response = await fetchWithAuth(
-          `/api/fetch-contracts?clientId=${session.user.id}${status ? `&status=${status}` : ""}${paymentType ? `&paymentType= ${paymentType}` : ""}`
+          `/api/fetch-contracts?clientId=${clientId}${status ? `&status=${status}` : ""}${paymentType ? `&paymentType=${paymentType}` : ""}`
         );
 
         if (!response.ok) {
@@ -75,10 +75,15 @@ const ContractsList: React.FC<ContractsListProps> = () => {
       } finally {
         setLoading(false);
       }
-    };
+    },
+    [] // Include debounce
+  );
 
-    fetchContracts();
-  }, [status, paymentType, session?.user?.id]);
+  useEffect(() => {
+    if (!session?.user?.id) return;
+
+    debouncedFetchContracts(session.user.id, status, paymentType);
+  }, [status, paymentType, session?.user?.id, debouncedFetchContracts]);
 
   // Filter contracts by search term if provided
   const filteredContracts = search
@@ -95,7 +100,7 @@ const ContractsList: React.FC<ContractsListProps> = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-48">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
       </div>
     );
   }
@@ -189,7 +194,7 @@ const ContractsList: React.FC<ContractsListProps> = () => {
                 <div className="mt-4 pt-4 border-t flex justify-end">
                   <Link
                     href={`/contracts/${contract._id}`}
-                    className="inline-flex items-center px-4 py-2 border border-blue-600 text-sm font-medium rounded-md text-blue-600 bg-white hover:bg-blue-50"
+                    className="inline-flex items-center px-4 py-2 border border-primary-600 text-sm font-medium rounded-md text-primary-600 bg-white hover:bg-primary-50"
                   >
                     View Details
                   </Link>
