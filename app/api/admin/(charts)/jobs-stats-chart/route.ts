@@ -25,8 +25,10 @@ export async function GET(
     await connectMongoDB();
 
     try {
+
+        const { searchParams } = new URL(req.url)
         // Get timeframe from query params (default: "monthly")
-        const timeframe = req.nextUrl.searchParams.get("timeframe") || "monthly";
+        const timeframe = searchParams.get("timeframe") || "monthly";
 
         let groupBy: any = {};
         let dateFormatter: (d: any) => string;

@@ -15,8 +15,10 @@ export async function GET(
     await connectMongoDB();
 
     try {
+        const { searchParams } = new URL(req.url);
+
         // ✅ Get `accountType` from query params (default to client)
-        const accountType = req.nextUrl.searchParams.get("accountType") || "freelancer";
+        const accountType = searchParams.get("accountType") || "freelancer";
 
         let industryStats;
 
