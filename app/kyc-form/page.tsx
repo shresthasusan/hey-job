@@ -7,8 +7,7 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 
-const KYCForm = ({ params }: { params: { id: string } }) => {
-  const { id } = params;
+const KYCForm = () => {
   const { data: session } = useSession();
   const [uploading, setUploading] = useState(false);
 
@@ -165,7 +164,7 @@ const KYCForm = ({ params }: { params: { id: string } }) => {
       }
 
       // Send data to API
-      const res = await fetchWithAuth(`/api/kyc-submit/${id}`, {
+      const res = await fetchWithAuth(`/api/kyc-submit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(submissionData),

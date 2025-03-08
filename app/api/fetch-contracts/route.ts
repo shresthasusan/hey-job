@@ -11,20 +11,22 @@ export async function GET(req: NextRequest) {
 
         // Extract query parameters from URL
         const { searchParams } = new URL(req.url);
-        const paymentType = searchParams.get("paymentType"); // e.g., "fixed,hourly"
-        const status = searchParams.get("status"); // e.g., "active,pending,rejected"
-        const clientId = searchParams.get("clientId"); // For client-specific filtering
-        const freelancerId = searchParams.get("freelancerId"); // For freelancer-specific filtering
+        const contractId = searchParams.get("contractId"); // Fetch specific contract
+        const paymentType = searchParams.get("paymentType");
+        const status = searchParams.get("status");
+        const clientId = searchParams.get("clientId");
+        const freelancerId = searchParams.get("freelancerId");
 
-        // Build the query filter based on provided parameters
         let query: { [key: string]: any } = {};
+
+        if (contractId) {
+            query._id = contractId;
+        }
         if (paymentType) {
-            const paymentTypes = paymentType.split(',').map(type => type.trim());
-            query.paymentType = { $in: paymentTypes };
+            query.paymentType = { $in: paymentType.split(',').map(type => type.trim()) };
         }
         if (status) {
-            const statuses = status.split(',').map(s => s.trim());
-            query.status = { $in: statuses };
+            query.status = { $in: status.split(',').map(s => s.trim()) };
         }
         if (clientId) {
             query.clientId = clientId;
@@ -33,54 +35,51 @@ export async function GET(req: NextRequest) {
             query.freelancerId = freelancerId;
         }
 
-        // Determine which data to populate based on the user's role
+        // Fetch contract(s) with job details
+        let contracts = await Contract.find(query)
+            .populate({ path: 'jobId', model: Jobs, select: "title budget description" }) // Populate job details
+            .exec();
+
+        if (!contracts.length) {
+            return NextResponse.json({ success: false, message: 'No contract found' }, { status: 404 });
+        }
+
         const isClient = !!clientId;
         const isFreelancer = !!freelancerId;
 
-        let populateFields = [];
-
-        // Fetch contracts with the necessary fields populated
-        const contracts = await Contract.find(query)
-            .populate({ path: 'jobId', model: 'Jobs', select: "title budget description" }) // Populate job details
-            .exec();
-
-
         if (isClient) {
-            // Fetch freelancer details for each contract
-            const contractsWithFreelancerDetails = await Promise.all(
+            contracts = await Promise.all(
                 contracts.map(async (contract) => {
                     if (contract.freelancerId) {
                         const freelancerDetails = await FreelancerInfo.findOne({
                             userId: contract.freelancerId,
                         }).select("fullName location rate industries");
                         return { ...contract.toObject(), freelancerDetails };
-                    } else {
-                        return contract.toObject(); // Return original contract if no freelancerId
                     }
+                    return contract.toObject();
                 })
             );
-            return NextResponse.json({ success: true, data: contractsWithFreelancerDetails });
         }
 
         if (isFreelancer) {
-            // Fetch freelancer details for each contract
-            const contractsWithClientDetails = await Promise.all(
+            contracts = await Promise.all(
                 contracts.map(async (contract) => {
                     if (contract.clientId) {
                         const clientDetails = await ClientInfo.findOne({
                             userId: contract.clientId,
                         }).select("fullName location rate industries");
                         return { ...contract.toObject(), clientDetails };
-                    } else {
-                        return contract.toObject(); // Return original contract if no freelancerId
                     }
+                    return contract.toObject();
                 })
             );
-            return NextResponse.json({ success: true, data: contractsWithClientDetails });
         }
 
+        return NextResponse.json({
+            success: true,
+            data: contractId ? contracts[0] : contracts, // Return a single object if fetching one
+        });
 
-        return NextResponse.json({ success: true, data: contracts });
     } catch (error) {
         console.error(error);
         return NextResponse.json({ success: false, message: 'Server Error' }, { status: 500 });

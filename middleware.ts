@@ -1,11 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { authenticateToken } from "./app/lib/authorizationMiddleware";
+import { getUserVerificationStatus } from "./app/lib/userVerificationStatus";
 
 export async function middleware(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-
   const pathname = req.nextUrl.pathname;
+
+
+  // Restrict users without KYC from submitting job offers
+  if (!token?.kycVerified && pathname.startsWith("/client/job-proposal/") && pathname.includes("/offer/")) {
+    return NextResponse.redirect(new URL("/kyc-required", req.url));
+  }
+
+  // Restrict email-unverified users from important routes
+  if (!token?.emailVerified && pathname.startsWith("/client/post-job")) {
+    return NextResponse.redirect(new URL("/verify-email", req.url));
+  }
+
+
+
 
   // Define routes
   const isAuthPage =

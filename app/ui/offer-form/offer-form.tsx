@@ -79,7 +79,6 @@ const OfferForm = ({ jobId, freelancerId }: OfferFormProps) => {
   return (
     <div className="w-full flex gap-10 flex-col">
       <p className="text-left text-4xl font-medium">Make an Offer</p>
-      {alert && <Alert type={alert.type} message={alert.message} />}{" "}
       {/* Display alert */}
       <FreelancerDetail freelancerId={freelancerId} />
       <JobDetails jobId={jobId} />
@@ -112,6 +111,7 @@ const OfferForm = ({ jobId, freelancerId }: OfferFormProps) => {
           {isSubmitting ? "Submitting..." : "Submit Proposal"}
         </Button>
       </form>
+      {alert && <Alert type={alert.type} message={alert.message} />}{" "}
     </div>
   );
 };

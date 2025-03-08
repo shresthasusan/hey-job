@@ -30,6 +30,8 @@ declare module "next-auth" {
     lastName: string;
     role: string;
     profilePicture?: string;
+    emailVerified?: boolean;
+    kycVerified?: boolean;
     accessToken?: string;
   }
 }
@@ -107,6 +109,8 @@ export const authOptions: NextAuthOptions = {
             email,
             name: user.name,
             lastName: user.lastName,
+            emailVerfied: user.emailVerified,
+            kycVerified: user.kycVerified,
             id: user._id.toString(),
           })
             .setProtectedHeader({ alg: "HS256" })
@@ -118,6 +122,8 @@ export const authOptions: NextAuthOptions = {
             profilePicture: user.profilePicture,
             role: "user",
             id: user._id.toString(),
+            emailVerfied: user.emailVerified,
+            kycVerified: user.kycVerified,
             accessToken,
           };
         } catch (error) {
@@ -162,6 +168,8 @@ export const authOptions: NextAuthOptions = {
             name: user.name,
             lastname: user.lastName,
             id: newUser._id.toString(),
+            emailVerfied: user.emailVerified,
+            kycVerified: user.kycVerified,
           })
             .setProtectedHeader({ alg: "HS256" })
             .sign(secretKey);
@@ -172,6 +180,8 @@ export const authOptions: NextAuthOptions = {
           user.role = "user";
           user.profilePicture = newUser.profilePicture;
           user.accessToken = accessToken;
+          user.emailVerified = newUser.emailVerified;
+          user.kycVerified = newUser.kycVerified;
         } else {
           // Use existing user data
           const secretKey = new TextEncoder().encode(
@@ -182,6 +192,8 @@ export const authOptions: NextAuthOptions = {
             name: user.name,
             lastname: user.lastName,
             id: existingUser._id.toString(),
+            emailVerified: existingUser.emailVerified,
+            kycVerified: existingUser.kycVerified,
           })
             .setProtectedHeader({ alg: "HS256" })
             .sign(secretKey);
@@ -193,6 +205,8 @@ export const authOptions: NextAuthOptions = {
           user.role = "user";
           user.profilePicture = existingUser.profilePicture;
           user.accessToken = accessToken;
+          user.kycVerified = existingUser.kycVerified;
+          user.emailVerified = existingUser.emailVerified;
         }
       }
       return true;
