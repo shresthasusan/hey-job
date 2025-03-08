@@ -1,11 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { authenticateToken } from "./app/lib/authorizationMiddleware";
-import { getUserVerificationStatus } from "./app/lib/userVerificationStatus";
+
 
 export async function middleware(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   const pathname = req.nextUrl.pathname;
+
+  // Define routes
+  const isAuthPage =
+    pathname === "/login" ||
+    pathname === "/signup" ||
+    pathname === "/api/register";
+
+  const isAdminAuthPage =
+    pathname === "/admin/login" || pathname === "/api/admin/register";
+
+  const isUserPage =
+    !pathname.startsWith("/admin") &&
+    !pathname.startsWith("/api") &&
+    !isAuthPage &&
+    !isAdminAuthPage;
 
 
   // Restrict users without KYC from submitting job offers
@@ -14,18 +29,17 @@ export async function middleware(req: NextRequest) {
   }
 
   // Restrict email-unverified users from important routes
-  if (!token?.emailVerified && pathname.startsWith("/client/post-job")) {
-    return NextResponse.redirect(new URL("/verify-email", req.url));
+  if (!token?.emailVerified && pathname.startsWith("/client/post-job") && pathname.startsWith("/user/proposal")) {
+    return NextResponse.redirect(new URL("/email-required", req.url));
+  }
+  // Restrict email-unverified users from important routes
+  if (!token?.emailVerified && pathname.startsWith("/user/proposal")) {
+    return NextResponse.redirect(new URL("/email-required", req.url));
   }
 
 
 
 
-  // Define routes
-  const isAuthPage =
-    pathname === "/login" ||
-    pathname === "/signup" ||
-    pathname === "/api/register";
 
   // Check if we can create a separate middleware for the server API requests
   if (pathname.startsWith("/api/") && !isAuthPage) {
@@ -60,8 +74,7 @@ export async function middleware(req: NextRequest) {
     });
   }
 
-  const isAdminAuthPage =
-    pathname === "/admin/login" || pathname === "/api/admin/register";
+
 
   const isAdminPanel = pathname.startsWith("/admin") && !isAdminAuthPage;
 
@@ -93,11 +106,7 @@ export async function middleware(req: NextRequest) {
     );
   }
 
-  const isUserPage =
-    !pathname.startsWith("/admin") &&
-    !pathname.startsWith("/api") &&
-    !isAuthPage &&
-    !isAdminAuthPage;
+
 
   // 4. Prevent admin users from accessing regular user pages
   if (token && token.role === "admin" && isUserPage) {
