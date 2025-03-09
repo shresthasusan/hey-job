@@ -9,7 +9,9 @@ const Card = ({ children, className }: CardProps) => {
   // Destructure children from props
   return (
     <>
-      <div className={`w-full shadow-lg p-6 rounded-lg ${className}`}>
+      <div
+        className={`w-full border border-primary-500 p-6 rounded-lg ${className}`}
+      >
         {children}
       </div>
     </>

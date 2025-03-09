@@ -41,18 +41,14 @@ export async function GET(req: NextRequest) {
             .exec();
 
         if (!contracts.length) {
-            return NextResponse.json({ success: false, message: 'No contract found' }, { status: 404 });
+            return NextResponse.json({ success: true, data: [] });
         }
 
         const isClient = !!clientId;
         const isFreelancer = !!freelancerId;
 
-
-        if (!isClient && !isFreelancer) {
-            console.log('errrrrrr'
-
-            )
-            return NextResponse.json({ message: 'error id missing' })
+        if (!clientId && !freelancerId) {
+            return NextResponse.json({ success: false, message: 'Either clientId or freelancerId must be provided to fetch contracts.' }, { status: 400 });
         }
 
         if (isClient) {
