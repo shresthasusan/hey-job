@@ -29,7 +29,7 @@ export async function middleware(req: NextRequest) {
   }
 
   // Restrict email-unverified users from important routes
-  if (!token?.emailVerified && pathname.startsWith("/client/post-job") && pathname.startsWith("/user/proposal")) {
+  if (!token?.emailVerified && pathname.startsWith("/client/post-job")) {
     return NextResponse.redirect(new URL("/email-required", req.url));
   }
   // Restrict email-unverified users from important routes

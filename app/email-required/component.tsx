@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { fetchWithAuth } from "../lib/fetchWIthAuth";
 
 const EmailVerification = () => {
   const [email, setEmail] = useState("user@example.com"); // Replace with actual email from context/state
@@ -8,10 +9,18 @@ const EmailVerification = () => {
   const [newEmail, setNewEmail] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const sendVerificationLink = () => {
-    // Call API to send verification link
-    setIsSent(true);
-    alert("Verification link sent to " + email);
+  const sendVerificationLink = async () => {
+    try {
+      const res = await fetchWithAuth("/api/send-verification-mail");
+      if (res.ok) {
+        setIsSent(true);
+        alert("Verification link sent to " + email);
+      } else {
+        alert("Failed to send verification link. Please try again.");
+      }
+    } catch (error) {
+      alert("An error occurred while sending the verification link.");
+    }
   };
 
   const updateEmail = () => {
