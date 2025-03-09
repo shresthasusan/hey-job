@@ -11,7 +11,9 @@ const EmailVerification = () => {
 
   const sendVerificationLink = async () => {
     try {
-      const res = await fetchWithAuth("/api/send-verification-mail");
+      const res = await fetchWithAuth("/api/send-verification-mail", {
+        method: "POST",
+      });
       if (res.ok) {
         setIsSent(true);
         alert("Verification link sent to " + email);

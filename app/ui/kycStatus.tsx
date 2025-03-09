@@ -8,6 +8,7 @@ import { fetchWithAuth } from "../lib/fetchWIthAuth";
 
 export interface KYCStatusResponse {
   kycVerified: boolean;
+  emailVerified: boolean;
 }
 
 const KYCStatus: React.FC = () => {
@@ -37,7 +38,28 @@ const KYCStatus: React.FC = () => {
         }
       })
       .catch((err) => console.error("Error fetching roles:", err));
-  }, [status, id, router, pathname]);
+
+    if (
+      !data?.kycVerified &&
+      pathname.startsWith("client/job-proposal") &&
+      pathname.includes("offer")
+    ) {
+      router.push("/kyc-required");
+    }
+    if (
+      !data?.kycVerified &&
+      pathname.startsWith("user/offer") &&
+      pathname.includes("offer")
+    ) {
+      router.push("/kyc-required");
+    }
+    if (
+      (!data?.emailVerified && pathname.startsWith("/client/post-job")) ||
+      pathname.startsWith("/user/proposal")
+    ) {
+      router.push("/email-required");
+    }
+  }, [status, id, router, pathname, data?.kycVerified, data?.emailVerified]);
 
   if (error) {
     console.error("Error fetching KYC status:", error);

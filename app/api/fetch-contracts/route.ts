@@ -47,6 +47,14 @@ export async function GET(req: NextRequest) {
         const isClient = !!clientId;
         const isFreelancer = !!freelancerId;
 
+
+        if (!isClient && !isFreelancer) {
+            console.log('errrrrrr'
+
+            )
+            return NextResponse.json({ message: 'error id missing' })
+        }
+
         if (isClient) {
             contracts = await Promise.all(
                 contracts.map(async (contract) => {

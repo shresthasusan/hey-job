@@ -24,17 +24,33 @@ export async function middleware(req: NextRequest) {
 
 
   // Restrict users without KYC from submitting job offers
-  if (!token?.kycVerified && pathname.startsWith("/client/job-proposal/") && pathname.includes("/offer/")) {
-    return NextResponse.redirect(new URL("/kyc-required", req.url));
+  if (!token?.kycVerified && pathname.startsWith("/api/submit-offer/")) {
+    return NextResponse.json(
+      { error: "unverified kyc" },
+      { status: 401 }
+    );
+  }
+  // Restrict users without KYC from submitting job offers
+  if (!token?.kycVerified && pathname.startsWith("/api/accept-offer/")) {
+    return NextResponse.json(
+      { error: "unverified kyc" },
+      { status: 401 }
+    );
   }
 
   // Restrict email-unverified users from important routes
-  if (!token?.emailVerified && pathname.startsWith("/client/post-job")) {
-    return NextResponse.redirect(new URL("/email-required", req.url));
+  if (!token?.emailVerified && pathname.startsWith("/api/post-job")) {
+    return NextResponse.json(
+      { error: "unverified email" },
+      { status: 401 }
+    );
   }
   // Restrict email-unverified users from important routes
-  if (!token?.emailVerified && pathname.startsWith("/user/proposal")) {
-    return NextResponse.redirect(new URL("/email-required", req.url));
+  if (!token?.emailVerified && pathname.startsWith("/api/submit-proposal")) {
+    return NextResponse.json(
+      { error: "unverified email" },
+      { status: 401 }
+    );
   }
 
 
