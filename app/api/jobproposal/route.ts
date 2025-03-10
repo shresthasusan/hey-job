@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
         // Define filter conditions dynamically
         const filter: any = {};
         if (jobId) filter.jobId = jobId;
-        if (freelancerId) filter.freelancerId = freelancerId;
+        if (freelancerId) filter.userId = freelancerId;
 
         // Apply status filtering only if it's NOT "all"
         if (status && status !== "all") {
@@ -24,7 +24,8 @@ export async function GET(req: NextRequest) {
 
         // Optimize query by selecting required fields & using `.lean()` for performance
         const proposals = await Proposal.find(filter)
-            .select("jobId userId bidAmount coverLetter status createdAt") // Fetch only necessary fields
+            .select("jobId clientId bidAmount coverLetter status createdAt") // Fetch only necessary fields
+            .populate({ path: 'jobId', select: 'title' }) // Populate jobId with title
             .lean(); // Convert to plain JSON object for faster response
 
         return NextResponse.json({ proposals }, { status: 200 });

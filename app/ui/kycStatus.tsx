@@ -54,8 +54,9 @@ const KYCStatus: React.FC = () => {
       router.push("/kyc-required");
     }
     if (
-      (!data?.emailVerified && pathname.startsWith("/client/post-job")) ||
-      pathname.startsWith("/user/proposal")
+      !data?.emailVerified &&
+      (pathname.startsWith("/client/post-job") ||
+        pathname.startsWith("/user/proposal"))
     ) {
       router.push("/email-required");
     }
