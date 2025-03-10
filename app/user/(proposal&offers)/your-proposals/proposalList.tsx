@@ -11,6 +11,7 @@ import {
   ExclamationCircleIcon,
 } from "@heroicons/react/24/outline";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
 const ProposalList = () => {
@@ -22,6 +23,7 @@ const ProposalList = () => {
     id: string;
     title: string;
     company: string;
+    jobId: string;
     price: string;
     paymentType: string;
     deadline: string;
@@ -62,9 +64,10 @@ const ProposalList = () => {
         id: offer._id,
         title: offer.jobId?.title, // Extract title from jobId
         company: offer.clientDetails?.fullName, // Extract company name from clientDetails
-        // Convert price to string if necessary
+        price: offer.price,
         paymentType: offer.paymentType,
         deadline: offer.deadline,
+        jobId: offer.jobId._id,
         expiration: `expires in ${Math.ceil((new Date(offer.expiration).getTime() - Date.now()) / (1000 * 60 * 60 * 24))}`,
         isNew:
           new Date(offer.createdAt) >
@@ -148,7 +151,12 @@ const ProposalList = () => {
                         <ExclamationCircleIcon className="h-5 w-5 mr-1" />
                         {offer.expiration} days
                       </div>
-                      <Button outline={true}>View Details</Button>
+                      <Link
+                        className="border flex h-10 items-center rounded-lg px-4 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 aria-disabled:cursor-not-allowed aria-disabled:opacity-50 border-primary-500 hover:bg-zinc-100 text-primary-600 bg-transparent"
+                        href={`/user/offer/${offer.id}/${offer.jobId}`}
+                      >
+                        View Details
+                      </Link>
                     </div>
                   </Card>
                 ))}

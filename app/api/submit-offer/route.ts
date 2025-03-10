@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
 import Contract from "@/models/contract";
-import mongoose from "mongoose";
+import Proposal from "@/models/proposal";
 import { connectMongoDB } from "@/app/lib/mongodb";
 
 
@@ -36,6 +35,17 @@ export async function POST(req: NextRequest) {
         // Check for existing Contract
         if (await Contract.exists({ jobId, freelancerId })) {
             return NextResponse.json({ message: "An Offer already exists for this job and freelancer" }, { status: 409 });
+        }
+
+        // Update proposal status to "accepted"
+        const updatedProposal = await Proposal.findOneAndUpdate(
+            { jobId, freelancerId },
+            { status: "accepted" },
+            { new: true }
+        );
+
+        if (!updatedProposal) {
+            return NextResponse.json({ message: "Proposal not found" }, { status: 404 });
         }
 
         // Create and save the Contract

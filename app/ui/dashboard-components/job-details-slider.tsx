@@ -14,8 +14,12 @@ import { useContext, useEffect, useState } from "react";
 import SaveButton from "../saveButton";
 import Link from "next/link";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
+import useFetch from "@/app/hooks/useFetch";
+import { useSession } from "next-auth/react";
+import ApplyProposalButton from "./apply-proposal-button";
 
 const JobDetailsSlider: React.FC = () => {
+  const { data: session } = useSession();
   const {
     jobData: job,
     jobDetailsVisible,
@@ -182,15 +186,7 @@ const JobDetailsSlider: React.FC = () => {
           </div>
         )}
 
-        {/* Apply Button */}
-        <div className="mt-10">
-          <Link
-            className="w-full bg-primary-600 text-white py-3 rounded-lg px-8  hover:bg-primary-700 transition"
-            href={`/user/proposal/${job?.jobId}`}
-          >
-            Apply for this Job
-          </Link>
-        </div>
+        <ApplyProposalButton jobId={job?.jobId} userId={session?.user.id} />
       </div>
     </div>
   );
