@@ -30,12 +30,16 @@ const ContractSchema: Schema = new Schema(
         price: { type: Number, required: true },
         deadline: { type: Date, required: true },
         status: { type: String, enum: ['pending', 'active', 'declined', 'completed', 'canceled'], default: 'pending' },
-        statusHistory: [
-            {
-                status: { type: String, required: true, default: "pending" },
-                changedAt: { type: Date, default: Date.now }
-            }
-        ],
+        statusHistory: {
+            type: [
+                {
+                    status: { type: String, required: true },
+                    changedAt: { type: Date, default: Date.now }
+                }
+            ],
+            required: true,
+            default: [{ status: "pending", changedAt: new Date() }]
+        },
         expiration: { type: Date }
     },
     { timestamps: true }

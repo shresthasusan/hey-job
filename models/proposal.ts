@@ -5,7 +5,6 @@ interface StatusHistory {
     changedAt: Date;
 }
 
-
 export interface IProposal extends Document {
     jobId: mongoose.Types.ObjectId;
     userId: mongoose.Types.ObjectId;
@@ -29,7 +28,8 @@ const ProposalSchema: Schema = new Schema(
         attachments: [{ type: String }],
         bidAmount: { type: Number, required: true },
         duration: {
-            type: String, required: true,
+            type: String,
+            required: true,
             enum: ["less than 1 month", "1 to 3 months", "3 to 6 months", "more than 6 months"]
         },
         status: {
@@ -37,12 +37,15 @@ const ProposalSchema: Schema = new Schema(
             enum: ["pending", "shortlisted", "accepted", "rejected", "withdrawn", "canceled"],
             default: "pending"
         },
-        statusHistory: [
-            {
-                status: { type: String, required: true, default: "pending" },
-                changedAt: { type: Date, default: Date.now }
-            }
-        ]
+        statusHistory: {
+            type: [
+                {
+                    status: { type: String, required: true },
+                    changedAt: { type: Date, default: Date.now }
+                }
+            ],
+            default: [{ status: "pending", changedAt: new Date() }] // ✅ Default value for the array itself
+        }
     },
     { timestamps: true }
 );
