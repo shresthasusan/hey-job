@@ -2,12 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectMongoDB } from "@/app/lib/mongodb";
 import Contract from "@/models/contract";
 
+// Define the allowed status transitions type
+type ContractStatus = "pending" | "active" | "declined" | "completed" | "canceled";
+
 export async function PATCH(req: NextRequest) {
     try {
         await connectMongoDB();
 
         // Parse request data
-        const { contractId, newStatus, userId }: { contractId: string, newStatus: keyof typeof allowedTransitions, userId: string } = await req.json();
+        const { contractId, newStatus, userId } = await req.json();
         if (!contractId || !newStatus || !userId) {
             return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
         }
@@ -18,8 +21,13 @@ export async function PATCH(req: NextRequest) {
             return NextResponse.json({ message: "Contract not found" }, { status: 404 });
         }
 
-        // Allowed status transitions
-        const allowedTransitions = {
+        // Check if the user is authorized (either client or freelancer)
+        if (contract.clientId.toString() !== userId && contract.freelancerId.toString() !== userId) {
+            return NextResponse.json({ message: "Unauthorized" }, { status: 403 });
+        }
+
+        // Allowed status transitions (typed as ContractStatus)
+        const allowedTransitions: Record<ContractStatus, string[]> = {
             pending: ["active", "declined", "canceled"],
             active: ["completed", "canceled"],
             declined: [],
@@ -27,12 +35,8 @@ export async function PATCH(req: NextRequest) {
             canceled: []
         };
 
-        // Check if the user is authorized (either client or freelancer)
-        if (contract.clientId.toString() !== userId && contract.freelancerId.toString() !== userId) {
-            return NextResponse.json({ message: "Unauthorized" }, { status: 403 });
-        }
-
-        if (!allowedTransitions[contract.status as keyof typeof allowedTransitions].includes(newStatus)) {
+        // TypeScript type checking
+        if (!allowedTransitions[contract.status as ContractStatus].includes(newStatus)) {
             return NextResponse.json({ message: `Invalid status transition from ${contract.status} to ${newStatus}` }, { status: 400 });
         }
 
