@@ -1,4 +1,6 @@
+"use client";
 import useFetch from "@/app/hooks/useFetch";
+import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 import { Button } from "@/app/ui/button";
 import { ShieldCheckIcon } from "@heroicons/react/24/outline";
 import React, { useState } from "react";
@@ -6,9 +8,10 @@ import React, { useState } from "react";
 interface Props {
   jobId: string;
   freelancerId?: string;
+  contractId?: string;
 }
 
-const AcceptButton = ({ jobId, freelancerId }: Props) => {
+const AcceptButton = ({ jobId, freelancerId, contractId }: Props) => {
   const { data: actions = [], loading } = useFetch<string[]>(
     `/check-action?jobId=${jobId}&freelancerId=${freelancerId}`
   );
@@ -16,18 +19,57 @@ const AcceptButton = ({ jobId, freelancerId }: Props) => {
   const [isAcceptDialogOpen, setIsAcceptDialogOpen] = useState(false);
   const [isDeclineDialogOpen, setIsDeclineDialogOpen] = useState(false);
 
-  const handleAccept = () => {
-    // Handle the accept logic here
-    setIsAcceptDialogOpen(false);
-    // Add logic to save the contract acceptance
+  const handleAccept = async () => {
+    try {
+      // Call the API to accept the contract
+      const response = await fetchWithAuth("/api/contract-action", {
+        method: "PATCH",
+        body: JSON.stringify({
+          contractId,
+          userId: freelancerId,
+          newStatus: "active",
+        }),
+      });
+
+      if (response.ok) {
+        // Handle successful acceptance
+        setIsAcceptDialogOpen(false);
+        alert("Contract accepted successfully!");
+      } else {
+        // Handle error case
+        alert("Failed to accept the contract. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error accepting contract:", error);
+      alert("An error occurred while accepting the contract.");
+    }
   };
 
-  const handleDecline = () => {
-    // Handle the decline logic here
-    setIsDeclineDialogOpen(false);
-    // Add logic to handle contract decline
-  };
+  const handleDecline = async () => {
+    try {
+      // Call the API to decline the contract
+      const response = await fetchWithAuth("/api/contract-action", {
+        method: "PATCH",
+        body: JSON.stringify({
+          jobId,
+          userId: freelancerId,
+          newStatus: "declined",
+        }),
+      });
 
+      if (response.ok) {
+        // Handle successful decline
+        setIsDeclineDialogOpen(false);
+        alert("Contract declined successfully!");
+      } else {
+        // Handle error case
+        alert("Failed to decline the contract. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error declining contract:", error);
+      alert("An error occurred while declining the contract.");
+    }
+  };
   if (loading) return <p>Loading...</p>;
 
   return (

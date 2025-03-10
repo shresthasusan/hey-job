@@ -149,6 +149,7 @@ export default function ContractDetails({
       <AcceptButton
         jobId={contract.jobId._id}
         freelancerId={session?.user.id}
+        contractId={contractId}
       />
     </div>
   );
