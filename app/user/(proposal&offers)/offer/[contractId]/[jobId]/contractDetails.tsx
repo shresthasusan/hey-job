@@ -8,6 +8,7 @@ import {
   ExclamationCircleIcon,
   ExclamationTriangleIcon,
   MapPinIcon,
+  ShieldCheckIcon,
 } from "@heroicons/react/24/outline";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 import { useSession } from "next-auth/react";
@@ -63,6 +64,7 @@ export default function ContractDetails({
       </div>
 
       <div className="px-6 pb-6 space-y-4">
+        {/* Client Information */}
         <div className="flex items-center">
           <BriefcaseIcon className="h-5 w-5 mr-3 text-gray-500" />
           <div>
@@ -71,6 +73,7 @@ export default function ContractDetails({
           </div>
         </div>
 
+        {/* Budget */}
         <div className="flex items-center">
           <CurrencyDollarIcon className="h-5 w-5 mr-3 text-gray-500" />
           <div>
@@ -82,6 +85,7 @@ export default function ContractDetails({
           </div>
         </div>
 
+        {/* Payment Type */}
         <div className="flex items-center">
           <ClockIcon className="h-5 w-5 mr-3 text-gray-500" />
           <div>
@@ -90,16 +94,22 @@ export default function ContractDetails({
           </div>
         </div>
 
+        {/* Deadline */}
         <div className="flex items-center">
           <CalendarDaysIcon className="h-5 w-5 mr-3 text-gray-500" />
           <div>
-            <p className="text-sm text-gray-500">Deadline</p>
+            <p className="text-sm text-gray-500">Project Deadline</p>
             <p className="font-medium">
-              {new Date(contract?.deadline).toLocaleDateString()}
+              {new Date(contract?.deadline).toLocaleDateString("en-US", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              })}
             </p>
           </div>
         </div>
 
+        {/* Client Location */}
         <div className="flex items-center">
           <MapPinIcon className="h-5 w-5 mr-3 text-gray-500" />
           <div>
@@ -107,6 +117,8 @@ export default function ContractDetails({
             <p className="font-medium">{contract?.clientDetails?.location}</p>
           </div>
         </div>
+
+        {/* Offer Expiration */}
         <div className="flex items-center">
           <ExclamationTriangleIcon className="h-5 w-5 mr-3 text-gray-500" />
           <div>
@@ -122,7 +134,18 @@ export default function ContractDetails({
         </div>
 
         <div className="my-4 border-t border-gray-200"></div>
+
+        {/* Terms & Conditions Binding Message */}
+
+        <div className="bg-gray-50 border border-gray-200 rounded-md p-2 mb-3">
+          <p className="text-xs text-gray-600 flex ]">
+            <ShieldCheckIcon className="h-5 w-5 text-gray-500 mr-2 flex-shrink-0" />
+            Accepting this offer creates a legally binding contract
+          </p>
+        </div>
       </div>
+
+      {/* Accept Button */}
       <AcceptButton
         jobId={contract.jobId._id}
         freelancerId={session?.user.id}

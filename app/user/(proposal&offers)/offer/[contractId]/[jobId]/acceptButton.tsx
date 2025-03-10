@@ -1,6 +1,7 @@
 import useFetch from "@/app/hooks/useFetch";
 import { Button } from "@/app/ui/button";
-import React from "react";
+import { ShieldCheckIcon } from "@heroicons/react/24/outline";
+import React, { useState } from "react";
 
 interface Props {
   jobId: string;
@@ -12,6 +13,21 @@ const AcceptButton = ({ jobId, freelancerId }: Props) => {
     `/check-action?jobId=${jobId}&freelancerId=${freelancerId}`
   );
 
+  const [isAcceptDialogOpen, setIsAcceptDialogOpen] = useState(false);
+  const [isDeclineDialogOpen, setIsDeclineDialogOpen] = useState(false);
+
+  const handleAccept = () => {
+    // Handle the accept logic here
+    setIsAcceptDialogOpen(false);
+    // Add logic to save the contract acceptance
+  };
+
+  const handleDecline = () => {
+    // Handle the decline logic here
+    setIsDeclineDialogOpen(false);
+    // Add logic to handle contract decline
+  };
+
   if (loading) return <p>Loading...</p>;
 
   return (
@@ -20,7 +36,10 @@ const AcceptButton = ({ jobId, freelancerId }: Props) => {
         <span className="">You&apos;ve taken action for this offer</span>
       ) : (
         <>
-          <Button className="w-full text-white font-medium py-2 px-4 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2">
+          <Button
+            className="w-full text-white font-medium py-2 px-4 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2"
+            onClick={() => setIsAcceptDialogOpen(true)}
+          >
             Accept Offer
           </Button>
 
@@ -28,10 +47,88 @@ const AcceptButton = ({ jobId, freelancerId }: Props) => {
             outline={true}
             danger={true}
             className="w-full font-medium py-2 px-4 rounded-md border hover:bg-zinc-50 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2"
+            onClick={() => setIsDeclineDialogOpen(true)}
           >
             Decline Offer
           </Button>
         </>
+      )}
+
+      {/* Accept Dialog */}
+      {isAcceptDialogOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-25 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-md w-full p-6 shadow-xl">
+            <div className="mb-4">
+              <h3 className="text-lg font-medium">Accept Contract Offer</h3>
+              <p className="text-gray-500 mt-1">
+                Are you sure you want to accept this contract offer? Once
+                accepted, you will be committed to the terms and conditions
+                outlined in the contract.
+              </p>
+            </div>
+            <div className="bg-blue-50 border border-blue-200 rounded-md p-4 mb-4">
+              <div className="flex items-start">
+                <div className="h-5 w-5 text-blue-500 mt-0.5 mr-3 flex-shrink-0">
+                  <ShieldCheckIcon className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium text-blue-800">
+                    Binding Agreement
+                  </h4>
+                  <p className="mt-1 text-sm text-blue-700">
+                    By accepting this offer, you acknowledge that you are
+                    entering into a legally binding agreement. You will be
+                    obligated to fulfill all requirements and deliverables as
+                    specified in the contract terms above.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-end gap-3">
+              <Button
+                onClick={() => setIsAcceptDialogOpen(false)}
+                className="px-4 py-2 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium text-sm"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleAccept}
+                className="px-4 py-2 rounded-md text-white font-medium text-sm hover:bg-primary-700"
+              >
+                Confirm & Accept
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Decline Dialog */}
+      {isDeclineDialogOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-25 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-md w-full p-6 shadow-xl">
+            <div className="mb-4">
+              <h3 className="text-lg font-medium">Decline Contract Offer</h3>
+              <p className="text-gray-500 mt-1">
+                Are you sure you want to decline this contract offer? This
+                action cannot be undone.
+              </p>
+            </div>
+            <div className="flex justify-end gap-3">
+              <Button
+                onClick={() => setIsDeclineDialogOpen(false)}
+                className="px-4 py-2 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium text-sm"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleDecline}
+                className="px-4 py-2 bg-red-600 rounded-md text-white hover:bg-red-700 font-medium text-sm"
+              >
+                Confirm & Decline
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
