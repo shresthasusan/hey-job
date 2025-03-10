@@ -105,10 +105,10 @@ const OfferForm = ({ jobId, freelancerId }: OfferFormProps) => {
 
         <Button
           type="submit"
-          className={` ${isSubmitting ? "bg-gray-400" : ""}`}
+          className={` text-white  ${isSubmitting ? "bg-gray-400" : ""}`}
           disabled={isSubmitting}
         >
-          {isSubmitting ? "Submitting..." : "Submit Proposal"}
+          {isSubmitting ? "Submitting..." : "Offer Contract"}
         </Button>
       </form>
       {alert && <Alert type={alert.type} message={alert.message} />}{" "}

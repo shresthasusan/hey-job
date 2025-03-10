@@ -5,7 +5,9 @@ import Link from "next/link";
 
 interface Proposal {
   id: string;
-  jobId: string;
+  jobId: {
+    _id: string;
+  };
   userId: string;
   clientId: string;
   attachments: string;
@@ -101,7 +103,7 @@ const JobProposalModal: React.FC<JobProposalModalProps> = ({
         <div className="mt-6 justify-centre space-x-4">
           <Link
             className="px-6 py-3 bg-green-400 text-white rounded-full hover:bg-green-700 transition-colors duration-300"
-            href={`/client/job-proposal/${proposal.jobId}/offer/${proposal.userId}/new`}
+            href={`/client/job-proposal/${proposal.jobId._id}/offer/${proposal.userId}/new`}
           >
             Hire
           </Link>

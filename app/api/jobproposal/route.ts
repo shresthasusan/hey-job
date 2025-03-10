@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
 
         // Optimize query by selecting required fields & using `.lean()` for performance
         const proposals = await Proposal.find(filter)
-            .select("jobId clientId bidAmount coverLetter status createdAt") // Fetch only necessary fields
+            .select("jobId clientId userId bidAmount coverLetter status createdAt") // Fetch only necessary fields
             .populate({ path: 'jobId', select: 'title' }) // Populate jobId with title
             .lean(); // Convert to plain JSON object for faster response
 

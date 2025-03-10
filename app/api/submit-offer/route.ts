@@ -10,7 +10,34 @@ export async function POST(req: NextRequest) {
         await connectMongoDB();
 
         const userData = req.headers.get("user");
-        const user = userData ? JSON.parse(userData) : null;
+        console.log("Raw userData from headers:", userData); // Debugging step
+
+        if (!userData) {
+            return NextResponse.json({ message: "User data is missing in headers" }, { status: 400 });
+        }
+
+        let user;
+        try {
+            user = JSON.parse(userData);
+            console.log("Parsed user object:", user); // Debugging step
+        } catch (error) {
+            return NextResponse.json({ message: "Invalid user data format" }, { status: 400 });
+        }
+
+        if (!user || typeof user !== "object") {
+            return NextResponse.json({ message: "User data is missing or invalid" }, { status: 400 });
+        }
+
+        if (!user.emailVerified || !user.kycVerified) {
+            const notVerified = [];
+            if (!user.emailVerified) {
+                console.log("Email Verified:", user.emailVerified); // Debugging
+                notVerified.push("email");
+            }
+            if (!user.kycVerified) notVerified.push("KYC");
+
+            return NextResponse.json({ message: `Unauthorized: ${notVerified.join(" and ")} not verified` }, { status: 400 });
+        }
 
         // Parse request body
         const { jobId, freelancerId, bidAmount, deadline, pricingType, expiration } = await req.json();
@@ -36,11 +63,18 @@ export async function POST(req: NextRequest) {
         if (await Contract.exists({ jobId, freelancerId })) {
             return NextResponse.json({ message: "An Offer already exists for this job and freelancer" }, { status: 409 });
         }
-
-        // Update proposal status to "accepted"
+        // Update proposal status to "accepted" and add to status history
         const updatedProposal = await Proposal.findOneAndUpdate(
-            { jobId, freelancerId },
-            { status: "accepted" },
+            { jobId, userId: freelancerId },
+            {
+                status: "accepted",
+                $push: {
+                    statusHistory: {
+                        status: "accepted",
+                        changedAt: new Date()
+                    }
+                }
+            },
             { new: true }
         );
 

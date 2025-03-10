@@ -109,7 +109,7 @@ export const authOptions: NextAuthOptions = {
             email,
             name: user.name,
             lastName: user.lastName,
-            emailVerfied: user.emailVerified,
+            emailVerified: user.emailVerified,
             kycVerified: user.kycVerified,
             id: user._id.toString(),
           })

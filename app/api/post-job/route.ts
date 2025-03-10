@@ -19,6 +19,15 @@ interface RequestBody {
 export async function POST(req: NextRequest) {
   const status = "active";
   try {
+
+    const userData = req.headers.get("user");
+    const user = userData ? JSON.parse(userData) : null;
+    if (!user.emailVerified) {
+
+
+      return NextResponse.json({ message: `Unauthorized email not verified` }, { status: 400 });
+    }
+
     const {
       userId,
       fullName,

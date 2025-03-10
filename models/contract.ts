@@ -1,5 +1,12 @@
 import mongoose, { Schema, Document } from "mongoose";
 
+
+interface StatusHistory {
+    status: string;
+    changedAt: Date;
+}
+
+
 export interface IContract extends Document {
     jobId: mongoose.Types.ObjectId;
     clientId: mongoose.Types.ObjectId;
@@ -8,6 +15,7 @@ export interface IContract extends Document {
     price: number;
     deadline: Date;
     status: 'pending' | 'active' | 'completed' | 'canceled' | 'declined';
+    statusHistory: StatusHistory[];
     expiration: Date;
     createdAt: Date;
     updatedAt: Date;
@@ -22,6 +30,12 @@ const ContractSchema: Schema = new Schema(
         price: { type: Number, required: true },
         deadline: { type: Date, required: true },
         status: { type: String, enum: ['pending', 'active', 'declined', 'completed', 'canceled'], default: 'pending' },
+        statusHistory: [
+            {
+                status: { type: String, required: true, default: "pending" },
+                changedAt: { type: Date, default: Date.now }
+            }
+        ],
         expiration: { type: Date }
     },
     { timestamps: true }

@@ -23,35 +23,35 @@ export async function middleware(req: NextRequest) {
     !isAdminAuthPage;
 
 
-  // Restrict users without KYC from submitting job offers
-  if (!token?.kycVerified && pathname.startsWith("/api/submit-offer/")) {
-    return NextResponse.json(
-      { error: "unverified kyc" },
-      { status: 401 }
-    );
-  }
-  // Restrict users without KYC from submitting job offers
-  if (!token?.kycVerified && pathname.startsWith("/api/accept-offer/")) {
-    return NextResponse.json(
-      { error: "unverified kyc" },
-      { status: 401 }
-    );
-  }
+  // // Restrict users without KYC from submitting job offers
+  // if (!token?.kycVerified && pathname.startsWith("/api/submit-offer/")) {
+  //   return NextResponse.json(
+  //     { error: "unverified kyc" },
+  //     { status: 401 }
+  //   );
+  // }
+  // // Restrict users without KYC from submitting job offers
+  // if (!token?.kycVerified && pathname.startsWith("/api/accept-offer/")) {
+  //   return NextResponse.json(
+  //     { error: "unverified kyc" },
+  //     { status: 401 }
+  //   );
+  // }
 
-  // Restrict email-unverified users from important routes
-  if (!token?.emailVerified && pathname.startsWith("/api/post-job")) {
-    return NextResponse.json(
-      { error: "unverified email" },
-      { status: 401 }
-    );
-  }
-  // Restrict email-unverified users from important routes
-  if (!token?.emailVerified && pathname.startsWith("/api/submit-proposal")) {
-    return NextResponse.json(
-      { error: "unverified email" },
-      { status: 401 }
-    );
-  }
+  // // Restrict email-unverified users from important routes
+  // if (!token?.emailVerified && pathname.startsWith("/api/post-job")) {
+  //   return NextResponse.json(
+  //     { error: "unverified email" },
+  //     { status: 401 }
+  //   );
+  // }
+  // // Restrict email-unverified users from important routes
+  // if (!token?.emailVerified && pathname.startsWith("/api/submit-proposal")) {
+  //   return NextResponse.json(
+  //     { error: "unverified email" },
+  //     { status: 401 }
+  //   );
+  // }
 
 
 
