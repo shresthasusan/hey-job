@@ -105,11 +105,16 @@ const ChatList: React.FC = () => {
       const messagesRef = collection(db, "messages");
       const chatsRef = collection(db, "chats");
 
-      const conversationExists = chatData?.some(
+      const conversationExists = chatData?.find(
         (chat) => chat.rId === selectedUser.id
       );
       if (conversationExists) {
         setChatUser(selectedUser);
+        // const chatItem = chatData?.find((item) => item.rId === selectedUser.id);
+        // if (chatItem) {
+        //   setChat(chatItem);
+        // }
+        setChat(conversationExists);
         alert("heyyy");
         return;
       }
@@ -188,7 +193,6 @@ const ChatList: React.FC = () => {
           placeholder="search here.."
           className="py-2 px-2 border-2 border-gray-200 hover:border-primary-400 rounded-2xl w-full"
         />
-        {/* <MagnifyingGlassCircleIcon /> */}
       </div>
 
       {/* User list */}
