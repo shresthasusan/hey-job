@@ -33,13 +33,6 @@ const ApplyProposalButton = ({ jobId, userId }: Props) => {
     fetchActions();
   }, [jobId, userId]);
 
-  console.log("Actions data:", actions); // Debugging log to check the fetched data
-  console.log("Is actions an array?", Array.isArray(actions));
-  console.log(
-    "Includes 'proposal_submitted'?",
-    actions?.includes("proposal_submitted")
-  );
-
   if (loading) return <p>Loading...</p>; // Show loading while fetching data
 
   return (

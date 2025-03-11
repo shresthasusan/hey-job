@@ -65,11 +65,12 @@ const ChatList: React.FC = () => {
   const [user, setUser] = useState<UserData | null>(null);
 
   const [showSearch, setShowSearch] = useState(false);
-  const [searchResults, setSearchResults] = useState<UserData[]>([]);
+  const [searchResults, setSearchResults] = useState<ChatDataItem[]>([]);
 
   const inputHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
-      const input = e.target.value?.trim().toLowerCase(); // Ensure input is trimmed & lowercase
+      const input = e.target.value.trim().toLowerCase();
+
       if (!input) {
         setShowSearch(false);
         setSearchResults([]); // Clear search results when input is empty
@@ -78,77 +79,19 @@ const ChatList: React.FC = () => {
 
       setShowSearch(true);
 
-      const userRef = collection(db, "users");
-      const q = query(
-        userRef,
-        where("username", ">=", input),
-        where("username", "<=", input + "\uf8ff")
-      );
-      const querySnap = await getDocs(q);
-
-      if (!querySnap.empty) {
-        const users: UserData[] = querySnap.docs
-          .map((doc) => doc.data() as UserData)
-          .filter((user) => user.id !== userData?.id); // Exclude current user
-
-        setSearchResults(users);
-      } else {
-        setSearchResults([]);
-      }
-    } catch (error) {
-      console.error("Search error:", error);
-    }
-  };
-
-  const addChat = async (selectedUser: UserData) => {
-    try {
-      const messagesRef = collection(db, "messages");
-      const chatsRef = collection(db, "chats");
-
-      const conversationExists = chatData?.find(
-        (chat) => chat.rId === selectedUser.id
-      );
-      if (conversationExists) {
-        setChatUser(selectedUser);
-        // const chatItem = chatData?.find((item) => item.rId === selectedUser.id);
-        // if (chatItem) {
-        //   setChat(chatItem);
-        // }
-        setChat(conversationExists);
-        alert("heyyy");
+      if (!chatData || chatData.length === 0) {
+        console.warn("Chat data is empty or not loaded yet.");
         return;
       }
 
-      const newMessageRef = doc(messagesRef);
-      await setDoc(newMessageRef, {
-        createAt: serverTimestamp(),
-        messages: [],
+      const filteredChats = chatData.filter((chat) => {
+        const userName = chat.userData?.username?.toLowerCase() || ""; // Ensure property access
+        return userName.includes(input) && chat.userData.id !== userData?.id;
       });
 
-      await updateDoc(doc(chatsRef, selectedUser.id), {
-        chatsData: arrayUnion({
-          messageId: newMessageRef.id,
-          lastMessage: "You can now start your conversation",
-          rId: userData?.id,
-          updateDoc: Date.now(),
-          messageSeen: true,
-        }),
-      });
-
-      await updateDoc(doc(chatsRef, userData?.id), {
-        chatsData: arrayUnion({
-          messageId: newMessageRef.id,
-          lastMessage: "You can now start your conversation",
-          rId: selectedUser.id,
-          updateDoc: Date.now(),
-          messageSeen: true,
-        }),
-      });
-
-      setChatUser(selectedUser);
-      setMessagesId(newMessageRef.id);
+      setSearchResults(filteredChats.length ? filteredChats : []);
     } catch (error) {
-      console.error("Error adding chat:", error);
+      console.error("Search error:", error);
     }
   };
 
@@ -183,6 +126,9 @@ const ChatList: React.FC = () => {
     }
   };
 
+  console.log("c", chatData);
+  console.log("s", searchResults);
+
   return (
     <div className="h-full relative overflow-hidden rounded-2xl shadow-[0_10px_20px_rgba(228,228,228,_0.7)] border-r-2">
       {/* Search component */}
@@ -199,23 +145,25 @@ const ChatList: React.FC = () => {
       <div className="h-full pb-16 overflow-scroll">
         <div className="flex flex-col">
           {showSearch && searchResults.length > 0
-            ? searchResults.map((user, index) => (
+            ? searchResults.map((item, index) => (
                 <div
                   key={index}
-                  onClick={() => addChat(user)}
+                  onClick={() => setChat(item)}
                   className="flex flex-row py-2 px-2 justify-center hover:bg-gray-200 items-center border-b-2"
                 >
                   <div className="w-1/4">
                     <Image
-                      src={user.avatar || "/images/image.png"}
+                      src={item.userData.avatar || "/images/image.png"}
                       className="object-cover h-12 w-12 rounded-full"
-                      alt={user.username}
+                      alt={item.userData.username || "User"}
                       width={48}
                       height={48}
                     />
                   </div>
                   <div className="w-[80%] relative">
-                    <div className="text-lg font-medium">{user.username}</div>
+                    <div className="text-lg font-medium">
+                      {item.userData.username}
+                    </div>
                   </div>
                 </div>
               ))

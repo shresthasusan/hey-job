@@ -44,6 +44,7 @@ export async function GET(req: NextRequest) {
     if (!params) {
       if (bestMatches) {
         // Fetch best match freelancers excluding current user
+
         freelancers = await FreelancerInfo.find({ userId: { $ne: userId } });
       } else if (savedFreelancers) {
         // Fetch saved freelancer IDs from SavedFreelancers collection

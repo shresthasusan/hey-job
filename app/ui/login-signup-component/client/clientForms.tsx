@@ -6,11 +6,7 @@ import { Button } from "@/app/ui/button";
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
-import {
-  jobCategories,
-  skills as predefinedSkills,
-  languageTags,
-} from "@/app/lib/data";
+import { jobCategories, skills as predefinedSkills } from "@/app/lib/data";
 
 interface ClientFormData {
   userId?: string;
@@ -23,20 +19,6 @@ interface ClientFormData {
   averageBudget: number;
   rating?: number; // Default to 0, can be updated later
 }
-
-const industries = [
-  "Technology",
-  "Finance",
-  "Healthcare",
-  "Education",
-  "Marketing",
-  "E-commerce",
-  "Construction",
-  "Automotive",
-  "Legal",
-  "Entertainment",
-  "Other",
-];
 
 const ClientForm = () => {
   const router = useRouter();

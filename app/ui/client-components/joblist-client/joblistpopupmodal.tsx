@@ -1,7 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 import Link from "next/link";
+import { Button } from "../../button";
+import { db } from "@/app/lib/firebase";
+import { serverTimestamp } from "firebase/database";
+import {
+  collection,
+  doc,
+  setDoc,
+  updateDoc,
+  arrayUnion,
+} from "firebase/firestore";
+import { Appcontext } from "@/app/context/appContext";
 
 interface Proposal {
   id: string;
@@ -27,10 +38,40 @@ interface JobProposalModalProps {
   onClose: () => void;
 }
 
+interface UserData {
+  id: string;
+}
+
+type ChatDataItem = {
+  messageId: string;
+  lastMessage: string;
+  rId: string;
+  updateDoc: number;
+  messageSeen: boolean;
+  userData: UserData;
+  user: UserData;
+  lastMessageSender?: string;
+};
+
 const JobProposalModal: React.FC<JobProposalModalProps> = ({
   proposal,
   onClose,
 }) => {
+  interface AppContextValue {
+    userData: UserData | null;
+    setUserData: React.Dispatch<React.SetStateAction<UserData | null>>;
+    chatData: ChatDataItem[] | null;
+    setChatData: React.Dispatch<React.SetStateAction<ChatDataItem[] | null>>;
+    loadUserData: (uid: string) => Promise<void>;
+    messages: any; // Replace `any` with a specific type if possible
+    setMessages: React.Dispatch<React.SetStateAction<any>>;
+    messagesId: string | null;
+    setMessagesId: React.Dispatch<React.SetStateAction<string | null>>;
+  }
+
+  const context = useContext(Appcontext) as AppContextValue;
+  const { userData, chatData } = context;
+
   const [freelancer, setFreelancer] = useState<Freelancer | null>(null);
 
   useEffect(() => {
@@ -48,6 +89,57 @@ const JobProposalModal: React.FC<JobProposalModalProps> = ({
 
     fetchFreelancer();
   }, [proposal.userId]);
+
+  interface ChatData {
+    messageId: string;
+    lastMessage: string;
+    rId: string;
+    updateDoc: number;
+    messageSeen: boolean;
+  }
+
+  const addChat = async (selectedUser: string | undefined) => {
+    try {
+      const messagesRef = collection(db, "messages");
+      const chatsRef = collection(db, "chats");
+
+      const conversationExists = chatData?.find(
+        (chat: ChatData) => chat.rId === selectedUser
+      );
+      if (conversationExists) {
+        alert("heyyy");
+        return;
+      }
+
+      const newMessageRef = doc(messagesRef);
+      await setDoc(newMessageRef, {
+        createAt: serverTimestamp(),
+        messages: [],
+      });
+
+      await updateDoc(doc(chatsRef, selectedUser), {
+        chatsData: arrayUnion({
+          messageId: newMessageRef.id,
+          lastMessage: "You can now start your conversation",
+          rId: userData?.id,
+          updateDoc: Date.now(),
+          messageSeen: true,
+        }),
+      });
+
+      await updateDoc(doc(chatsRef, userData?.id), {
+        chatsData: arrayUnion({
+          messageId: newMessageRef.id,
+          lastMessage: "You can now start your conversation",
+          rId: selectedUser,
+          updateDoc: Date.now(),
+          messageSeen: true,
+        }),
+      });
+    } catch (error) {
+      console.error("Error adding chat:", error);
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 transition-opacity duration-300">
@@ -101,6 +193,9 @@ const JobProposalModal: React.FC<JobProposalModalProps> = ({
           </div>
         </div>
         <div className="mt-6 justify-centre space-x-4">
+          <Button onClick={() => addChat(freelancer?.userId)} outline={true}>
+            Message
+          </Button>
           <Link
             className="px-6 py-3 bg-green-400 text-white rounded-full hover:bg-green-700 transition-colors duration-300"
             href={`/client/job-proposal/${proposal.jobId._id}/offer/${proposal.userId}/new`}
