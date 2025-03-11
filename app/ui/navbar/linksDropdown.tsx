@@ -166,26 +166,51 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
               </Link>
             )}
           </div>
-          <div className="hover:bg-slate-200 p-1">
-            <Link href={"/user/profile"}>
+            <div className="hover:bg-slate-200 p-1">
+            {(currentMode?.startsWith("/client") ||
+              currentMode?.startsWith("/search/talent")) ? (
+              <Link href={"/client/profile"}>
               <span className="flex items-center gap-1">
                 <UserCircleIcon className="size-8" />
                 <span className="flex flex-col ">
-                  <p>Profile</p>
+                <p>Profile</p>
                 </span>
               </span>
-            </Link>
-          </div>
-          <div className="hover:bg-slate-200 p-1">
-            <Link href={"/user/setting"}>
+              </Link>
+            ) : (
+              <Link href={"/user/profile"}>
+              <span className="flex items-center gap-1">
+                <UserCircleIcon className="size-8" />
+                <span className="flex flex-col ">
+                <p>Profile</p>
+                </span>
+              </span>
+              </Link>
+            )}
+            </div>
+       
+            <div className="hover:bg-slate-200 p-1">
+            {(currentMode?.startsWith("/client") ||
+              currentMode?.startsWith("/search/talent")) ? (
+              <Link href={"/client/setting"}>
               <span className="flex items-center gap-1">
                 <Cog6ToothIcon className="size-8" />
                 <span className="flex flex-col ">
-                  <p>Settings</p>
+                <p>Settings</p>
                 </span>
               </span>
-            </Link>
-          </div>{" "}
+              </Link>
+            ) : (
+              <Link href={"/user/setting"}>
+              <span className="flex items-center gap-1">
+                <Cog6ToothIcon className="size-8" />
+                <span className="flex flex-col ">
+                <p>Settings</p>
+                </span>
+              </span>
+              </Link>
+            )}
+            </div>
           <button
             onClick={() => signOut()}
             className="hover:bg-slate-200 p-1 w-full flex items-center gap-1 text-left"
