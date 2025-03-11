@@ -10,6 +10,7 @@ import Image from "next/image";
 import useFirebaseAuth from "@/app/hooks/useFirebaseAuth";
 import clsx from "clsx";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
+import { skills as predefinedSkills } from "@/app/lib/data";
 
 const DetailsForm = () => {
   type formData = {
@@ -32,6 +33,7 @@ const DetailsForm = () => {
   const { data: session } = useSession();
   const id = session?.user.id;
   const fullName = session?.user.name + " " + session?.user.lastName;
+  const [tagInput, setTagInput] = useState<string>("");
 
   const initialFormData: formData = {
     userId: id,
@@ -62,7 +64,7 @@ const DetailsForm = () => {
   };
 
   const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFormData({
@@ -79,6 +81,36 @@ const DetailsForm = () => {
       [name]: array,
     });
   };
+
+  const handleTagChange = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && tagInput.trim()) {
+      e.preventDefault();
+      if (!formData.tags.includes(tagInput.trim())) {
+        setFormData((prev) => ({
+          ...prev,
+          tags: [...(prev.tags as string[]), tagInput.trim()],
+        }));
+      }
+      setTagInput("");
+    }
+  };
+
+  // Removes a selected tag
+  const removeTag = (tag: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      tags: Array.isArray(prev.tags)
+        ? prev.tags.filter((t) => t !== tag)
+        : prev.tags,
+    }));
+  };
+
+  // Filters recommendations based on input
+  const filteredRecommendations = predefinedSkills.filter(
+    (skill) =>
+      skill.toLowerCase().includes(tagInput.toLowerCase()) &&
+      !formData.tags.includes(skill)
+  );
 
   useFirebaseAuth();
 
@@ -161,15 +193,20 @@ const DetailsForm = () => {
             >
               Experience Level
             </label>
-            <input
-              type="text"
+            <select
               name="experience"
               id="experience"
               value={formData.experience}
               onChange={handleChange}
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm"
-            />
+            >
+              <option value="">Select experience level</option>
+              <option value="Entry">Entry</option>
+              <option value="Intermediate">Intermediate</option>
+              <option value="Expert">Expert</option>
+            </select>
           </div>
+
           <div className="flex justify-between">
             <Button
               className="text-white disabled cursor-not-allowed opacity-50"
@@ -216,7 +253,7 @@ const DetailsForm = () => {
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm"
             />
           </div>
-          <div>
+          {/* <div>
             <label
               htmlFor="tags"
               className="block text-sm font-medium text-gray-700"
@@ -231,7 +268,52 @@ const DetailsForm = () => {
               onChange={handleChangeArray}
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm"
             />
+          </div> */}
+
+          <div className="mt-3">
+            <label className="block font-medium">Preferred Skills</label>
+            <div className="flex flex-wrap gap-2 border rounded-md p-2 min-h-[40px]">
+              {formData.tags.map((skill, index) => (
+                <span
+                  key={index}
+                  className="bg-green-200 text-green-800 px-2 py-1 rounded-md text-sm cursor-pointer"
+                  onClick={() => removeTag(skill)}
+                >
+                  {skill} ✕
+                </span>
+              ))}
+              <input
+                type="text"
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={handleTagChange}
+                className="border-none outline-none flex-grow"
+                placeholder="Type a skill and press Enter..."
+              />
+            </div>
+
+            {/* Recommended skills dropdown */}
+            {tagInput && filteredRecommendations.length > 0 && (
+              <div className="border rounded-md mt-2 p-2 bg-white shadow-md max-h-40 overflow-y-auto">
+                {filteredRecommendations.map((skill, index) => (
+                  <div
+                    key={index}
+                    className="p-1 cursor-pointer hover:bg-gray-200"
+                    onClick={() => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        tags: [...prev.tags, skill],
+                      }));
+                      setTagInput("");
+                    }}
+                  >
+                    {skill}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
+
           <div className="flex justify-between">
             <Button onClick={prevStep} className="text-white">
               Back
@@ -318,7 +400,7 @@ const DetailsForm = () => {
               </Button>
               <Button
                 onClick={() => handleSubmit}
-                className={clsx("text-white", {
+                className={clsx("text-white bg-primary-500", {
                   "bg-neutral-400": uploading,
                 })}
                 success={true}
