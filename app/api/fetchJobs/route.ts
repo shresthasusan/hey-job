@@ -5,6 +5,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/lib/auth";
 import proposal from "@/models/proposal";
+import FreelancerInfo from "@/models/freelancerInfo";
+import { industrySkillsMapping } from "@/app/lib/data";
 
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -17,7 +19,7 @@ export async function GET(req: NextRequest) {
   const jobId = searchParams.get('jobId');
   const clientId = searchParams.get('userId'); // Get userId from query parameters
 
- const userId = session?.user.id;
+  const userId = session?.user.id;
 
   if (!session) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -59,10 +61,27 @@ export async function GET(req: NextRequest) {
     // Fetch jobs based on query parameters
     if (!title) {
       if (bestMatches) {
-        jobs = await Jobs.find({
-          userId: { $ne: userId },
+        // Fetch freelancer info to get their skills
+        const freelancerInfo = await FreelancerInfo.findOne({ userId }).select("skills");
+        const freelancerSkills = freelancerInfo?.skills || [];
+
+        // Fetch jobs that match the freelancer's skills and exclude jobs posted by the user
+        const recommendedJobs = await Jobs.find({
+          tags: { $in: freelancerSkills }, // Match job tags with freelancer skills
+          userId: { $ne: userId }, // Exclude jobs posted by the user
           status: 'active'
         });
+
+        // Fetch other jobs excluding recommended ones and jobs posted by the user
+        const recommendedJobIds = recommendedJobs.map(job => job._id);
+        const otherJobs = await Jobs.find({
+          _id: { $nin: recommendedJobIds },
+          userId: { $ne: userId }, // Exclude jobs posted by the user
+          status: 'active'
+        });
+
+        // Combine recommended and other jobs
+        jobs = [...recommendedJobs, ...otherJobs];
       } else if (mostRecent) {
         jobs = await Jobs.find({
           userId: { $ne: userId },
