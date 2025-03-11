@@ -50,6 +50,7 @@ type ChatDataItem = {
   messageSeen: boolean;
   userData: UserData;
   user: UserData;
+  proposalDetails: Proposal;
   lastMessageSender?: string;
 };
 
@@ -96,48 +97,75 @@ const JobProposalModal: React.FC<JobProposalModalProps> = ({
     rId: string;
     updateDoc: number;
     messageSeen: boolean;
+    proposalDetails: Proposal;
   }
 
-  const addChat = async (selectedUser: string | undefined) => {
+  const addChat = async (
+    selectedUser: string | undefined,
+    proposal?: Proposal
+  ) => {
     try {
+      if (!selectedUser || !userData?.id) {
+        console.error("Invalid user selection");
+        return;
+      }
+
       const messagesRef = collection(db, "messages");
       const chatsRef = collection(db, "chats");
 
       const conversationExists = chatData?.find(
         (chat: ChatData) => chat.rId === selectedUser
       );
+
       if (conversationExists) {
-        alert("heyyy");
+        console.log(
+          "Chat already exists for this proposal. Skipping creation."
+        );
         return;
       }
+
+      // Proceed with chat creation if it doesn't exist
+      const initialMessage = `Regarding proposal  with bid amount $${proposal?.bidAmount}`;
 
       const newMessageRef = doc(messagesRef);
       await setDoc(newMessageRef, {
         createAt: serverTimestamp(),
-        messages: [],
+        messages: [
+          {
+            sid: userData.id,
+            text: initialMessage,
+            createdAt: Date.now(),
+            proposalDetails: proposal,
+          },
+        ],
       });
 
+      // Update both users' chat collections
       await updateDoc(doc(chatsRef, selectedUser), {
         chatsData: arrayUnion({
           messageId: newMessageRef.id,
-          lastMessage: "You can now start your conversation",
+          lastMessage: initialMessage,
           rId: userData?.id,
           updateDoc: Date.now(),
           messageSeen: true,
+          proposalDetails: proposal,
         }),
       });
 
       await updateDoc(doc(chatsRef, userData?.id), {
         chatsData: arrayUnion({
           messageId: newMessageRef.id,
-          lastMessage: "You can now start your conversation",
+          lastMessage: initialMessage,
           rId: selectedUser,
           updateDoc: Date.now(),
           messageSeen: true,
+          proposalDetails: proposal,
         }),
       });
+
+      console.log(`Chat created between ${userData?.id} and ${selectedUser}`);
     } catch (error) {
-      console.error("Error adding chat:", error);
+      console.error("Error creating chat:", error);
     }
   };
 
@@ -193,7 +221,10 @@ const JobProposalModal: React.FC<JobProposalModalProps> = ({
           </div>
         </div>
         <div className="mt-6 justify-centre space-x-4">
-          <Button onClick={() => addChat(freelancer?.userId)} outline={true}>
+          <Button
+            onClick={() => addChat(freelancer?.userId, proposal)}
+            outline={true}
+          >
             Message
           </Button>
           <Link
