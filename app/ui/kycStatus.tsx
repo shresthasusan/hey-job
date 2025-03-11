@@ -20,44 +20,29 @@ const KYCStatus: React.FC = () => {
   const { data, error } = useFetch<KYCStatusResponse>(`/verification-status`); // fetch kycVerified
   const id = session?.user.id;
 
+
+
   useEffect(() => {
     if (status !== "authenticated") return;
-
-    fetchWithAuth("/api/user?fields=roles") // ✅ Fetch only roles from API
+  
+    fetchWithAuth("/api/user?fields=roles")
       .then((res) => res.json())
       .then((data) => {
-        if (data.roles && !data.roles.client && !data.roles.freelancer) {
+        if (!data.roles || (!data.roles.client && !data.roles.freelancer)) {
           router.push(`/signup/profile-upload/${id}`);
+          return; // Ensure no further redirects happen
         }
         if (pathname.startsWith("/user") && !data.roles.freelancer) {
           console.log("false", data.roles.freelancer);
           router.push(`/signup/freelancer`);
+          return;
         }
         if (pathname.startsWith("/client") && !data.roles.client) {
           router.push(`/signup/client`);
         }
       })
       .catch((err) => console.error("Error fetching roles:", err));
-
-    if (
-      !data?.kycVerified &&
-      pathname.startsWith("/client/job-proposal") &&
-      pathname.includes("offer")
-    ) {
-      router.push("/kyc-required");
-    }
-    if (!data?.kycVerified && pathname.startsWith("/user/offer")) {
-      router.push("/kyc-required");
-    }
-
-    if (
-      !data?.emailVerified &&
-      (pathname.startsWith("/client/post-job") ||
-        pathname.startsWith("/user/proposal"))
-    ) {
-      router.push("/email-required");
-    }
-  }, [status, id, router, pathname, data?.kycVerified, data?.emailVerified]);
+  }, [status, pathname, id, router]);
 
   if (error) {
     console.error("Error fetching KYC status:", error);
