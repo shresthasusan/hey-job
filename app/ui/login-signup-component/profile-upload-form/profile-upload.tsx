@@ -138,8 +138,7 @@ const ProfileUploadForm = () => {
       <div className="md:w-2/3 p-10">
         <div className="md:text-5xl text-3xl">
           {" "}
-          A few last details, then you can explore and search your desired
-          projects.
+          A few details to publish on your profile.
         </div>
         <p className="text-gray-600 md:text-lg text-base my-6">
           A professional photo helps you build trust with your clients. To keep
