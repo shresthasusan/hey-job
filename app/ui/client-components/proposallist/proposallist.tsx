@@ -14,7 +14,9 @@ import JobProposalModal from "@/app/ui/client-components/joblist-client/joblistp
 
 interface Proposal {
   id: string;
-  jobId: string;
+  jobId: {
+    _id: string;
+  };
   userId: string;
   clientId: string;
   attachments: string;
