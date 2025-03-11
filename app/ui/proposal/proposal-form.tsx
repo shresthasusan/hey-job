@@ -10,6 +10,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import app from "@/app/lib/firebase";
 import { Button } from "../button";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
+import Alert from "../alert";
 
 interface ProposalFormProps {
   jobId: string;
@@ -23,6 +24,11 @@ const ProposalForm = ({ jobId }: ProposalFormProps) => {
   const [files, setFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
+   const [alert, setAlert] = useState<{
+      type: "success" | "error";
+      message: string;
+    } | null>(null);
+  
 
   const storage = getStorage(app); // Firebase Storage reference
 
@@ -79,11 +85,19 @@ const ProposalForm = ({ jobId }: ProposalFormProps) => {
       }
 
       console.log("Proposal submitted successfully");
+      setAlert({
+        type: "success",
+        message: "Proposal Submitted Successfully!",
+      });
+    } catch (error: any) {
+      setAlert({
+        type: "error",
+        message: error.message || "Error uploading files",
+      });
+     
 
       setFiles([]); // Clear selected files after submission
-    } catch (error) {
-      console.error("Error uploading files:", error);
-    } finally {
+    }   finally {
       setIsSubmitting(false);
     }
   };
@@ -121,6 +135,7 @@ const ProposalForm = ({ jobId }: ProposalFormProps) => {
           {isSubmitting ? "Submitting..." : "Submit Proposal"}
         </Button>
       </form>
+      {alert && <Alert type={alert.type} message={alert.message} />}{" "} 
     </div>
   );
 };

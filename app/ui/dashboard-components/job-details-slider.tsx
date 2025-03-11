@@ -31,6 +31,10 @@ const JobDetailsSlider: React.FC = () => {
     interviewing: "Loading...",
   });
 
+
+  //fetch proposal when the panel opens
+
+
   // Fetch job stats when the panel opens
   useEffect(() => {
     if (jobDetailsVisible && job?.jobId) {
@@ -157,34 +161,36 @@ const JobDetailsSlider: React.FC = () => {
           <h3 className="text-lg  mb-2">Activity on this job</h3>
           <div className="text-gray-700 space-y-1">
             <p>
-              📌 <strong>Proposals:</strong> {jobStats.proposals}
+               <strong>Proposals: </strong> {jobStats.proposals}
             </p>
             <p>
-              🗣️ <strong>Interviewing:</strong> {jobStats.interviewing}
+              
             </p>
           </div>
         </div>
 
         {/* File Attachments */}
-        {job?.fileUrls && (
-          <div className="mt-4 border-b pb-4">
-            <h3 className="text-lg  mb-2">Attachments</h3>
+        <div className="mt-4 border-b pb-4">
+          <h3 className="text-lg  mb-2">Attachments</h3>
+          {job?.fileUrls && job.fileUrls.length > 0 ? (
             <div className="flex items-center space-x-2">
               <DocumentTextIcon className="w-5 h-5 text-gray-600" />
               {job.fileUrls.map((url, index) => (
-                <a
-                  key={index}
-                  href={url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline"
-                >
-                  View Attachment {index + 1}
-                </a>
+          <a
+            key={index}
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:underline"
+          >
+            View Attachment {index + 1}
+          </a>
               ))}
             </div>
-          </div>
-        )}
+          ) : (
+            <p className="text-gray-600">No attachments available</p>
+          )}
+        </div>
 
         <ApplyProposalButton jobId={job?.jobId} userId={session?.user.id} />
       </div>
