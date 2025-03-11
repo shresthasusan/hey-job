@@ -17,39 +17,86 @@ const KYCStatus: React.FC = () => {
   const [isVisible, setIsVisible] = useState(true);
   const router = useRouter(); // ✅ Use useRouter from next/navigation
   const pathname = usePathname();
-  const { data, error } = useFetch<KYCStatusResponse>(`/verification-status`); // fetch kycVerified
   const id = session?.user.id;
+  const { data: verificationData, error } = useFetch<KYCStatusResponse>(
+    "/verification-status"
+  );
 
+  interface UserRoles {
+    client?: boolean;
+    freelancer?: boolean;
+  }
 
+  interface UserData {
+    roles: UserRoles;
+  }
+
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (status !== "authenticated") return;
-  
+
     fetchWithAuth("/api/user?fields=roles")
       .then((res) => res.json())
       .then((data) => {
-        if (!data.roles || (!data.roles.client && !data.roles.freelancer)) {
-          router.push(`/signup/profile-upload/${id}`);
-          return; // Ensure no further redirects happen
-        }
-        if (pathname.startsWith("/user") && !data.roles.freelancer) {
-          console.log("false", data.roles.freelancer);
-          router.push(`/signup/freelancer`);
-          return;
-        }
-        if (pathname.startsWith("/client") && !data.roles.client) {
-          router.push(`/signup/client`);
-        }
+        setUserData(data);
+        setLoading(false);
       })
-      .catch((err) => console.error("Error fetching roles:", err));
-  }, [status, pathname, id, router]);
+      .catch((err) => {
+        console.error("Error fetching user data:", err);
+        setLoading(false);
+      });
+  }, [status]);
+
+  useEffect(() => {
+    if (loading || !userData || !verificationData) return;
+
+    const { roles } = userData;
+    const { kycVerified, emailVerified } = verificationData;
+
+    // Role-based redirection
+    if (!roles || (!roles.client && !roles.freelancer)) {
+      router.push(`/signup/profile-upload/${id}`);
+      return;
+    }
+    if (pathname.startsWith("/user") && !roles.freelancer) {
+      router.push(`/signup/freelancer`);
+      return;
+    }
+    if (pathname.startsWith("/client") && !roles.client) {
+      router.push(`/signup/client`);
+      return;
+    }
+
+    // KYC and email verification-based redirection
+    if (
+      !kycVerified &&
+      pathname.startsWith("/client/job-proposal") &&
+      pathname.includes("offer")
+    ) {
+      router.push("/kyc-required");
+      return;
+    }
+    if (!kycVerified && pathname.startsWith("/user/offer")) {
+      router.push("/kyc-required");
+      return;
+    }
+    if (
+      !emailVerified &&
+      (pathname.startsWith("/client/post-job") ||
+        pathname.startsWith("/user/proposal"))
+    ) {
+      router.push("/email-required");
+    }
+  }, [userData, loading, verificationData, pathname, id, router]);
 
   if (error) {
     console.error("Error fetching KYC status:", error);
     return null;
   }
 
-  if (data?.kycVerified || !isVisible) {
+  if (verificationData?.kycVerified || !isVisible) {
     return null; // Do not show the notification bar if KYC is verified or closed
   }
 
