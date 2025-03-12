@@ -28,31 +28,40 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
             {(currentMode?.startsWith("/user") ||
               currentMode?.startsWith("/search/jobs")) && (
               <>
-                <li className=" p-3 hover:bg-slate-100">
-                  <Link href={"/user/best-matches"}>Jobs</Link>
+                <li >
+                  <Link href={"/user/best-matches"}> 
+                  <p className=" p-3 hover:bg-slate-100">Jobs</p>
+                  </Link>
                 </li>
 
-                <li className=" p-3 hover:bg-slate-100">
-                  <Link href={"/user/saved-jobs"}>Saved Jobs</Link>
+                <li >
+                  <Link href={"/user/saved-jobs"}>
+                  <p className=" p-3 hover:bg-slate-100">  Saved Jobs</p>
+                
+                  </Link>
                 </li>
-                <li className=" p-3 hover:bg-slate-100">
-                  <Link href={"/user/your-proposals"}>Proposal & Offers</Link>
-                </li>
+                
               </>
             )}
             {(currentMode?.startsWith("/client") ||
               currentMode?.startsWith("/search/talent")) && (
               <>
                 <Link href={"/client/post-job"}>
-                  <li className=" p-3 hover:bg-slate-100">Post Jobs</li>
+                  <li >
+                    <p className=" p-3 hover:bg-slate-100">Post Jobs
+                      </p></li>
                 </Link>
 
                 <Link href={"/client/your-contracts"}>
-                  <li className=" p-3 hover:bg-slate-100">All Contracts</li>
+                  <li >
+                    <p className=" p-3 hover:bg-slate-100">All Contracts</p>
+                    </li>
                 </Link>
 
                 <Link href={`/client/your-jobs/${session?.user.id}`}>
-                  <li className=" p-3 hover:bg-slate-100">All Jobs Posts</li>
+                <li >
+                    <p className=" p-3 hover:bg-slate-100">All Jobs Posts</p>
+                    </li>
                 </Link>
               </>
             )}
@@ -65,13 +74,17 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
             {(currentMode?.startsWith("/user") ||
               currentMode?.startsWith("/search/jobs")) && (
               <>
-                <li className=" p-3 hover:bg-slate-100">
+                <li >
                   <Link href={"/user/business/paymenthistory"}>
-                    Payment History
+                  <li >
+                    <p className=" p-3 hover:bg-slate-100">Payments</p>
+                    </li>
                   </Link>
                 </li>
-                <li className=" p-3 hover:bg-slate-100">
-                  <Link href={"/user/business/transaction"}>Transaction</Link>
+                <li >
+                  <Link href={"/user/business/transaction"}>
+                  <p className=" p-3 hover:bg-slate-100">Transactions</p>
+                  </Link>
                 </li>
               </>
             )}

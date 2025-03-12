@@ -47,9 +47,9 @@ const MenuBar = () => {
           </li>
           <li className="hover:text-primary-600 flex align-items-center justify-center">
             <Link
-              href="/user/business"
+              href="/user/your-proposals"
               className={clsx({
-                "text-primary-600": currentPath == "/user/business",
+                "text-primary-600": currentPath == "/user/your-proposals",
               })}
               onClick={() => setIsOpen(!isOpen)}
             >

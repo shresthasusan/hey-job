@@ -68,9 +68,9 @@ const Links = () => {
             {(currentPath.startsWith("/user") ||
               currentPath.startsWith("/search/jobs")) && (
               <Link
-                href="/user/business"
+                href="/user/your-proposals"
                 className={clsx("hover:text-primary-600", {
-                  "text-primary-600": currentPath == "/user/business",
+                  "text-primary-600": currentPath == "/user/your-proposals",
                 })}
               >
                 My Business
