@@ -24,7 +24,6 @@ interface Proposal {
   bidAmount: number;
   createdAt: string;
 }
-
 interface Job {
   id: string;
   title: string;
@@ -114,32 +113,32 @@ const AllProposalsList: React.FC<AllProposalsListProps> = ({ jobId }) => {
     setSelectedProposal(null);
   };
 
-  const handleHire = async () => {
-    if (selectedProposal) {
-      try {
-        const response = await fetch("/api/hire-freelancer", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            proposalId: selectedProposal.id,
-            freelancerId: selectedProposal.userId,
-            jobId: selectedProposal.jobId,
-          }),
-        });
+  // const handleHire = async () => {
+  //   if (selectedProposal) {
+  //     try {
+  //       const response = await fetch("/api/hire-freelancer", {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({
+  //           proposalId: selectedProposal.id,
+  //           freelancerId: selectedProposal.userId,
+  //           jobId: selectedProposal.jobId,
+  //         }),
+  //       });
 
-        if (response.ok) {
-          console.log("Hired:", selectedProposal);
-          setSelectedProposal(null);
-        } else {
-          console.error("Error hiring freelancer");
-        }
-      } catch (error) {
-        console.error("Error hiring freelancer:", error);
-      }
-    }
-  };
+  //       if (response.ok) {
+  //         console.log("Hired:", selectedProposal);
+  //         setSelectedProposal(null);
+  //       } else {
+  //         console.error("Error hiring freelancer");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error hiring freelancer:", error);
+  //     }
+  //   }
+  // };
 
   return (
     <div className="container mx-auto p-4">

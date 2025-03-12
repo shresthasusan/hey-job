@@ -45,34 +45,34 @@ export async function GET(req: NextRequest) {
 
     if (!params) {
       if (bestMatches) {
-      // Fetch best match freelancers excluding current user
-      const clientPrefferedIndustriesSkills = await clientinfo.findOne({ userId: userId }).select("industry prefferedSkills");
-      
-      // Step 2: Construct a query to find matching freelancers
-      const recommendedFreelancers = await FreelancerInfo.find({
-        userId: { $ne: userId }, // Exclude the client
-        industries: { $in: clientPrefferedIndustriesSkills?.industry || [] }, // Match industries
-        skills: {
-        $in: [
-          ...(clientPrefferedIndustriesSkills?.industry || []), // Match preferred skills
-          ...(clientPrefferedIndustriesSkills?.industry?.flatMap(industry => industrySkillsMapping[industry as keyof typeof industrySkillsMapping] || []) || []), // Match related industry skills
-        ]
-        },
-      });
+        // Fetch best match freelancers excluding current user
+        const clientPrefferedIndustriesSkills = await clientinfo.findOne({ userId: userId }).select("industry prefferedSkills");
 
-      // Fetch other freelancers excluding recommended ones and current user
-      const recommendedFreelancerIds = recommendedFreelancers.map(freelancer => freelancer.userId);
-      const otherFreelancers = await FreelancerInfo.find({
-        userId: { $ne: userId, $nin: recommendedFreelancerIds },
-      });
+        // Step 2: Construct a query to find matching freelancers
+        const recommendedFreelancers = await FreelancerInfo.find({
+          userId: { $ne: userId }, // Exclude the client
+          industries: { $in: clientPrefferedIndustriesSkills?.industry || [] }, // Match industries
+          skills: {
+            $in: [
+              ...(clientPrefferedIndustriesSkills?.industry || []), // Match preferred skills
+              ...(clientPrefferedIndustriesSkills?.industry?.flatMap(industry => industrySkillsMapping[industry as keyof typeof industrySkillsMapping] || []) || []), // Match related industry skills
+            ]
+          },
+        });
 
-      // Combine recommended and other freelancers
-      freelancers = [...recommendedFreelancers, ...otherFreelancers];
-      
-    
-        
-        
-     
+        // Fetch other freelancers excluding recommended ones and current user
+        const recommendedFreelancerIds = recommendedFreelancers.map(freelancer => freelancer.userId);
+        const otherFreelancers = await FreelancerInfo.find({
+          userId: { $ne: userId, $nin: recommendedFreelancerIds },
+        });
+
+        // Combine recommended and other freelancers
+        freelancers = [...recommendedFreelancers, ...otherFreelancers];
+
+
+
+
+
 
       } else if (savedFreelancers) {
         // Fetch saved freelancer IDs from SavedFreelancers collection
