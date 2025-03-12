@@ -1,14 +1,14 @@
-import React from 'react';
+'use client';
 
-const DisplayProfile: React.FC = () => {
-  return <div>Profile Details</div>;
-};
+import React from 'react';
+import DisplayProfile from '../../ui/user-component/displayProfile';
+
+
 
 const UserProfile: React.FC = () => {
   return (
-    <div className='container border p-8 text-center'>
-      <h1>User Profile</h1>
-      <p>Welcome to the user profile page!</p>
+    <div  >
+      <h1 className='font-black text-center text-5xl'>User Profile</h1>
       <DisplayProfile />
     </div>
   );

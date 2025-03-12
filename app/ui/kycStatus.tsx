@@ -56,18 +56,18 @@ const KYCStatus: React.FC = () => {
     const { kycVerified, emailVerified } = verificationData;
 
     // Role-based redirection
-    if (!roles || (!roles.client && !roles.freelancer)) {
-      router.push(`/signup/profile-upload/${id}`);
-      return;
-    }
-    if (pathname.startsWith("/user") && !roles.freelancer) {
-      router.push(`/signup/freelancer`);
-      return;
-    }
-    if (pathname.startsWith("/client") && !roles.client) {
-      router.push(`/signup/client`);
-      return;
-    }
+   // if (!roles || (!roles.client && !roles.freelancer)) {
+ //     router.push(`/signup/profile-upload/${id}`);
+  //    return;
+   // }
+  //  if (pathname.startsWith("/user") && !roles.freelancer) {
+  //    router.push(`/signup/freelancer`);
+   //   return;
+  //  }
+  //  if (pathname.startsWith("/client") && !roles.client) {
+  //    router.push(`/signup/client`);
+  //    return;
+  //  }
 
     // KYC and email verification-based redirection
     if (

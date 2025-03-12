@@ -64,3 +64,27 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error }, { status: 500 });
     }
 }
+
+export async function GET(req: NextRequest) {
+    try {
+        const { searchParams } = new URL(req.url);
+        const userId = searchParams.get("userId");
+
+        if (!userId) {
+            return NextResponse.json({ message: "User ID is required" }, { status: 400 });
+        }
+
+        await connectMongoDB();
+
+        // Find the client data by userId
+        const client = await ClientInfo.findOne({ userId });
+
+        if (!client) {
+            return NextResponse.json({ message: "Client not found" }, { status: 404 });
+        }
+
+        return NextResponse.json({ client }, { status: 200 });
+    } catch (error) {
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    }
+}
