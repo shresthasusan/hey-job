@@ -49,9 +49,7 @@ const LinksRight = () => {
         )}
       </li>
 
-      <li>
-        <RectangleGroupIcon className="size-8" />
-      </li>
+      
       <li className="relative">
         <BellIcon
           className="size-8"
