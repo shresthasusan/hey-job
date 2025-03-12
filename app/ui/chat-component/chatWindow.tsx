@@ -14,22 +14,16 @@ import {
 } from "firebase/firestore";
 import { PaperAirplaneIcon, PhotoIcon } from "@heroicons/react/24/outline";
 import UserProfileLoader from "@/app/lib/userProfileLoader";
+import Link from "next/link";
 
 interface Message {
   sId: string;
   text?: string;
   image?: string;
   createdAt: any;
-  proposalDetails?: {
-    id: string;
-    bidAmount: number;
-    coverLetter: string;
-    jobId: {
-      title: string;
-      budget: string;
-      experience: string;
-      description: string;
-    };
+  attachment?: {
+    type: "proposalDetails" | "contractOffer" | "activeContract";
+    data: any;
   };
 }
 
@@ -169,6 +163,100 @@ const ChatWindow: React.FC = () => {
     }
   };
 
+  const ProposalDetailsComponent = ({
+    data,
+    msg,
+  }: {
+    data: any;
+    msg: Message;
+  }) => (
+    <div className="mt-3 rounded-lg border border-yellow-300 overflow-hidden shadow-sm">
+      <div className="bg-yellow-100 p-4 border-b border-yellow-300">
+        <h3 className="text-lg font-bold text-yellow-800">
+          {data.jobId.title}
+        </h3>
+        <div className="flex flex-wrap gap-2 mt-2">
+          <span className="px-2 py-1 bg-yellow-200 rounded-full text-sm font-medium text-yellow-800">
+            Budget: {data.jobId.budget}
+          </span>
+          <span className="px-2 py-1 bg-yellow-200 rounded-full text-sm font-medium text-yellow-800">
+            Experience: {data.jobId.experience}
+          </span>
+        </div>
+      </div>
+      <div className="p-4 bg-white border-b border-yellow-200">
+        <p className="text-sm text-gray-700 line-clamp-3">
+          {data.jobId.description}
+        </p>
+        <button className="mt-1 text-xs text-blue-600 hover:text-blue-800 font-medium">
+          Read more
+        </button>
+      </div>
+      <div className="p-4 bg-gray-50">
+        <h4 className="font-semibold text-gray-700">Proposal Details</h4>
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-gray-600 text-sm">Your Bid:</span>
+          <span className="font-bold text-green-600">${data.bidAmount}</span>
+        </div>
+        <div className="mt-2">
+          <p className="text-xs text-gray-500 font-medium mb-1">
+            Cover Letter:
+          </p>
+          <p className="text-sm text-gray-700 bg-white p-2 rounded border border-gray-200 max-h-20 overflow-y-auto">
+            {data.coverLetter}
+          </p>
+        </div>
+        <div className="mt-2">
+          <Link
+            className="text-xs text-primary-500 underline font-medium mx-auto mb-1"
+            href={
+              userData?.id === msg.sId
+                ? `/client/job-proposal/${data.jobId._id}`
+                : `/user/your-proposals`
+            }
+          >
+            View proposal
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+
+  const ContractOfferComponent = ({
+    data,
+    msg,
+  }: {
+    data: any;
+    msg: Message;
+  }) => (
+    <div className="p-4 border rounded-lg shadow-sm bg-blue-100">
+      <h3 className="text-lg font-bold text-blue-800">Contract Offer</h3>
+      <p className="text-sm text-gray-700">{data.contractTerms}</p>
+      <div className="mt-2 flex justify-end">
+        <button className="text-white bg-green-500 px-3 py-1 rounded-md">
+          Accept
+        </button>
+        <button className="ml-2 text-white bg-red-500 px-3 py-1 rounded-md">
+          Decline
+        </button>
+      </div>
+    </div>
+  );
+
+  const ActiveContractComponent = ({
+    data,
+    msg,
+  }: {
+    data: any;
+    msg: Message;
+  }) => (
+    <div className="p-4 border rounded-lg shadow-sm bg-green-100">
+      <h3 className="text-lg font-bold text-green-800">Active Contract</h3>
+      <p className="text-sm text-gray-700">Project: {data.projectTitle}</p>
+      <p className="text-sm text-gray-700">Status: {data.status}</p>
+    </div>
+  );
+
   return (
     <>
       <UserProfileLoader />
@@ -188,17 +276,21 @@ const ChatWindow: React.FC = () => {
                     <div
                       key={index}
                       className={`flex mb-4 items-center ${
-                        msg.sId === userData?.id
-                          ? `justify-end `
-                          : `justify-end flex-row-reverse`
+                        msg.attachment
+                          ? "justify-center"
+                          : msg.sId === userData?.id
+                            ? "justify-end"
+                            : "justify-end flex-row-reverse"
                       } `}
                     >
                       <div
-                        className={`py-3 px-4 max-w-md rounded-tl-3xl rounded-tr-xl  text-white  ${
-                          msg.sId === userData?.id
-                            ? `bg-primary-500 mr-2 rounded-bl-3xl`
-                            : `bg-gray-300 ml-2 rounded-br-3xl`
-                        }   `}
+                        className={`py-3 px-4 max-w-md rounded-tl-3xl rounded-tr-xl text-white${
+                          msg.attachment
+                            ? ""
+                            : msg.sId === userData?.id
+                              ? "bg-primary-500 mr-2 rounded-bl-3xl"
+                              : "bg-gray-300 ml-2 rounded-br-3xl"
+                        }`}
                       >
                         {msg.image ? (
                           <Image
@@ -207,62 +299,23 @@ const ChatWindow: React.FC = () => {
                             src={msg.image}
                             alt={"msg-image"}
                           />
-                        ) : msg.proposalDetails ? (
-                          <div className="mt-3 rounded-lg border border-yellow-300 overflow-hidden shadow-sm">
-                            <p className="msg break-words">{msg.text}</p>
-                            {/* Job Details Header - Prominent section */}
-                            <div className="bg-yellow-100 p-4 border-b border-yellow-300">
-                              <h3 className="text-lg font-bold text-yellow-800">
-                                {msg.proposalDetails.jobId.title}
-                              </h3>
-                              <div className="flex flex-wrap gap-2 mt-2">
-                                <span className="px-2 py-1 bg-yellow-200 rounded-full text-sm font-medium text-yellow-800">
-                                  Budget: {msg.proposalDetails.jobId.budget}
-                                </span>
-                                <span className="px-2 py-1 bg-yellow-200 rounded-full text-sm font-medium text-yellow-800">
-                                  Experience:{" "}
-                                  {msg.proposalDetails.jobId.experience}
-                                </span>
-                              </div>
-                            </div>
-
-                            {/* Job Description */}
-                            <div className="p-4 bg-white border-b border-yellow-200">
-                              <p className="text-sm text-gray-700 line-clamp-3">
-                                {msg.proposalDetails.jobId.description}
-                              </p>
-                              <button className="mt-1 text-xs text-blue-600 hover:text-blue-800 font-medium">
-                                Read more
-                              </button>
-                            </div>
-
-                            {/* Proposal Details - Secondary section */}
-                            <div className="p-4 bg-gray-50">
-                              <div className="flex justify-between items-center mb-2">
-                                <h4 className="font-semibold text-gray-700">
-                                  Proposal Details
-                                </h4>
-                              </div>
-
-                              <div className="flex items-center justify-between mb-2">
-                                <span className="text-gray-600 text-sm">
-                                  Your Bid:
-                                </span>
-                                <span className="font-bold text-green-600">
-                                  ${msg.proposalDetails.bidAmount}
-                                </span>
-                              </div>
-
-                              <div className="mt-2">
-                                <p className="text-xs text-gray-500 font-medium mb-1">
-                                  Cover Letter:
-                                </p>
-                                <p className="text-sm text-gray-700 bg-white p-2 rounded border border-gray-200 max-h-20 overflow-y-auto">
-                                  {msg.proposalDetails.coverLetter}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
+                        ) : msg.attachment ? (
+                          msg.attachment.type === "proposalDetails" ? (
+                            <ProposalDetailsComponent
+                              data={msg.attachment.data}
+                              msg={msg}
+                            />
+                          ) : msg.attachment.type === "contractOffer" ? (
+                            <ContractOfferComponent
+                              data={msg.attachment.data}
+                              msg={msg}
+                            />
+                          ) : msg.attachment.type === "activeContract" ? (
+                            <ActiveContractComponent
+                              data={msg.attachment.data}
+                              msg={msg}
+                            />
+                          ) : null
                         ) : (
                           <p className="msg break-words">{msg.text}</p>
                         )}
@@ -273,12 +326,14 @@ const ChatWindow: React.FC = () => {
                             ? userData.avatar || "/default-avatar.png"
                             : chatUser.avatar || "/default-avatar.png"
                         }
-                        className="object-cover h-8 w-8 rounded-full"
+                        className={`${msg.attachment ? "hidden" : ""} object-cover h-8 w-8 rounded-full`}
                         alt="User avatar"
                         width={32}
                         height={32}
                       />
-                      <p className="text-sm mx-2">
+                      <p
+                        className={`text-sm mx-2 ${msg.attachment ? "hidden" : ""}`}
+                      >
                         {convertTimestamp(msg.createdAt)}
                       </p>
                     </div>

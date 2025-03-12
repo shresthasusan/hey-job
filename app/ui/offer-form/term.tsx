@@ -54,8 +54,8 @@ const Terms = ({
           onChange={(e) => setPricingType(e.target.value as "fixed" | "hourly")}
           className="border px-7  rounded-md text-lg "
         >
-          <option value="fixed">Fixed Price</option>
           <option value="hourly">Hourly Rate</option>
+          <option value="fixed">Fixed Price</option>
         </select>
       </div>
 

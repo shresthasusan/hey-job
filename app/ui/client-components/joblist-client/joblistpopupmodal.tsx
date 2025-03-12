@@ -97,7 +97,6 @@ const JobProposalModal: React.FC<JobProposalModalProps> = ({
     rId: string;
     updateDoc: number;
     messageSeen: boolean;
-    proposalDetails: Proposal;
   }
 
   const addChat = async (
@@ -132,12 +131,22 @@ const JobProposalModal: React.FC<JobProposalModalProps> = ({
         createAt: serverTimestamp(),
         messages: [
           {
-            sid: userData.id,
+            sId: userData.id,
             text: initialMessage,
             createdAt: Date.now(),
-            proposalDetails: proposal,
           },
         ],
+      });
+
+      await updateDoc(doc(db, "messages", newMessageRef.id), {
+        messages: arrayUnion({
+          sId: userData.id,
+          attachment: {
+            type: "proposalDetails",
+            data: proposal,
+          },
+          createdAt: new Date(),
+        }),
       });
 
       // Update both users' chat collections
@@ -147,8 +156,8 @@ const JobProposalModal: React.FC<JobProposalModalProps> = ({
           lastMessage: initialMessage,
           rId: userData?.id,
           updateDoc: Date.now(),
-          messageSeen: true,
-          proposalDetails: proposal,
+          messageSeen: false,
+          chatStatus: "open",
         }),
       });
 
@@ -159,7 +168,7 @@ const JobProposalModal: React.FC<JobProposalModalProps> = ({
           rId: selectedUser,
           updateDoc: Date.now(),
           messageSeen: true,
-          proposalDetails: proposal,
+          chatStatus: "open",
         }),
       });
 
