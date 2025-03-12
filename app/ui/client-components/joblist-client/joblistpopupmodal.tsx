@@ -13,6 +13,7 @@ import {
   arrayUnion,
 } from "firebase/firestore";
 import { Appcontext } from "@/app/context/appContext";
+import UserProfileLoader from "@/app/lib/userProfileLoader";
 
 interface Proposal {
   id: string;
@@ -72,8 +73,9 @@ const JobProposalModal: React.FC<JobProposalModalProps> = ({
 
   const context = useContext(Appcontext) as AppContextValue;
   const { userData, chatData } = context;
-
   const [freelancer, setFreelancer] = useState<Freelancer | null>(null);
+  const [showMessageInput, setShowMessageInput] = useState(false);
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     const fetchFreelancer = async () => {
@@ -87,7 +89,6 @@ const JobProposalModal: React.FC<JobProposalModalProps> = ({
         console.error("Error fetching freelancer data:", error);
       }
     };
-
     fetchFreelancer();
   }, [proposal.userId]);
 
@@ -105,7 +106,7 @@ const JobProposalModal: React.FC<JobProposalModalProps> = ({
   ) => {
     try {
       if (!selectedUser || !userData?.id) {
-        console.error("Invalid user selection");
+        console.error("Invalid user selection", userData?.id);
         return;
       }
 
@@ -117,14 +118,10 @@ const JobProposalModal: React.FC<JobProposalModalProps> = ({
       );
 
       if (conversationExists) {
-        console.log(
-          "Chat already exists for this proposal. Skipping creation."
-        );
+        console.log("Chat already exists.");
+        alert("you've already send a message regarding this proposal");
         return;
       }
-
-      // Proceed with chat creation if it doesn't exist
-      const initialMessage = `Regarding proposal  with bid amount $${proposal?.bidAmount}`;
 
       const newMessageRef = doc(messagesRef);
       await setDoc(newMessageRef, {
@@ -132,7 +129,7 @@ const JobProposalModal: React.FC<JobProposalModalProps> = ({
         messages: [
           {
             sId: userData.id,
-            text: initialMessage,
+            text: message,
             createdAt: Date.now(),
           },
         ],
@@ -153,7 +150,7 @@ const JobProposalModal: React.FC<JobProposalModalProps> = ({
       await updateDoc(doc(chatsRef, selectedUser), {
         chatsData: arrayUnion({
           messageId: newMessageRef.id,
-          lastMessage: initialMessage,
+          lastMessage: message,
           rId: userData?.id,
           updateDoc: Date.now(),
           messageSeen: false,
@@ -164,7 +161,7 @@ const JobProposalModal: React.FC<JobProposalModalProps> = ({
       await updateDoc(doc(chatsRef, userData?.id), {
         chatsData: arrayUnion({
           messageId: newMessageRef.id,
-          lastMessage: initialMessage,
+          lastMessage: message,
           rId: selectedUser,
           updateDoc: Date.now(),
           messageSeen: true,
@@ -173,17 +170,18 @@ const JobProposalModal: React.FC<JobProposalModalProps> = ({
       });
 
       console.log(`Chat created between ${userData?.id} and ${selectedUser}`);
+      setShowMessageInput(false);
     } catch (error) {
       console.error("Error creating chat:", error);
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 transition-opacity duration-300">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-3xl transition-transform transform scale-100 relative">
+    <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-3xl relative">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors duration-300"
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
         >
           <XMarkIcon className="w-6 h-6" />
         </button>
@@ -191,21 +189,15 @@ const JobProposalModal: React.FC<JobProposalModalProps> = ({
           Proposal Details
         </h2>
         <div className="space-y-4">
-          <div className="border-b border-dotted pb-4">
-            <p className="text-lg">
-              <strong>Cover Letter:</strong> {proposal.coverLetter}
-            </p>
-          </div>
-          <div className="border-b border-dotted pb-4">
-            <p className="text-lg">
-              <strong>Bid Amount:</strong> ${proposal.bidAmount}
-            </p>
-          </div>
+          <p className="text-lg">
+            <strong>Cover Letter:</strong> {proposal.coverLetter}
+          </p>
+          <p className="text-lg">
+            <strong>Bid Amount:</strong> ${proposal.bidAmount}
+          </p>
           {proposal.attachments && (
-            <div className="border-b border-dotted pb-4">
-              <p className="text-lg">
-                <strong>Attachments:</strong>
-              </p>
+            <p className="text-lg">
+              <strong>Attachments:</strong>
               <a
                 href={proposal.attachments}
                 target="_blank"
@@ -214,36 +206,51 @@ const JobProposalModal: React.FC<JobProposalModalProps> = ({
               >
                 View Attachment
               </a>
-            </div>
+            </p>
           )}
-          <div className="border-b border-dotted pb-4">
-            <p className="text-lg">
-              <strong>Freelancer Name:</strong>{" "}
-              {freelancer ? freelancer.fullName : "Loading..."}
-            </p>
-          </div>
-          <div className="border-b border-dotted pb-4">
-            <p className="text-lg">
-              <strong>Created Time:</strong>{" "}
-              {new Date(proposal.createdAt).toLocaleString()}
-            </p>
-          </div>
+          <p className="text-lg">
+            <strong>Freelancer Name:</strong>{" "}
+            {freelancer ? freelancer.fullName : "Loading..."}
+          </p>
+          <p className="text-lg">
+            <strong>Created Time:</strong>{" "}
+            {new Date(proposal.createdAt).toLocaleString()}
+          </p>
         </div>
-        <div className="mt-6 justify-centre space-x-4">
-          <Button
-            onClick={() => addChat(freelancer?.userId, proposal)}
-            outline={true}
-          >
+        <div className="mt-6 space-x-4">
+          <Button onClick={() => setShowMessageInput(true)} outline>
             Message
           </Button>
           <Link
-            className="px-6 py-3 bg-green-400 text-white rounded-full hover:bg-green-700 transition-colors duration-300"
+            className="px-6 py-3 bg-green-400 text-white rounded-full hover:bg-green-700"
             href={`/client/job-proposal/${proposal.jobId._id}/offer/${proposal.userId}/new`}
           >
             Hire
           </Link>
         </div>
       </div>
+      {showMessageInput && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <UserProfileLoader />
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
+            <h3 className="text-xl font-bold mb-4">Send a Message</h3>
+            <textarea
+              className="w-full p-2 border rounded-lg"
+              placeholder="Type your message..."
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+            />
+            <div className="flex justify-end mt-4 space-x-4">
+              <Button onClick={() => setShowMessageInput(false)} outline>
+                Cancel
+              </Button>
+              <Button onClick={() => addChat(freelancer?.userId, proposal)}>
+                Send Message
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
