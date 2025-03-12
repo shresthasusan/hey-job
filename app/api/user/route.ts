@@ -17,6 +17,7 @@ export async function GET(req: NextRequest) {
         // ✅ Parse query parameters
         const url = new URL(req.url);
         const queryFields = url.searchParams.get("fields"); // e.g., "email,profilePicture"
+        const userIdParam = url.searchParams.get("userId"); // e.g., "12345"
 
         // ✅ Define restricted fields that should NEVER be exposed
         const restrictedFields = ["password", "__v"];
@@ -52,12 +53,13 @@ export async function GET(req: NextRequest) {
                 zipPostalCode: 1,
                 createdAt: 1,
                 dob: 1,
-
             };
         }
 
-        // ✅ Fetch user data based on session and safe query fields
-        const user = await User.findOne({ email: session.user.email }).select(selectedFields);
+        // ✅ If userId is provided in the query parameter, fetch user based on userId
+        const userId = userIdParam ;  // Default to session email if userId not provided
+
+        const user = await User.findOne({ _id: userId }).select(selectedFields);
 
         if (!user) {
             return NextResponse.json({ message: "User not found" }, { status: 404 });
