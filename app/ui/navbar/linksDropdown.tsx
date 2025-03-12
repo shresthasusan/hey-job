@@ -192,7 +192,7 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
             <div className="hover:bg-slate-200 p-1">
             {(currentMode?.startsWith("/client") ||
               currentMode?.startsWith("/search/talent")) ? (
-              <Link href={"/client/setting"}>
+              <Link href={"/user/setting"}>
               <span className="flex items-center gap-1">
                 <Cog6ToothIcon className="size-8" />
                 <span className="flex flex-col ">
