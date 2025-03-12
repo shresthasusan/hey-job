@@ -11,12 +11,13 @@ import {
   setDoc,
   updateDoc,
   arrayUnion,
+  getDoc,
 } from "firebase/firestore";
 import { Appcontext } from "@/app/context/appContext";
 import UserProfileLoader from "@/app/lib/userProfileLoader";
 
 interface Proposal {
-  id: string;
+  _id: string;
   jobId: {
     _id: string;
   };
@@ -51,8 +52,8 @@ type ChatDataItem = {
   messageSeen: boolean;
   userData: UserData;
   user: UserData;
-  proposalDetails: Proposal;
   lastMessageSender?: string;
+  proposalArray?: [proposalId: string];
 };
 
 const JobProposalModal: React.FC<JobProposalModalProps> = ({
@@ -118,8 +119,90 @@ const JobProposalModal: React.FC<JobProposalModalProps> = ({
       );
 
       if (conversationExists) {
-        console.log("Chat already exists.");
-        alert("you've already send a message regarding this proposal");
+        const eMessageId = conversationExists.messageId;
+        console.log("Debug - Existing Conversation:", {
+          messageId: eMessageId,
+          proposalArray: conversationExists.proposalArray,
+        });
+
+        const proposalExists = conversationExists.proposalArray?.find((pId) => {
+          console.log("Checking proposal:", pId, "against", proposal?._id);
+          return pId === proposal?._id;
+        });
+
+        console.log("Debug - Proposal Check:", { proposalExists });
+        if (!proposalExists) {
+          await updateDoc(doc(db, "messages", eMessageId), {
+            messages: arrayUnion({
+              sId: userData?.id,
+              text: message,
+              createdAt: new Date(),
+            }),
+          });
+          await updateDoc(doc(db, "messages", eMessageId), {
+            messages: arrayUnion({
+              sId: userData?.id,
+              attachment: {
+                type: "proposalDetails",
+                data: proposal,
+              },
+              createdAt: new Date(),
+            }),
+          });
+
+          const userIDs = [freelancer?.userId, userData.id];
+
+          userIDs.forEach(async (id) => {
+            // Reference to the chat document
+            const selectedUserChatRef = doc(chatsRef, id);
+
+            // Fetch the existing chat document
+            const UserChatSnap = await getDoc(selectedUserChatRef);
+
+            if (UserChatSnap.exists()) {
+              const UserChatData = UserChatSnap.data();
+
+              // Find the chat with matching messageId
+              const chatIndex = UserChatData.chatsData.findIndex(
+                (c: ChatData) => c.messageId === eMessageId
+              );
+
+              if (chatIndex !== -1) {
+                // Clone the chatsData array to avoid direct mutation
+                let updatedChatsData = [...UserChatData.chatsData];
+
+                // Ensure proposalArray exists, then push the new proposal ID
+                updatedChatsData[chatIndex].proposalArray = [
+                  ...(updatedChatsData[chatIndex].proposalArray || []), // Default to empty array if it doesn't exist
+                  proposal?._id,
+                ];
+
+                // Update other fields
+                updatedChatsData[chatIndex].lastMessage = message;
+                updatedChatsData[chatIndex].updatedAt = Date.now();
+                updatedChatsData[chatIndex].messageSeen = false;
+
+                // Save back to Firestore
+                await updateDoc(selectedUserChatRef, {
+                  chatsData: updatedChatsData,
+                });
+              }
+            }
+          });
+
+          // await updateDoc(doc(chatsRef, userData?.id), {
+          //   chatsData: arrayUnion({
+          //     messageId: eMessageId,
+          //     lastMessage: message,
+          //     rId: selectedUser,
+          //     updateDoc: Date.now(),
+          //     messageSeen: true,
+          //     chatStatus: "open",
+          //     proposalArray: proposal?._id ? [proposal._id] : [],
+          //   }),
+          // });
+        }
+
         return;
       }
 
@@ -155,6 +238,7 @@ const JobProposalModal: React.FC<JobProposalModalProps> = ({
           updateDoc: Date.now(),
           messageSeen: false,
           chatStatus: "open",
+          proposalArray: proposal?._id ? [proposal._id] : [],
         }),
       });
 
@@ -166,6 +250,7 @@ const JobProposalModal: React.FC<JobProposalModalProps> = ({
           updateDoc: Date.now(),
           messageSeen: true,
           chatStatus: "open",
+          proposalArray: proposal?._id ? [proposal._id] : [],
         }),
       });
 

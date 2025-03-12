@@ -284,12 +284,12 @@ const ChatWindow: React.FC = () => {
                       } `}
                     >
                       <div
-                        className={`py-3 px-4 max-w-md rounded-tl-3xl rounded-tr-xl text-white${
+                        className={`py-3 px-4 max-w-md text-white ${
                           msg.attachment
                             ? ""
                             : msg.sId === userData?.id
-                              ? "bg-primary-500 mr-2 rounded-bl-3xl"
-                              : "bg-gray-300 ml-2 rounded-br-3xl"
+                              ? "bg-primary-500 mr-2 rounded-bl-3xl  rounded-tl-3xl rounded-tr-xl"
+                              : "bg-gray-300 ml-2 rounded-br-3xl rounded-tr-3xl rounded-tl-xl"
                         }`}
                       >
                         {msg.image ? (
