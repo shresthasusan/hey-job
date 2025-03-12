@@ -14,6 +14,7 @@ import {
 } from "firebase/firestore";
 import {
   BriefcaseIcon,
+  ClipboardDocumentCheckIcon,
   ClockIcon,
   CurrencyDollarIcon,
   DocumentTextIcon,
@@ -184,7 +185,9 @@ const ChatWindow: React.FC = () => {
       <div className="bg-yellow-50 flex items-center justify-between border-b p-3 px-5 border-yellow-300">
         <div className=" flex items-start align-top gap-2  ">
           <DocumentTextIcon className="w-6 h-6 text-primary-700" />{" "}
-          <p className="text-gray-700 font-medium text-lg">Your Proposal</p>
+          <p className="text-gray-700 font-medium text-lg">
+            {msg.sId === userData?.id ? "" : "your "} Proposal
+          </p>
         </div>
         <div className="text-xs text-gray-500">
           {convertTimestamp(msg?.createdAt)} •
@@ -301,16 +304,141 @@ const ChatWindow: React.FC = () => {
     data: any;
     msg: Message;
   }) => (
-    <div className="p-4 border rounded-lg shadow-sm bg-blue-100">
-      <h3 className="text-lg font-bold text-blue-800">Contract Offer</h3>
-      <p className="text-sm text-gray-700">{data.contractTerms}</p>
-      <div className="mt-2 flex justify-end">
-        <button className="text-white bg-green-500 px-3 py-1 rounded-md">
-          Accept
-        </button>
-        <button className="ml-2 text-white bg-red-500 px-3 py-1 rounded-md">
-          Decline
-        </button>
+    <div className="mt-3 w-full rounded-xl border border-blue-300 overflow-hidden shadow-sm">
+      <div className="bg-blue-50 flex items-center justify-between border-b p-3 px-5 border-blue-300">
+        <div className=" flex items-start align-top gap-2  ">
+          <ClipboardDocumentCheckIcon className="w-6 h-6 text-blue-500" />{" "}
+          <p className="text-gray-700 font-medium text-lg">
+            Congratulations! You just got an contract offer!
+          </p>
+        </div>
+        <div className="text-xs text-gray-500">
+          {convertTimestamp(msg?.createdAt)} •
+        </div>
+      </div>
+      <div className="p-4 px-6 bg-white border-b border-yellow-200">
+        <span className="flex gap-4 mb-3">
+          <p className="text-gray-500 text-2xl flex">
+            <Image
+              src={
+                msg.sId === userData?.id
+                  ? userData.avatar || "/default-avatar.png"
+                  : chatUser.avatar || "/default-avatar.png"
+              }
+              className={`object-cover h-16 w-16 mr-4 rounded-full`}
+              alt="User avatar"
+              width={100}
+              height={100}
+            />
+            <p>
+              {msg.sId === userData?.id
+                ? `${userData?.username}`
+                : `${chatUser.username}`}
+              <p className="text-sm">
+                Offer send at: {convertTimestamp(msg.createdAt)}
+              </p>
+            </p>
+          </p>
+        </span>
+        <div className="flex gap-3">
+          <span className="bg-green-100 p-3 px-4 rounded-lg w-1/2">
+            <p className="text-sm mb-1 flex items-center gap-2 text-gray-500">
+              <span className="text-lg text-green-600">
+                <CurrencyDollarIcon className="w-6 h-6" />
+              </span>{" "}
+              Project Budget
+            </p>
+            <p className="text-green-700 text-xl ml-2"> $ {data.bidAmount}</p>
+          </span>
+          <span className="bg-gray-100 p-3 px-4 rounded-lg w-1/2">
+            <p className="text-sm mb-1 flex items-center gap-2 text-gray-500">
+              <span className="text-lg text-primary-700">
+                <ClockIcon className="w-6 h-6" />
+              </span>{" "}
+              Project Deadline
+            </p>
+            <p className="text-green-700 text-xl ml-2">
+              {" "}
+              {new Date(data.deadline).toLocaleDateString("en-US", {
+                month: "short",
+                day: "2-digit",
+                year: "numeric",
+              })}
+            </p>
+          </span>
+        </div>
+
+        <span className="bg-gray-100 mt-5 p-3 w-full px-4 rounded-lg">
+          <p className="text-sm mb-1 flex items-center gap-2 text-gray-500">
+            <span className="text-lg text-primary-700">
+              <ClockIcon className="w-6 h-6" />
+            </span>{" "}
+            Project Deadline
+          </p>
+          <p className="text-green-700 text-xl ml-2">
+            {" "}
+            {new Date(data.deadline).toLocaleDateString("en-US", {
+              month: "short",
+              day: "2-digit",
+              year: "numeric",
+            })}
+          </p>
+        </span>
+      </div>
+
+      <div className="p-4 px-6 bg-gray-50">
+        <h4 className="font-semibold text-gray-700">Proposal Details</h4>
+
+        <div className="mt-2">
+          <p className="text-xs text-gray-500 font-medium mb-1">
+            Cover Letter:
+          </p>
+          <p className="text-sm text-gray-700 bg-white p-2 rounded border border-gray-200 max-h-20 overflow-y-auto">
+            {data.coverLetter}
+          </p>
+        </div>
+        <div className="flex mt-5 gap-3 items-center justify-between mb-2">
+          <span className="bg-green-100 p-3 px-4 rounded-lg w-1/2">
+            <p className="text-sm mb-1 flex items-center gap-2 text-gray-500">
+              <span className="text-lg text-green-600">
+                <TagIcon className="w-6 h-6" />
+              </span>{" "}
+              Bid Amount
+            </p>
+            <p className="text-green-700 text-xl ml-2">
+              {" "}
+              $ {data.jobId.budget}
+            </p>
+          </span>
+          <span className="bg-gray-100 p-3 px-4 rounded-lg w-1/2">
+            <p className="text-sm mb-1 flex items-center gap-2 text-gray-500">
+              <span className="text-lg text-primary-700">
+                <ClockIcon className="w-6 h-6" />
+              </span>{" "}
+              Job Posted
+            </p>
+            <p className="text-green-700 text-xl ml-2">
+              {" "}
+              {new Date(data.jobId.createdAt).toLocaleDateString("en-US", {
+                month: "short",
+                day: "2-digit",
+                year: "numeric",
+              })}
+            </p>
+          </span>
+        </div>
+        <div className="mt-5  text-right">
+          <Link
+            className="text-primary-500 underline font-medium mx-auto mb-1"
+            href={
+              userData?.id === msg.sId
+                ? `/client/job-proposal/${data.jobId._id}`
+                : `/user/your-proposals`
+            }
+          >
+            View proposal
+          </Link>
+        </div>
       </div>
     </div>
   );
