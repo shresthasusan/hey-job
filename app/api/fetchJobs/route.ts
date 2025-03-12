@@ -80,9 +80,7 @@ export async function GET(req: NextRequest) {
         userId: { $ne: userId },
         status: 'active'
       });
-       console.log("matchingJobs", matchingJobs);
-       console.log("relatedSkills", relatedSkills);
-
+      
       // Step 4: Fetch other jobs excluding the matching jobs
       const otherJobs = await Jobs.find({
         _id: { $nin: matchingJobs.map(job => job._id) },
