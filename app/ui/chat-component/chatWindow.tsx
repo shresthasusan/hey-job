@@ -12,7 +12,17 @@ import {
   getDoc,
   onSnapshot,
 } from "firebase/firestore";
-import { PaperAirplaneIcon, PhotoIcon } from "@heroicons/react/24/outline";
+import {
+  BriefcaseIcon,
+  ClockIcon,
+  CurrencyDollarIcon,
+  DocumentTextIcon,
+  IdentificationIcon,
+  PaperAirplaneIcon,
+  PhotoIcon,
+  TagIcon,
+  TrophyIcon,
+} from "@heroicons/react/24/outline";
 import UserProfileLoader from "@/app/lib/userProfileLoader";
 import Link from "next/link";
 
@@ -136,9 +146,9 @@ const ChatWindow: React.FC = () => {
     const minute = date.getMinutes();
 
     if (hour > 12) {
-      return hour - 12 + ":" + minute + "PM";
+      return hour - 12 + ":" + minute + " PM";
     } else {
-      return hour + ":" + minute + "AM";
+      return hour + ":" + minute + " AM";
     }
   };
 
@@ -170,34 +180,66 @@ const ChatWindow: React.FC = () => {
     data: any;
     msg: Message;
   }) => (
-    <div className="mt-3 rounded-lg border border-yellow-300 overflow-hidden shadow-sm">
-      <div className="bg-yellow-100 p-4 border-b border-yellow-300">
-        <h3 className="text-lg font-bold text-yellow-800">
+    <div className="mt-3 w-full rounded-xl border border-yellow-300 overflow-hidden shadow-sm">
+      <div className="bg-yellow-50 flex items-center justify-between border-b p-3 px-5 border-yellow-300">
+        <div className=" flex items-start align-top gap-2  ">
+          <DocumentTextIcon className="w-6 h-6 text-primary-700" />{" "}
+          <p className="text-gray-700 font-medium text-lg">Your Proposal</p>
+        </div>
+        <div className="text-xs text-gray-500">
+          {convertTimestamp(msg?.createdAt)} •
+        </div>
+      </div>
+      <div className="p-4 px-6 bg-white border-b border-yellow-200">
+        <p className="text-xl mb-1 font-semibold text-gray-700 line-clamp-3">
           {data.jobId.title}
-        </h3>
-        <div className="flex flex-wrap gap-2 mt-2">
-          <span className="px-2 py-1 bg-yellow-200 rounded-full text-sm font-medium text-yellow-800">
-            Budget: {data.jobId.budget}
-          </span>
-          <span className="px-2 py-1 bg-yellow-200 rounded-full text-sm font-medium text-yellow-800">
-            Experience: {data.jobId.experience}
-          </span>
-        </div>
-      </div>
-      <div className="p-4 bg-white border-b border-yellow-200">
-        <p className="text-sm text-gray-700 line-clamp-3">
-          {data.jobId.description}
         </p>
-        <button className="mt-1 text-xs text-blue-600 hover:text-blue-800 font-medium">
-          Read more
-        </button>
-      </div>
-      <div className="p-4 bg-gray-50">
-        <h4 className="font-semibold text-gray-700">Proposal Details</h4>
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-gray-600 text-sm">Your Bid:</span>
-          <span className="font-bold text-green-600">${data.bidAmount}</span>
+        <span className="flex gap-4 mb-3">
+          <p className="text-gray-500 text-sm items-center flex gap-1">
+            <IdentificationIcon className="w-4 h-4" />
+            {msg.sId === userData?.id
+              ? `${userData?.username}`
+              : `${chatUser.username}`}
+          </p>
+          <p className="text-gray-500 text-sm items-center flex gap-1">
+            <TrophyIcon className="w-4 h-4" />
+            {data.jobId.experience}
+          </p>
+        </span>
+        <div className="flex gap-3">
+          <span className="bg-primary-400 p-3 px-4 rounded-lg w-1/2">
+            <p className="text-sm mb-1 flex items-center gap-2 text-gray-500">
+              <span className="text-lg text-green-600">
+                <CurrencyDollarIcon className="w-6 h-6" />
+              </span>{" "}
+              Project Budget
+            </p>
+            <p className="text-green-700 text-xl ml-2">
+              {" "}
+              $ {data.jobId.budget}
+            </p>
+          </span>
+          <span className="bg-gray-100 p-3 px-4 rounded-lg w-1/2">
+            <p className="text-sm mb-1 flex items-center gap-2 text-gray-500">
+              <span className="text-lg text-primary-700">
+                <ClockIcon className="w-6 h-6" />
+              </span>{" "}
+              Job Posted
+            </p>
+            <p className="text-green-700 text-xl ml-2">
+              {" "}
+              {new Date(data.jobId.createdAt).toLocaleDateString("en-US", {
+                month: "short",
+                day: "2-digit",
+                year: "numeric",
+              })}
+            </p>
+          </span>
         </div>
+      </div>
+      <div className="p-4 px-6 bg-gray-50">
+        <h4 className="font-semibold text-gray-700">Proposal Details</h4>
+
         <div className="mt-2">
           <p className="text-xs text-gray-500 font-medium mb-1">
             Cover Letter:
@@ -206,9 +248,39 @@ const ChatWindow: React.FC = () => {
             {data.coverLetter}
           </p>
         </div>
-        <div className="mt-2">
+        <div className="flex mt-5 gap-3 items-center justify-between mb-2">
+          <span className="bg-green-100 p-3 px-4 rounded-lg w-1/2">
+            <p className="text-sm mb-1 flex items-center gap-2 text-gray-500">
+              <span className="text-lg text-green-600">
+                <TagIcon className="w-6 h-6" />
+              </span>{" "}
+              Bid Amount
+            </p>
+            <p className="text-green-700 text-xl ml-2">
+              {" "}
+              $ {data.jobId.budget}
+            </p>
+          </span>
+          <span className="bg-gray-100 p-3 px-4 rounded-lg w-1/2">
+            <p className="text-sm mb-1 flex items-center gap-2 text-gray-500">
+              <span className="text-lg text-primary-700">
+                <ClockIcon className="w-6 h-6" />
+              </span>{" "}
+              Job Posted
+            </p>
+            <p className="text-green-700 text-xl ml-2">
+              {" "}
+              {new Date(data.jobId.createdAt).toLocaleDateString("en-US", {
+                month: "short",
+                day: "2-digit",
+                year: "numeric",
+              })}
+            </p>
+          </span>
+        </div>
+        <div className="mt-5  text-right">
           <Link
-            className="text-xs text-primary-500 underline font-medium mx-auto mb-1"
+            className="text-primary-500 underline font-medium mx-auto mb-1"
             href={
               userData?.id === msg.sId
                 ? `/client/job-proposal/${data.jobId._id}`
@@ -284,12 +356,12 @@ const ChatWindow: React.FC = () => {
                       } `}
                     >
                       <div
-                        className={`py-3 px-4 max-w-md rounded-tl-3xl rounded-tr-xl text-white${
+                        className={`py-3 px-4 text-white ${
                           msg.attachment
-                            ? ""
+                            ? "w-5/6"
                             : msg.sId === userData?.id
-                              ? "bg-primary-500 mr-2 rounded-bl-3xl"
-                              : "bg-gray-300 ml-2 rounded-br-3xl"
+                              ? "bg-primary-500 mr-2 rounded-bl-3xl max-w-md rounded-tl-3xl rounded-tr-xl"
+                              : "bg-gray-300 ml-2 rounded-br-3xl rounded-tr-3xl max-w-md rounded-tl-xl"
                         }`}
                       >
                         {msg.image ? (
