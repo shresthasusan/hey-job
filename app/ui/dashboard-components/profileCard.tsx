@@ -23,18 +23,12 @@ const ProfileCard = ({ mode }: Props) => {
   return (
     <div className="flex min-w-[280px] w-[15%] flex-col relative rounded-3xl h-[250px] overflow-hidden shadow-[0_10px_20px_rgba(228,228,228,_0.7)]">
       {/* Cover image section */}
-      <div className="h-[40%] bg-secondary-600 overflow-hidden">
-        <Image
-          src={"/images/placeholder-614.webp"}
-          alt="cover"
-          width={100}
-          className="w-full object-cover"
-          height={100}
-        />
+      <div className="h-[40%] bg-gray-500 overflow-hidden">
+       
       </div>
 
       {/* Profile image section */}
-      <div className="bg-yellow-400 rounded-full absolute translate-y-[50%] overflow-hidden translate-x-1/2 right-[50%] h-24 w-24">
+      <div className="bg-400 rounded-full bg-white absolute translate-y-[50%] overflow-hidden translate-x-1/2 right-[50%] h-24 w-24">
         <Image
           src={session?.user?.profilePicture || "/images/image.png"}
           alt="profile"

@@ -112,7 +112,7 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
         <>
           <div className="p-3 flex   flex-col relative overflow-hidden  align-middle items-center ">
             <div
-              className="bg-yellow-400  rounded-full
+              className="  rounded-full
                             
                      h-24 w-24"
             >
