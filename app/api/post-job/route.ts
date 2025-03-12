@@ -27,10 +27,9 @@ export async function POST(req: NextRequest) {
 
       return NextResponse.json({ message: `Unauthorized email not verified` }, { status: 400 });
     }
-
+    const fullName = user.name + " " + user.lastname;
+    const userId = user.id;
     const {
-      userId,
-      fullName,
       title,
       type,
       experience,

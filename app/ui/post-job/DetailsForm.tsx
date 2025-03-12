@@ -14,8 +14,6 @@ import { skills as predefinedSkills } from "@/app/lib/data";
 
 const DetailsForm = () => {
   type formData = {
-    userId?: string;
-    fullName?: string;
     title: string;
     type: string;
     experience: string;
@@ -32,12 +30,9 @@ const DetailsForm = () => {
   const prevStep = () => setStep(step - 1);
   const { data: session } = useSession();
   const id = session?.user.id;
-  const fullName = session?.user.name + " " + session?.user.lastName;
   const [tagInput, setTagInput] = useState<string>("");
 
   const initialFormData: formData = {
-    userId: id,
-    fullName: fullName,
     title: "",
     type: "",
     experience: "",
@@ -147,6 +142,7 @@ const DetailsForm = () => {
       }
     } catch (error) {
       console.error("An error occurred while submitting the form", error);
+      setUploading(false);
     }
   };
 
