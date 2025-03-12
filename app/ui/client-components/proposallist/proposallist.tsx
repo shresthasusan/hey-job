@@ -13,7 +13,7 @@ import { getTimeAgo } from "../../dashboard-components/job-list/jobList";
 import JobProposalModal from "@/app/ui/client-components/joblist-client/joblistpopupmodal";
 
 interface Proposal {
-  id: string;
+  _id: string;
   jobId: {
     _id: string;
   };
@@ -199,7 +199,7 @@ const AllProposalsList: React.FC<AllProposalsListProps> = ({ jobId }) => {
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {proposals.map((proposal) => (
                   <div
-                    key={`${proposal.id}-${proposal.userId}`}
+                    key={`${proposal._id}-${proposal.userId}`}
                     className="border-dotted border-2 border-gray-300 p-4 rounded-lg shadow hover:shadow-lg transition-shadow duration-300 bg-white cursor-pointer"
                     onClick={() => handleProposalClick(proposal)}
                   >
