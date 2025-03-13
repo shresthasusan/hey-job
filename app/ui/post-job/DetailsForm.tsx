@@ -167,22 +167,28 @@ const DetailsForm = () => {
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm"
             />
           </div>
-          <div>
+            <div>
             <label
               htmlFor="type"
               className="block text-sm font-medium text-gray-700"
             >
               Job Type
             </label>
-            <input
-              type="text"
+            <select
               name="type"
               id="type"
               value={formData.type}
               onChange={handleChange}
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm"
-            />
-          </div>
+            >
+              <option value="">Choose Job Type</option>
+              <option value="Full-time">Full-Time (Stable Career)</option>
+              <option value="Part-time">Part-Time (Flexible Hours)</option>
+              <option value="Contract">Freelance/Project-Based</option>
+              <option value="Internship">Internship (Career Starter)</option>
+
+            </select>
+            </div>
           <div>
             <label
               htmlFor="experience"
