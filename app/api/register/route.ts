@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create new user and retrieve `_id`
-    const newUser = await User.create({ email, name, lastName, password: hashedPassword });
+    const newUser = await User.create({ email, name, lastName, password: hashedPassword, isFirstLogin: true });
 
 
     // Generate email verification token

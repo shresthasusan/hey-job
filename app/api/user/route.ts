@@ -57,7 +57,7 @@ export async function GET(req: NextRequest) {
         }
 
         // ✅ If userId is provided in the query parameter, fetch user based on userId
-        const userId = userIdParam ;  // Default to session email if userId not provided
+        const userId = userIdParam || session.user.id;  // Default to session email if userId not provided
 
         const user = await User.findOne({ _id: userId }).select(selectedFields);
 

@@ -55,7 +55,11 @@ export async function POST(req: NextRequest) {
 
     const updatedUser = await User.findOneAndUpdate(
       { _id: userId },
-      { $set: fieldsToUpdate },
+      {
+        $set: fieldsToUpdate,
+        $unset: { isFirstLogin: "" },
+      },
+
       { new: true, runValidators: true, strict: false }
     );
 
