@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import DisplayProfile from "@/app/ui/client-components/clientProfile";
 
