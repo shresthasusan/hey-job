@@ -1,14 +1,15 @@
-import SettingsPage from '@/app/ui/user-component/usersettings'
-import React from 'react'
+import SettingsPage from "@/app/ui/user-component/usersettings";
+import React, { Suspense } from "react";
 
 const page = () => {
   return (
     <div>
-      <h1 className='text-4xl text-center mt-8 font-semibold'>Settings</h1>
-      <SettingsPage />
-      
+      <h1 className="text-4xl text-center mt-8 font-semibold">Settings</h1>
+      <Suspense fallback={<div>loading</div>}>
+        <SettingsPage />
+      </Suspense>
     </div>
-  )
-}
+  );
+};
 
-export default page
+export default page;
