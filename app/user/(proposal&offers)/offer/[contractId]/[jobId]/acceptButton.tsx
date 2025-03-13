@@ -3,6 +3,7 @@ import { Appcontext } from "@/app/context/appContext";
 import useFetch from "@/app/hooks/useFetch";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 import { db } from "@/app/lib/firebase";
+import UserProfileLoader from "@/app/lib/userProfileLoader";
 import { Button } from "@/app/ui/button";
 import { ShieldCheckIcon } from "@heroicons/react/24/outline";
 import {
@@ -36,6 +37,7 @@ const AcceptButton = ({ jobId, freelancerId, contractId }: Props) => {
     try {
       const { clientId, paymentType, deadline } = contract;
       console.log("con", contract);
+      console.log("chaData", chatData);
 
       const chatsRef = collection(db, "chats");
 
@@ -165,6 +167,7 @@ const AcceptButton = ({ jobId, freelancerId, contractId }: Props) => {
 
   return (
     <div className="py-2 space-y-3 mb-4">
+      <UserProfileLoader />
       {Array.isArray(actions) && actions.includes("proposal_submitted") ? (
         <span className="">You&apos;ve taken action for this offer</span>
       ) : (

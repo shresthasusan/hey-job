@@ -28,40 +28,38 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
             {(currentMode?.startsWith("/user") ||
               currentMode?.startsWith("/search/jobs")) && (
               <>
-                <li >
-                  <Link href={"/user/best-matches"}> 
-                  <p className=" p-3 hover:bg-slate-100">Jobs</p>
+                <li>
+                  <Link href={"/user/best-matches"}>
+                    <p className=" p-3 hover:bg-slate-100">Jobs</p>
                   </Link>
                 </li>
 
-                <li >
+                <li>
                   <Link href={"/user/saved-jobs"}>
-                  <p className=" p-3 hover:bg-slate-100">  Saved Jobs</p>
-                
+                    <p className=" p-3 hover:bg-slate-100"> Saved Jobs</p>
                   </Link>
                 </li>
-                
               </>
             )}
             {(currentMode?.startsWith("/client") ||
               currentMode?.startsWith("/search/talent")) && (
               <>
                 <Link href={"/client/post-job"}>
-                  <li >
-                    <p className=" p-3 hover:bg-slate-100">Post Jobs
-                      </p></li>
+                  <li>
+                    <p className=" p-3 hover:bg-slate-100">Post Jobs</p>
+                  </li>
                 </Link>
 
                 <Link href={"/client/your-contracts"}>
-                  <li >
+                  <li>
                     <p className=" p-3 hover:bg-slate-100">All Contracts</p>
-                    </li>
+                  </li>
                 </Link>
 
                 <Link href={`/client/your-jobs/${session?.user.id}`}>
-                <li >
+                  <li>
                     <p className=" p-3 hover:bg-slate-100">All Jobs Posts</p>
-                    </li>
+                  </li>
                 </Link>
               </>
             )}
@@ -74,16 +72,21 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
             {(currentMode?.startsWith("/user") ||
               currentMode?.startsWith("/search/jobs")) && (
               <>
-                <li >
+                <li>
+                  <Link href={"/user/your-contracts"}>
+                    <p className=" p-3 hover:bg-slate-100">Your Contracts</p>
+                  </Link>
+                </li>
+                <li>
                   <Link href={"/user/business/paymenthistory"}>
-                  <li >
-                    <p className=" p-3 hover:bg-slate-100">Payments</p>
+                    <li>
+                      <p className=" p-3 hover:bg-slate-100">Payments</p>
                     </li>
                   </Link>
                 </li>
-                <li >
+                <li>
                   <Link href={"/user/business/transaction"}>
-                  <p className=" p-3 hover:bg-slate-100">Transactions</p>
+                    <p className=" p-3 hover:bg-slate-100">Transactions</p>
                   </Link>
                 </li>
               </>
@@ -179,51 +182,51 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
               </Link>
             )}
           </div>
-            <div className="hover:bg-slate-200 p-1">
-            {(currentMode?.startsWith("/client") ||
-              currentMode?.startsWith("/search/talent")) ? (
+          <div className="hover:bg-slate-200 p-1">
+            {currentMode?.startsWith("/client") ||
+            currentMode?.startsWith("/search/talent") ? (
               <Link href={"/client/profile"}>
-              <span className="flex items-center gap-1">
-                <UserCircleIcon className="size-8" />
-                <span className="flex flex-col ">
-                <p>Profile</p>
+                <span className="flex items-center gap-1">
+                  <UserCircleIcon className="size-8" />
+                  <span className="flex flex-col ">
+                    <p>Profile</p>
+                  </span>
                 </span>
-              </span>
               </Link>
             ) : (
               <Link href={"/user/profile"}>
-              <span className="flex items-center gap-1">
-                <UserCircleIcon className="size-8" />
-                <span className="flex flex-col ">
-                <p>Profile</p>
+                <span className="flex items-center gap-1">
+                  <UserCircleIcon className="size-8" />
+                  <span className="flex flex-col ">
+                    <p>Profile</p>
+                  </span>
                 </span>
-              </span>
               </Link>
             )}
-            </div>
-       
-            <div className="hover:bg-slate-200 p-1">
-            {(currentMode?.startsWith("/client") ||
-              currentMode?.startsWith("/search/talent")) ? (
+          </div>
+
+          <div className="hover:bg-slate-200 p-1">
+            {currentMode?.startsWith("/client") ||
+            currentMode?.startsWith("/search/talent") ? (
               <Link href={"/user/setting"}>
-              <span className="flex items-center gap-1">
-                <Cog6ToothIcon className="size-8" />
-                <span className="flex flex-col ">
-                <p>Settings</p>
+                <span className="flex items-center gap-1">
+                  <Cog6ToothIcon className="size-8" />
+                  <span className="flex flex-col ">
+                    <p>Settings</p>
+                  </span>
                 </span>
-              </span>
               </Link>
             ) : (
               <Link href={"/user/setting"}>
-              <span className="flex items-center gap-1">
-                <Cog6ToothIcon className="size-8" />
-                <span className="flex flex-col ">
-                <p>Settings</p>
+                <span className="flex items-center gap-1">
+                  <Cog6ToothIcon className="size-8" />
+                  <span className="flex flex-col ">
+                    <p>Settings</p>
+                  </span>
                 </span>
-              </span>
               </Link>
             )}
-            </div>
+          </div>
           <button
             onClick={() => signOut()}
             className="hover:bg-slate-200 p-1 w-full flex items-center gap-1 text-left"
