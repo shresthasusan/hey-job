@@ -5,7 +5,6 @@ import { useSession } from "next-auth/react";
 import React, { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { debounce } from "@/app/lib/debounce"; // Import the debounce function
 
 // Updated interfaces to include more relevant information
 interface Job {

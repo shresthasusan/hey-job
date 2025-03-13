@@ -32,7 +32,9 @@ const NavBar = () => {
           }
         </div>
         <div className="flex items-center justify-end lg:w-[40%]">
-          <SearchInput />
+          <Suspense>
+            <SearchInput />
+          </Suspense>
           <LinksRight />
         </div>
       </div>

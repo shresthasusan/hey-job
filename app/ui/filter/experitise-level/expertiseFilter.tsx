@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import Filter from "../filter";
 
 const ExpertiseFilter = () => {
@@ -7,13 +7,19 @@ const ExpertiseFilter = () => {
       <p>Expertise Level </p>
       <ul>
         <li>
-          <Filter Experience="Entry" />
+          <Suspense>
+            <Filter Experience="Entry" />
+          </Suspense>
         </li>
         <li>
-          <Filter Experience="Intermediate" />
+          <Suspense>
+            <Filter Experience="Intermediate" />
+          </Suspense>
         </li>
         <li>
-          <Filter Experience="Expert" />
+          <Suspense>
+            <Filter Experience="Expert" />
+          </Suspense>
         </li>
       </ul>
     </div>
