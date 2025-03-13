@@ -22,11 +22,11 @@ export async function POST(req: NextRequest) {
 
     const userData = req.headers.get("user");
     const user = userData ? JSON.parse(userData) : null;
-    if (!user.emailVerified) {
+    // if (!user.emailVerified) {
 
 
-      return NextResponse.json({ message: `Unauthorized email not verified` }, { status: 400 });
-    }
+    //   return NextResponse.json({ message: `Unauthorized email not verified` }, { status: 400 });
+    // }
     const fullName = user.name + " " + user.lastname;
     const userId = user.id;
     const {
