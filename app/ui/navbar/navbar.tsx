@@ -2,9 +2,9 @@ import Image from "next/image";
 import React, { Suspense } from "react";
 import Link from "next/link";
 import Links from "./links";
-import NavSearchBar from "./navSearchBar";
 import MenuBar from "./menuBar";
 import LinksRight from "./linksRight";
+import SearchInput from "./navSearchBar";
 
 const NavBar = () => {
   return (
@@ -32,7 +32,7 @@ const NavBar = () => {
           }
         </div>
         <div className="flex items-center justify-end lg:w-[40%]">
-          <NavSearchBar />
+          <SearchInput />
           <LinksRight />
         </div>
       </div>
