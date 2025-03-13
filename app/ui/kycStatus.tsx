@@ -29,6 +29,7 @@ const KYCStatus: React.FC = () => {
 
   interface UserData {
     roles: UserRoles;
+    isFirstLogin?: boolean;
   }
 
   const [userData, setUserData] = useState<UserData | null>(null);
@@ -37,7 +38,7 @@ const KYCStatus: React.FC = () => {
   useEffect(() => {
     if (status !== "authenticated") return;
 
-    fetchWithAuth("/api/user?fields=roles")
+    fetchWithAuth("/api/user?fields=roles,isFirstLogin")
       .then((res) => res.json())
       .then((data) => {
         setUserData(data);
@@ -52,22 +53,22 @@ const KYCStatus: React.FC = () => {
   useEffect(() => {
     if (loading || !userData || !verificationData) return;
 
-    const { roles } = userData;
+    const { roles, isFirstLogin } = userData;
     const { kycVerified, emailVerified } = verificationData;
 
     // Role-based redirection
-   // if (!roles || (!roles.client && !roles.freelancer)) {
- //     router.push(`/signup/profile-upload/${id}`);
-  //    return;
-   // }
-  //  if (pathname.startsWith("/user") && !roles.freelancer) {
-  //    router.push(`/signup/freelancer`);
-   //   return;
-  //  }
-  //  if (pathname.startsWith("/client") && !roles.client) {
-  //    router.push(`/signup/client`);
-  //    return;
-  //  }
+    if (!roles || isFirstLogin) {
+      router.push(`/signup/profile-upload`);
+      return;
+    }
+    if (pathname.startsWith("/user") && !roles.freelancer) {
+      router.push(`/signup/freelancer`);
+      return;
+    }
+    if (pathname.startsWith("/client") && !roles.client) {
+      router.push(`/signup/client`);
+      return;
+    }
 
     // KYC and email verification-based redirection
     if (

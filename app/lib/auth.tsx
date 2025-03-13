@@ -33,6 +33,7 @@ declare module "next-auth" {
     emailVerified?: boolean;
     kycVerified?: boolean;
     accessToken?: string;
+    isFirstLogin?: boolean;
   }
 }
 
@@ -112,6 +113,7 @@ export const authOptions: NextAuthOptions = {
             emailVerified: user.emailVerified,
             kycVerified: user.kycVerified,
             id: user._id.toString(),
+            isFirstLogin: user.isFirstLogin || false,
           })
             .setProtectedHeader({ alg: "HS256" })
             .sign(secretKey);
@@ -158,6 +160,7 @@ export const authOptions: NextAuthOptions = {
             profilePicture: user.image,
             emailVerified: true,
             oauth: true,
+            isFirstLogin: true,
           });
 
           const secretKey = new TextEncoder().encode(

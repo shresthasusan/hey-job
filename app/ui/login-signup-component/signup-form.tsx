@@ -72,7 +72,7 @@ const SignupForm = () => {
       }
 
       // ✅ Redirect user to profile upload page with `userId`
-      router.push(`/signup/profile-upload/${userId}`);
+      router.push(`/signup/profile-upload`);
       console.log("✅ Registration & Login Successful, Redirecting...");
     } catch (error) {
       console.error("Error during registration:", error);
