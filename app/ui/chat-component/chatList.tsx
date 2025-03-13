@@ -126,9 +126,6 @@ const ChatList: React.FC = () => {
     }
   };
 
-  console.log("c", chatData);
-  console.log("s", searchResults);
-
   return (
     <div className="h-full relative overflow-hidden rounded-2xl shadow-[0_10px_20px_rgba(228,228,228,_0.7)] border-r-2">
       {/* Search component */}

@@ -410,8 +410,23 @@ const ChatWindow: React.FC = () => {
   }) => (
     <div className="p-4 border rounded-lg shadow-sm bg-green-100">
       <h3 className="text-lg font-bold text-green-800">Active Contract</h3>
-      <p className="text-sm text-gray-700">Project: {data.projectTitle}</p>
-      <p className="text-sm text-gray-700">Status: {data.status}</p>
+      <p className="text-sm text-gray-700">Project: {data.jobId.title}</p>
+      <p className="text-sm text-gray-700">
+        Status:{" "}
+        <span className="text-green-700 font-semibold">{data.status}</span>
+      </p>
+      <div className="mt-5  text-right">
+        <Link
+          className="text-green-500 underline font-medium mx-auto mb-1"
+          href={
+            userData?.id === msg.sId
+              ? `/client/job-proposal/${data.jobId._id}`
+              : `/user/your-proposals`
+          }
+        >
+          View Project
+        </Link>
+      </div>
     </div>
   );
 

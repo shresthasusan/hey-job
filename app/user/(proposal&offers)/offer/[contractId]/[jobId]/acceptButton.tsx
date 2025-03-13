@@ -1,9 +1,18 @@
 "use client";
+import { Appcontext } from "@/app/context/appContext";
 import useFetch from "@/app/hooks/useFetch";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
+import { db } from "@/app/lib/firebase";
 import { Button } from "@/app/ui/button";
 import { ShieldCheckIcon } from "@heroicons/react/24/outline";
-import React, { useState } from "react";
+import {
+  collection,
+  updateDoc,
+  doc,
+  arrayUnion,
+  getDoc,
+} from "firebase/firestore";
+import React, { useContext, useState } from "react";
 
 interface Props {
   jobId: string;
@@ -11,13 +20,93 @@ interface Props {
   contractId?: string;
 }
 
+//use either freelancerId or userData.id same in this case
+
 const AcceptButton = ({ jobId, freelancerId, contractId }: Props) => {
   const { data: actions = [], loading } = useFetch<string[]>(
     `/check-action?jobId=${jobId}&freelancerId=${freelancerId}`
   );
 
+  const { userData, chatData } = useContext(Appcontext);
+
   const [isAcceptDialogOpen, setIsAcceptDialogOpen] = useState(false);
   const [isDeclineDialogOpen, setIsDeclineDialogOpen] = useState(false);
+
+  const sendContractToChat = async (contract: any) => {
+    try {
+      const { clientId, paymentType, deadline } = contract;
+      console.log("con", contract);
+
+      const chatsRef = collection(db, "chats");
+
+      // retrive chat id
+      const chatExists = chatData?.find((chat) => chat.rId === clientId);
+
+      const initialMessage = "Looking forward to work with you";
+
+      await updateDoc(doc(db, "messages", chatExists?.messageId), {
+        messages: arrayUnion(
+          {
+            sId: userData?.id,
+            text: initialMessage,
+            createdAt: new Date(),
+          },
+          {
+            sId: userData?.id,
+            text: `Contract details:\nPrice: $${paymentType}\nDeadline: ${deadline}`,
+            attachment: {
+              type: "activeContract",
+              data: contract,
+            },
+            createdAt: new Date(),
+          }
+        ),
+      });
+
+      //add active contractid in the chatData
+      const userIDs = [clientId, userData?.id];
+
+      userIDs.forEach(async (id) => {
+        // Reference to the chat document
+        const selectedUserChatRef = doc(chatsRef, id);
+
+        // Fetch the existing chat document
+        const UserChatSnap = await getDoc(selectedUserChatRef);
+
+        if (UserChatSnap.exists()) {
+          const UserChatData = UserChatSnap.data();
+
+          // Find the chat with matching messageId
+          const chatIndex = UserChatData.chatsData.findIndex(
+            (c: any) => c.messageId === chatExists?.messageId
+          );
+
+          if (chatIndex !== -1) {
+            // Clone the chatsData array to avoid direct mutation
+            let updatedChatsData = [...UserChatData.chatsData];
+
+            // Ensure contractArray exists, then push the new contract ID
+            updatedChatsData[chatIndex].ContractArray = [
+              ...(updatedChatsData[chatIndex].ContractArray || []), // Default to empty array if it doesn't exist
+              contract?._id,
+            ];
+
+            // Update other fields
+            updatedChatsData[chatIndex].updatedAt = Date.now();
+            updatedChatsData[chatIndex].messageSeen = false;
+            updatedChatsData[chatIndex].lastMessage = initialMessage;
+
+            // Save back to Firestore
+            await updateDoc(selectedUserChatRef, {
+              chatsData: updatedChatsData,
+            });
+          }
+        }
+      });
+    } catch (error) {
+      console.error("Error sending contract to chat:", error);
+    }
+  };
 
   const handleAccept = async () => {
     try {
@@ -33,6 +122,8 @@ const AcceptButton = ({ jobId, freelancerId, contractId }: Props) => {
 
       if (response.ok) {
         // Handle successful acceptance
+        const { contract } = await response.json();
+        sendContractToChat(contract);
         setIsAcceptDialogOpen(false);
         alert("Contract accepted successfully!");
       } else {

@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectMongoDB } from "@/app/lib/mongodb";
 import Contract from "@/models/contract";
+import Jobs from "@/models/jobs";
 
-// Define the allowed status transitions type
 type ContractStatus = "pending" | "active" | "declined" | "completed" | "canceled";
+type JobStatus = "active" | "in-progress" | "completed" | "canceled";
 
 export async function PATCH(req: NextRequest) {
     try {
@@ -15,22 +16,23 @@ export async function PATCH(req: NextRequest) {
             return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
         }
 
-        // Find the contract
-        const contract = await Contract.findById(contractId);
+        // Find the contract and populate job details
+        const contract = await Contract.findById(contractId)
+            .populate({ path: "jobId", select: "title description status" });
+
         if (!contract) {
             return NextResponse.json({ message: "Contract not found" }, { status: 404 });
         }
 
-        // Check if the user is authorized (either client or freelancer)
+        // Authorization check
         if (contract.clientId.toString() !== userId && contract.freelancerId.toString() !== userId) {
             return NextResponse.json({ message: "Unauthorized" }, { status: 403 });
         }
 
-        // If the user is a client, prevent changing the status to 'active' or 'declined'
+        // Prevent clients from changing status to 'active' or 'declined'
         if (contract.clientId.toString() === userId && (newStatus === "active" || newStatus === "declined")) {
             return NextResponse.json({ message: "Clients cannot change the status to 'active' or 'declined'" }, { status: 403 });
         }
-
 
         // Prevent changes after completed or canceled contracts
         if (contract.status === "completed" && (newStatus === "pending" || newStatus === "active" || newStatus === "declined")) {
@@ -41,7 +43,7 @@ export async function PATCH(req: NextRequest) {
             return NextResponse.json({ message: "A canceled contract cannot be changed" }, { status: 400 });
         }
 
-        // Allowed status transitions (typed as ContractStatus)
+        // Allowed status transitions
         const allowedTransitions: Record<ContractStatus, string[]> = {
             pending: ["active", "declined", "canceled"],
             active: ["completed", "canceled"],
@@ -56,18 +58,38 @@ export async function PATCH(req: NextRequest) {
         }
 
         // Ensure a reason is provided when changing to certain statuses
-        if (newStatus === "declined" || newStatus === "canceled") {
-            if (!reason) {
-                return NextResponse.json({ message: "A reason must be provided for declining or canceling the contract" }, { status: 400 });
-            }
+        if ((newStatus === "declined" || newStatus === "canceled") && !reason) {
+            return NextResponse.json({ message: "A reason must be provided for declining or canceling the contract" }, { status: 400 });
+        }
+
+        // Update Job Status Based on Contract Status
+        let updatedJobStatus: JobStatus | undefined;
+        if (newStatus === "active") updatedJobStatus = "in-progress";
+        if (newStatus === "completed") updatedJobStatus = "completed";
+        if (newStatus === "canceled") updatedJobStatus = "canceled";
+
+        // If the contract moves to "active", remove expiration
+        if (contract.status === "pending" && newStatus === "active") {
+            contract.expiration = undefined;
+            contract.set("expiration", undefined, { strict: false });
         }
 
         // Update contract status
         contract.status = newStatus;
         contract.statusHistory.push({ status: newStatus, changedAt: new Date() });
+
+        // Save contract
         await contract.save();
 
-        return NextResponse.json({ message: "Contract status updated successfully", contract }, { status: 200 });
+        // Update job status if needed
+        if (updatedJobStatus && contract.jobId) {
+            await Jobs.findByIdAndUpdate(contract.jobId._id, { status: updatedJobStatus });
+        }
+
+        return NextResponse.json({
+            message: "Contract and job status updated successfully",
+            contract
+        }, { status: 200 });
 
     } catch (error) {
         console.error(error);

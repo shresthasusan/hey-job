@@ -28,15 +28,6 @@ interface OfferFormProps {
   freelancerId: string;
 }
 
-interface Proposal {
-  jobId: string;
-  freelancerId: string;
-  bidAmount: number;
-  deadline: string;
-  pricingType: string;
-  expiration: string;
-}
-
 const OfferForm = ({ jobId, freelancerId }: OfferFormProps) => {
   const [pricingType, setPricingType] = useState<string>(""); // Pricing Model
   const [bidAmount, setBidAmount] = useState<string>("");
@@ -53,15 +44,7 @@ const OfferForm = ({ jobId, freelancerId }: OfferFormProps) => {
     id: string;
   }
 
-  const {
-    userData,
-    messagesId,
-    chatUser,
-    chatData,
-    messages,
-    setMessages,
-    chatVisual,
-  } = useContext(Appcontext);
+  const { userData, chatData } = useContext(Appcontext);
 
   const sendContractToChat = async (proposal: any) => {
     try {
@@ -105,7 +88,7 @@ const OfferForm = ({ jobId, freelancerId }: OfferFormProps) => {
             rId: freelancerId,
             updateDoc: Date.now(),
             messageSeen: false,
-            contractArray: [proposal._id],
+            // contractArray: [proposal._id],
             chatStatus: "open",
           }),
         });
@@ -118,7 +101,7 @@ const OfferForm = ({ jobId, freelancerId }: OfferFormProps) => {
             updateDoc: Date.now(),
             messageSeen: false,
             chatStatus: "open",
-            contractArray: [proposal._id],
+            // contractArray: [proposal._id],
           }),
         });
       } // Send contract details to the chat
@@ -165,10 +148,10 @@ const OfferForm = ({ jobId, freelancerId }: OfferFormProps) => {
               let updatedChatsData = [...UserChatData.chatsData];
 
               // Ensure proposalArray exists, then push the new proposal ID
-              updatedChatsData[chatIndex].ContractArray = [
-                ...(updatedChatsData[chatIndex].ContractArray || []), // Default to empty array if it doesn't exist
-                proposal?._id,
-              ];
+              // updatedChatsData[chatIndex].ContractArray = [
+              //   ...(updatedChatsData[chatIndex].ContractArray || []), // Default to empty array if it doesn't exist
+              //   proposal?._id,
+              // ];
 
               // Update other fields
               updatedChatsData[chatIndex].updatedAt = Date.now();
