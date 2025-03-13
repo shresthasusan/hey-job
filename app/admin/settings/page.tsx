@@ -10,19 +10,22 @@ const AdminSettingsPage = () => {
     darkMode: false,
     autoBackup: false,
     twoFactorAuth: false,
+    sessionTimeout: 30, // in minutes
+    loggingLevel: "info",
     apiKey: "************", // Masked for security
-    selectedUserId: "",
-    selectedRole: "",
   });
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value, type, checked } = e.target as HTMLInputElement;
+  const handleChange = (e: { target: { name: any; value: any; type: any; checked: any; }; }) => {
+    const { name, value, type, checked } = e.target;
     setSettings({ ...settings, [name]: type === "checkbox" ? checked : value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const regenerateApiKey = () => {
+    const newApiKey = Math.random().toString(36).substring(2, 18).toUpperCase();
+    setSettings({ ...settings, apiKey: newApiKey });
+  };
+
+  async function handleSubmit(e: { preventDefault: () => void; }) {
     e.preventDefault();
     try {
       await fetchWithAuth("/api/adminSettings", {
@@ -30,90 +33,64 @@ const AdminSettingsPage = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(settings),
       });
-      alert("Settings updated!");
+      alert("Settings updated successfully!");
     } catch (error) {
       console.error("Error updating settings:", error);
     }
-  };
+  }
 
   return (
-    <div className="flex flex-col flex-1 p-6 md:p-10 bg-white min-h-screen">
-      {/* Heading */}
-      <h1 className="text-4xl text-black-400 text-center md:text-left">
-        Admin Settings
-      </h1>
-
-      {/* Settings Form */}
-      <div className="max-w-4xl  p-6 bg-gray-50 shadow-lg rounded-lg mt-8">
+    <div className="flex flex-col p-6 md:p-10 bg-gray-100 min-h-screen">
+      <h1 className="text-4xl font-bold text-gray-800 text-center md:text-left">Admin Settings</h1>
+      <div className="max-w-4xl p-6 bg-white shadow-lg rounded-lg mt-8">
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-          {/* Maintenance Mode */}
-          <div className="flex items-center justify-between p-3 bg-white shadow rounded-lg">
-            <label className="text-gray-700">Enable Maintenance Mode</label>
+          {[
+            { label: "Enable Maintenance Mode", name: "maintenanceMode" },
+            { label: "Enable Notifications", name: "notifications" },
+            { label: "Enable Dark Mode", name: "darkMode" },
+            { label: "Enable Auto Backup", name: "autoBackup" },
+            { label: "Enable Two-Factor Authentication", name: "twoFactorAuth" },
+          ].map((setting) => (
+            <div key={setting.name} className="flex items-center justify-between p-3 bg-gray-50 shadow rounded-lg">
+              <label className="text-gray-700">{setting.label}</label>
+              <input
+                type="checkbox"
+               // name={setting.name}
+                //checked={settings[setting.name]}
+                onChange={handleChange}
+                className="w-5 h-5"
+              />
+            </div>
+          ))}
+
+          <div className="p-3 bg-gray-50 shadow rounded-lg">
+            <label className="block text-gray-700">Session Timeout (minutes)</label>
             <input
-              type="checkbox"
-              name="maintenanceMode"
-              checked={settings.maintenanceMode}
+              type="number"
+              name="sessionTimeout"
+              value={settings.sessionTimeout}
               onChange={handleChange}
-              className="w-5 h-5"
+              className="w-full p-2 border rounded mt-2"
             />
           </div>
 
-          {/* Enable Notifications */}
-          <div className="flex items-center justify-between p-3 bg-white shadow rounded-lg">
-            <label className="text-gray-700">Enable Notifications</label>
-            <input
-              type="checkbox"
-              name="notifications"
-              checked={settings.notifications}
-              onChange={handleChange}
-              className="w-5 h-5"
-            />
+          <div className="p-3 bg-gray-50 shadow rounded-lg">
+            <label className="block text-gray-700">Logging Level</label>
+            <select
+              name="loggingLevel"
+              value={settings.loggingLevel}
+             // onChange={handleChange}
+              className="w-full p-2 border rounded mt-2"
+            >
+              <option value="debug">Debug</option>
+              <option value="info">Info</option>
+              <option value="warn">Warn</option>
+              <option value="error">Error</option>
+            </select>
           </div>
 
-          {/* Dark Mode */}
-          <div className="flex items-center justify-between p-3 bg-white shadow rounded-lg">
-            <label className="text-gray-700">Enable Dark Mode</label>
-            <input
-              type="checkbox"
-              name="darkMode"
-              checked={settings.darkMode}
-              onChange={handleChange}
-              className="w-5 h-5"
-            />
-          </div>
+       
 
-          {/* Two-Factor Authentication */}
-          <div className="flex items-center justify-between p-3 bg-white shadow rounded-lg">
-            <label className="text-gray-700">
-              Enable Two-Factor Authentication
-            </label>
-            <input
-              type="checkbox"
-              name="twoFactorAuth"
-              checked={settings.twoFactorAuth}
-              onChange={handleChange}
-              className="w-5 h-5"
-            />
-          </div>
-
-          {/* API Key Management */}
-          <div className="p-3 bg-white shadow rounded-lg">
-            <label className="block text-gray-700">API Key</label>
-            <input
-              type="text"
-              name="apiKey"
-              value={settings.apiKey}
-              disabled
-              className="w-full p-2 border rounded mt-2 bg-gray-100 cursor-not-allowed"
-            />
-            <button className="mt-2 text-blue-500 hover:underline">
-              Regenerate API Key
-            </button>
-          </div>
-
-          {/* User Role Management */}
-
-          {/* Submit Button */}
           <button
             type="submit"
             className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"

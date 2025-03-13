@@ -10,6 +10,7 @@ import {
   UserIcon,
   KeyIcon,
   ArrowLeftStartOnRectangleIcon,
+  BackwardIcon
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
@@ -118,22 +119,17 @@ const SettingsSidebar: React.FC = () => {
               isActive={pathname === "/admin/settings/manage-admins"}
             />
           )}
-          <NavItem
-            href="/admin/settings/#"
-            icon={<ServerIcon className="w-6 h-6" />}
-            label="TBH"
-            isActive={pathname === ""}
-          />
-          <NavItem
-            href="/admin/settings/#"
-            icon={<CurrencyRupeeIcon className="w-6 h-6" />}
-            label="TBH"
-            isActive={pathname === ""}
-          />
+          
           <NavItem
             href="/admin/settings/#"
             icon={<BoltIcon className="w-6 h-6" />}
-            label="tbh"
+            label="Admin Settings"
+            isActive={pathname === ""}
+          />
+          <NavItem
+            href="/admin"
+            icon={<BackwardIcon className="w-6 h-6" />}
+            label="Back"
             isActive={pathname === ""}
           />
         </ul>
