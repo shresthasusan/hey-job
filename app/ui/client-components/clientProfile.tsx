@@ -1,4 +1,4 @@
-"use Client";
+"use client";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
