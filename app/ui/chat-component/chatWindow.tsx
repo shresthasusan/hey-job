@@ -415,7 +415,11 @@ const ChatWindow: React.FC = () => {
         Status:{" "}
         <span className="text-green-700 font-semibold">{data.status}</span>
       </p>
-      <div className="mt-5  text-right">
+      <div className="bg-danger-500 p-2 w-1/2 mt-5 gap-2 rounded-lg flex">
+        <ClockIcon className="w-6 h-6" />
+        Deadline: {new Date(data.deadline).toString()}
+      </div>
+      <div className="mt-2  text-right">
         <Link
           className="text-green-500 underline font-medium mx-auto mb-1"
           href={
