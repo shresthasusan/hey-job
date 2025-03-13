@@ -139,6 +139,7 @@ const DetailsForm = () => {
         router.push("/client/best-matches");
       } else {
         console.error("Form submission failed");
+        setUploading(false);
       }
     } catch (error) {
       console.error("An error occurred while submitting the form", error);

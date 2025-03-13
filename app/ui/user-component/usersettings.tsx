@@ -1,15 +1,19 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 import { useSession } from "next-auth/react";
-import { PencilIcon, SunIcon, MoonIcon, TrashIcon, LockClosedIcon } from "@heroicons/react/20/solid";
+import {
+  PencilIcon,
+  SunIcon,
+  MoonIcon,
+  TrashIcon,
+  LockClosedIcon,
+} from "@heroicons/react/20/solid";
 
 export default function SettingsPage() {
   const { data: session } = useSession();
   const [darkMode, setDarkMode] = useState(false);
   const [email, setEmail] = useState(session?.user?.email || "");
-  const [password, setPassword] = useState("");
 
   const handleToggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -28,7 +32,9 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className={`container mx-auto p-6 min-h-screen ${darkMode ? "bg-gray-900 text-white" : " text-black"}`}>
+    <div
+      className={`container mx-auto p-6 min-h-screen ${darkMode ? "bg-gray-900 text-white" : " text-black"}`}
+    >
       <div className="bg-white p-6 rounded-md shadow-md mb-6 ">
         <h2 className="text-2xl font-semibold mb-4">Profile Settings</h2>
         <div className="mb-4">
@@ -56,7 +62,11 @@ export default function SettingsPage() {
             onClick={handleToggleDarkMode}
             className="p-2 bg-gray-200 rounded-full dark:bg-gray-700"
           >
-            {darkMode ? <SunIcon className="w-6 h-6 text-yellow-500" /> : <MoonIcon className="w-6 h-6 text-gray-900" />}
+            {darkMode ? (
+              <SunIcon className="w-6 h-6 text-yellow-500" />
+            ) : (
+              <MoonIcon className="w-6 h-6 text-gray-900" />
+            )}
           </button>
         </div>
       </div>
@@ -72,7 +82,9 @@ export default function SettingsPage() {
       </div>
 
       <div className="bg-white p-6 rounded-md shadow-md ">
-        <h2 className="text-2xl font-semibold mb-4 text-red-500">Danger Zone</h2>
+        <h2 className="text-2xl font-semibold mb-4 text-red-500">
+          Danger Zone
+        </h2>
         <button
           onClick={handleDeleteAccount}
           className="w-full flex items-center justify-center bg-red-500 text-white py-2 rounded-md hover:bg-red-600"

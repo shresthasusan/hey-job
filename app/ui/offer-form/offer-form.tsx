@@ -12,6 +12,7 @@ import {
   updateDoc,
   arrayUnion,
   serverTimestamp,
+  getDoc,
 } from "firebase/firestore";
 import { db } from "@/app/lib/firebase";
 import { Button } from "../button";
@@ -20,19 +21,11 @@ import FreelancerDetail from "./freelancer-details";
 import Alert from "../alert";
 import { Appcontext } from "@/app/context/appContext";
 import proposal from "@/models/proposal";
+import { log } from "console";
 
 interface OfferFormProps {
   jobId: string;
   freelancerId: string;
-}
-
-interface Proposal {
-  jobId: string;
-  freelancerId: string;
-  bidAmount: number;
-  deadline: string;
-  pricingType: string;
-  expiration: string;
 }
 
 const OfferForm = ({ jobId, freelancerId }: OfferFormProps) => {
@@ -51,19 +44,11 @@ const OfferForm = ({ jobId, freelancerId }: OfferFormProps) => {
     id: string;
   }
 
-  const {
-    userData,
-    messagesId,
-    chatUser,
-    chatData,
-    messages,
-    setMessages,
-    chatVisual,
-  } = useContext(Appcontext);
+  const { userData, chatData } = useContext(Appcontext);
 
   const sendContractToChat = async (proposal: any) => {
     try {
-      const { freelancerId, bidAmount, deadline } = proposal;
+      const { freelancerId, paymentType, deadline } = proposal;
 
       const messagesRef = collection(db, "messages");
       const chatsRef = collection(db, "chats");
@@ -73,7 +58,7 @@ const OfferForm = ({ jobId, freelancerId }: OfferFormProps) => {
 
       let chatId = chatExists?.messageId;
 
-      const initialMessage = `New contract offer: $${bidAmount}, Deadline: ${deadline}`;
+      const initialMessage = `New contract offer: ${paymentType}, Deadline: ${deadline}`;
 
       if (!chatExists) {
         // Create new chat
@@ -83,8 +68,13 @@ const OfferForm = ({ jobId, freelancerId }: OfferFormProps) => {
           createdAt: serverTimestamp(),
           messages: [
             {
-              sId: freelancerId,
+              sId: userData?.id,
               text: initialMessage,
+              createdAt: Date.now(),
+            },
+            {
+              sId: userData?.id,
+              proposal: proposal,
               createdAt: Date.now(),
             },
           ],
@@ -97,7 +87,8 @@ const OfferForm = ({ jobId, freelancerId }: OfferFormProps) => {
             lastMessage: initialMessage,
             rId: freelancerId,
             updateDoc: Date.now(),
-            messageSeen: true,
+            messageSeen: false,
+            // contractArray: [proposal._id],
             chatStatus: "open",
           }),
         });
@@ -110,24 +101,70 @@ const OfferForm = ({ jobId, freelancerId }: OfferFormProps) => {
             updateDoc: Date.now(),
             messageSeen: false,
             chatStatus: "open",
+            // contractArray: [proposal._id],
           }),
         });
-
-        console.log("new message with offer created");
       } // Send contract details to the chat
       else {
         await updateDoc(doc(db, "messages", chatId), {
-          messages: arrayUnion({
-            sId: freelancerId,
-            text: `Contract details:\nBid: $${bidAmount}\nDeadline: ${deadline}`,
-            attachment: {
-              type: "contractOffer",
-              data: proposal,
+          messages: arrayUnion(
+            {
+              sId: userData?.id,
+              text: initialMessage,
+              createdAt: new Date(),
             },
-            createdAt: new Date(),
-          }),
+            {
+              sId: userData?.id,
+              text: `Contract details:\nBid: $${paymentType}\nDeadline: ${deadline}`,
+              attachment: {
+                type: "contractOffer",
+                data: proposal,
+              },
+              createdAt: new Date(),
+            }
+          ),
         });
-        console.log("new chat with offer created");
+
+        //add active contractid in the chatData
+        const userIDs = [freelancerId, userData?.id];
+
+        userIDs.forEach(async (id) => {
+          // Reference to the chat document
+          const selectedUserChatRef = doc(chatsRef, id);
+
+          // Fetch the existing chat document
+          const UserChatSnap = await getDoc(selectedUserChatRef);
+
+          if (UserChatSnap.exists()) {
+            const UserChatData = UserChatSnap.data();
+
+            // Find the chat with matching messageId
+            const chatIndex = UserChatData.chatsData.findIndex(
+              (c: any) => c.messageId === chatId
+            );
+
+            if (chatIndex !== -1) {
+              // Clone the chatsData array to avoid direct mutation
+              let updatedChatsData = [...UserChatData.chatsData];
+
+              // Ensure proposalArray exists, then push the new proposal ID
+              // updatedChatsData[chatIndex].ContractArray = [
+              //   ...(updatedChatsData[chatIndex].ContractArray || []), // Default to empty array if it doesn't exist
+              //   proposal?._id,
+              // ];
+
+              // Update other fields
+              updatedChatsData[chatIndex].updatedAt = Date.now();
+              updatedChatsData[chatIndex].messageSeen = false;
+              updatedChatsData[chatIndex].lastMessage = initialMessage;
+
+              // Save back to Firestore
+              await updateDoc(selectedUserChatRef, {
+                chatsData: updatedChatsData,
+              });
+            }
+          }
+        });
       }
 
       console.log(`Contract sent to chat ${chatId}`);
@@ -140,7 +177,6 @@ const OfferForm = ({ jobId, freelancerId }: OfferFormProps) => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setIsSubmitting(true);
-    setIsSubmitted(true);
     setAlert(null); // Reset alerts
 
     if (!bidAmount.trim() || !deadline) {
@@ -168,7 +204,9 @@ const OfferForm = ({ jobId, freelancerId }: OfferFormProps) => {
       if (!response.ok) {
         throw new Error(await response.text());
       }
-      await sendContractToChat(proposalData);
+      const { Contract } = await response.json();
+      console.log("contrat send to func", Contract);
+      await sendContractToChat(Contract);
       setAlert({
         type: "success",
         message: "Offer send successfully!",

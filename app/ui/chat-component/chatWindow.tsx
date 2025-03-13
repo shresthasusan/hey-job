@@ -309,7 +309,9 @@ const ChatWindow: React.FC = () => {
         <div className=" flex items-start align-top gap-2  ">
           <ClipboardDocumentCheckIcon className="w-6 h-6 text-blue-500" />{" "}
           <p className="text-gray-700 font-medium text-lg">
-            Congratulations! You just got an contract offer!
+            {msg.sId === userData?.id
+              ? "You send an contract offer"
+              : "Congratulations! You just got an contract offer!"}
           </p>
         </div>
         <div className="text-xs text-gray-500">
@@ -348,7 +350,7 @@ const ChatWindow: React.FC = () => {
               </span>{" "}
               Offered Amount
             </p>
-            <p className="text-green-700 text-xl ml-2"> $ {data.bidAmount}</p>
+            <p className="text-green-700 text-xl ml-2"> $ {data.price}</p>
           </span>
           <span className="bg-danger-400 p-3 px-4 rounded-lg w-1/2">
             <p className="text-sm mb-1 flex items-center gap-2 text-gray-500">
@@ -389,7 +391,7 @@ const ChatWindow: React.FC = () => {
             href={
               userData?.id === msg.sId
                 ? `/client/job-proposal/${data.jobId._id}`
-                : `/user/your-proposals`
+                : `/user/offer/${data._id}/${data.jobId}`
             }
           >
             View offer
@@ -408,8 +410,23 @@ const ChatWindow: React.FC = () => {
   }) => (
     <div className="p-4 border rounded-lg shadow-sm bg-green-100">
       <h3 className="text-lg font-bold text-green-800">Active Contract</h3>
-      <p className="text-sm text-gray-700">Project: {data.projectTitle}</p>
-      <p className="text-sm text-gray-700">Status: {data.status}</p>
+      <p className="text-sm text-gray-700">Project: {data.jobId.title}</p>
+      <p className="text-sm text-gray-700">
+        Status:{" "}
+        <span className="text-green-700 font-semibold">{data.status}</span>
+      </p>
+      <div className="mt-5  text-right">
+        <Link
+          className="text-green-500 underline font-medium mx-auto mb-1"
+          href={
+            userData?.id === msg.sId
+              ? `/client/job-proposal/${data.jobId._id}`
+              : `/user/your-proposals`
+          }
+        >
+          View Project
+        </Link>
+      </div>
     </div>
   );
 
