@@ -3,13 +3,14 @@
 import { useEffect, useState } from "react";
 import JobDetails from "./jobDetails";
 import TimeLine from "./timeLine";
-import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
+
 import Requirements from "./Requirements";
 import Deliveries from "./deliveries";
 import FileSection from "./fileSection";
-import ClientDashboard from "@/app/ui/dashboard-components/talent-posting/dashboard";
 import ClientInfomation from "./clientInfomation";
 import CommunicationSection from "./communicationSection";
+import Button from "./contractButton";
+import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 
 interface Props {
   contractId: string;
@@ -18,121 +19,179 @@ interface Props {
 
 export default function ContractDetailsPage({ contractId, jobId }: Props) {
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
+  const [contract, setContract] = useState<any>(null);
 
-  // Fetch project details using useEffect
-  useEffect(() => {
-    const fetchProjectDetails = async () => {
-      try {
-        setLoading(true);
-        const response = await fetchWithAuth(
-          `/api/project-details?contractId=${contractId}`,
-          {
-            method: "GET",
-          }
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch project details");
+  const handleSuccess = () => {
+    console.log("Action completed successfully");
+    fetchProjectDetails(); // Refetch to update UI with new status
+  };
+
+  const handleError = (error: Error) => {
+    console.error("Action failed:", error.message);
+    setError(error.message);
+  };
+
+  const fetchProjectDetails = async () => {
+    try {
+      setLoading(true);
+      const response = await fetchWithAuth(
+        `/api/project-details?contractId=${contractId}`,
+        {
+          method: "GET",
         }
-        const { project } = await response.json();
-
-        setContract(project);
-        setError(null);
-      } catch (err: any) {
-        console.error(err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch project details");
       }
-    };
+      const { project } = await response.json();
+      setContract(project);
+      setError(null);
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     if (contractId) {
       fetchProjectDetails();
     }
   }, [contractId]);
 
-  const [contract, setContract] = useState<any>();
+  if (loading) {
+    return <div className="container mx-auto py-8 px-4">Loading...</div>;
+  }
 
-  // Update the handleAddTimelineItem function to use the state setter
-  // Replace the existing handleAddTimelineItem function with:
+  if (error) {
+    return (
+      <div className="container mx-auto py-8 px-4 text-red-600">
+        Error: {error}
+      </div>
+    );
+  }
 
-  // Helper function to get status color
+  // Helper function to get status styling
+  const getStatusStyle = (status?: string) => {
+    switch (status) {
+      case "completed":
+        return "bg-green-100 text-green-800";
+      case "canceled":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
 
   return (
     <div className="container mx-auto py-8 px-4">
-      {/* Header */}
       <JobDetails jobId={jobId} />
+      {/* Display Project Status */}
+      <div className="mb-6">
+        <h2 className="text-lg font-semibold">Project Status</h2>
+        <span
+          className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${getStatusStyle(
+            contract?.status
+          )}`}
+        >
+          {contract?.status || "Active"}
+        </span>
+      </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Timeline Section */}
           <TimeLine
             contractId={contractId}
             project_todo={contract?.project_todo}
           />
-          {/* Requirements Section */}
           <Requirements requirements={contract?.requirements} />
-          {/* Deliverables Section */}
           <Deliveries
             deliverables={contract?.deliveries}
             contractId={contractId}
           />
-          {/* Files Section */}
           <FileSection
             files={contract?.project_files}
             contractId={contractId}
           />
         </div>
-
-        {/* Sidebar */}
         <div className="space-y-6">
-          {/* Client Information */}
           <ClientInfomation jobId={jobId} />
-          {/* Communication Section */}
           <CommunicationSection
             contractId={contractId}
             meetings={contract?.meetings}
+            userRole={
+              contract?.freelancerId === "current-user-id"
+                ? "freelancer"
+                : "client"
+            } // Replace with auth logic
           />
-          {/* <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
-            <div
-              className="p-4 border-b border-gray-200 flex justify-between items-center cursor-pointer hover:bg-gray-50"
-              onClick={() => toggleSection("communication")}
+          <div className="flex gap-3">
+            <Button
+              action="completed"
+              contractId={contractId}
+              onSuccess={handleSuccess}
+              onError={handleError}
+              disabled={
+                contract?.status === "completed" ||
+                contract?.status === "canceled"
+              } // Disable if already completed/canceled
+            />
+            <Button
+              action="canceled"
+              contractId={contractId}
+              onSuccess={handleSuccess}
+              onError={handleError}
+              disabled={
+                contract?.status === "completed" ||
+                contract?.status === "canceled"
+              } // Disable if already completed/canceled
             >
-              <h2 className="text-lg font-semibold">Communication</h2>
-              {expandedSections.communication ? (
-                <ChevronUpIcon className="h-5 w-5 text-gray-500" />
-              ) : (
-                <ChevronDownIcon className="h-5 w-5 text-gray-500" />
-              )}
-            </div>
-            {expandedSections.communication && (
-              <div className="p-4">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div className="flex items-center">
-                      <CalendarDaysIcon className="h-5 w-5 text-blue-500 mr-3" />
-                      <div>
-                        <p className="font-medium text-gray-900">
-                          Kickoff Meeting
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          March 16, 2025 • 10:00 AM
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <button className="flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 mt-2">
-                    <PlusIcon className="h-4 w-4 mr-1" />
-                    Schedule Meeting
-                  </button>
-                </div>
-              </div>
-            )}
-          </div> */}
+              Cancel Now
+            </Button>
+          </div>
         </div>
       </div>
     </div>
   );
+}
+{
+  /* <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+  <div
+    className="p-4 border-b border-gray-200 flex justify-between items-center cursor-pointer hover:bg-gray-50"
+    onClick={() => toggleSection("communication")}
+  >
+    <h2 className="text-lg font-semibold">Communication</h2>
+    {expandedSections.communication ? (
+      <ChevronUpIcon className="h-5 w-5 text-gray-500" />
+    ) : (
+      <ChevronDownIcon className="h-5 w-5 text-gray-500" />
+    )}
+  </div>
+  {expandedSections.communication && (
+    <div className="p-4">
+      <div className="space-y-3">
+        <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+          <div className="flex items-center">
+            <CalendarDaysIcon className="h-5 w-5 text-blue-500 mr-3" />
+            <div>
+              <p className="font-medium text-gray-900">
+                Kickoff Meeting
+              </p>
+              <p className="text-xs text-gray-500">
+                March 16, 2025 • 10:00 AM
+              </p>
+            </div>
+          </div>
+        </div>
+        <button className="flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 mt-2">
+          <PlusIcon className="h-4 w-4 mr-1" />
+          Schedule Meeting
+        </button>
+      </div>
+    </div>
+  )}
+</div> */
 }
 {
   /* Budget Section */

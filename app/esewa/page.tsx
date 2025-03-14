@@ -28,26 +28,26 @@ export default function EsewaPayment() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchDummyData = async () => {
-      try {
-        const response = await fetchWithAuth("/api/dummy-data?method=esewa");
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        setAmount(data.amount);
-        setProductName(data.productName);
-        setTransactionId(data.transactionId);
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : "An unknown error occurred";
-        console.error("Error fetching dummy data:", errorMessage);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchDummyData = async () => {
+  //     try {
+  //       const response = await fetchWithAuth("/api/dummy-data?method=esewa");
+  //       if (!response.ok) {
+  //         throw new Error(`HTTP error! status: ${response.status}`);
+  //       }
+  //       const data = await response.json();
+  //       setAmount(data.amount);
+  //       setProductName(data.productName);
+  //       setTransactionId(data.transactionId);
+  //     } catch (error) {
+  //       const errorMessage =
+  //         error instanceof Error ? error.message : "An unknown error occurred";
+  //       console.error("Error fetching dummy data:", errorMessage);
+  //     }
+  //   };
 
-    fetchDummyData();
-  }, []);
+  //   fetchDummyData();
+  // }, []);
 
   const handlePayment = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
