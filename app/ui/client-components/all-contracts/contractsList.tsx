@@ -116,7 +116,7 @@ const ContractsList: React.FC<ContractsListProps> = () => {
     <div className="space-y-4">
       {filteredContracts.length > 0 ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-1">
-          {filteredContracts.map((contract) => (
+          {filteredContracts?.map((contract) => (
             <div
               key={contract._id}
               className="border rounded-lg shadow-sm overflow-hidden bg-white hover:shadow-md transition-shadow"
