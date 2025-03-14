@@ -5,7 +5,6 @@ import { useSession } from "next-auth/react";
 import React, { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { debounce } from "@/app/lib/debounce"; // Import the debounce function
 
 // Updated interfaces to include more relevant information
 interface Job {
@@ -117,7 +116,7 @@ const ContractsList: React.FC<ContractsListProps> = () => {
     <div className="space-y-4">
       {filteredContracts.length > 0 ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-1">
-          {filteredContracts.map((contract) => (
+          {filteredContracts?.map((contract) => (
             <div
               key={contract._id}
               className="border rounded-lg shadow-sm overflow-hidden bg-white hover:shadow-md transition-shadow"

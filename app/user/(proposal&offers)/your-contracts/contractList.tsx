@@ -4,6 +4,7 @@ import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 import { Button } from "@/app/ui/button";
 import Card from "@/app/ui/card";
 import CardSkeleton from "@/app/ui/dashboard-components/skeletons/cardSkeleton";
+import Deadline from "@/app/ui/offer-form/deadline";
 import {
   CalculatorIcon,
   ClockIcon,
@@ -14,12 +15,12 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
-const ProposalList = () => {
-  const [activeTab, setActiveTab] = useState("proposal-list");
+const ContractList = () => {
+  const [activeTab, setActiveTab] = useState("active-contracts");
   const { data: session } = useSession();
   const [loading, setLoading] = useState(true);
 
-  interface ContractOffer {
+  interface Contract {
     id: string;
     title: string;
     company: string;
@@ -27,39 +28,23 @@ const ProposalList = () => {
     price: string;
     paymentType: string;
     deadline: string;
-    isNew: boolean;
-    expiration: string;
-  }
-
-  interface proposal {
-    id: string;
-    title: string;
-    bidAmount: string;
     status: string;
-    createdAt: string;
-    jobId: {
-      title: string;
-    };
+    toDueDate: string;
+    isNew: boolean;
   }
 
-  const [contractOffers, setContractOffers] = useState<ContractOffer[]>([]);
-  const [proposal, setProposal] = useState<proposal[]>([]);
+  const [contract, setContract] = useState<Contract[]>([]);
 
   useEffect(() => {
-    const fetchContractOffers = async () => {
+    const fetchContract = async () => {
       setLoading(true);
       const response = await fetchWithAuth(
-        `/api/fetch-contracts?freelancerId=${session?.user.id}&status=pending`
-      );
-      const res = await fetchWithAuth(
-        `/api/jobproposal?freelancerId=${session?.user.id}`
+        `/api/fetch-contracts?freelancerId=${session?.user.id}&status=active,completed,canceled`
       );
 
-      const { proposals } = await res.json();
-      setProposal(proposals);
       const { data } = await response.json();
 
-      // Map the response data to the ContractOffer structure
+      // Map the response data to the Contract structure
       const offers = data?.map((offer: any) => ({
         id: offer._id,
         title: offer.jobId?.title, // Extract title from jobId
@@ -67,19 +52,23 @@ const ProposalList = () => {
         price: offer.price,
         paymentType: offer.paymentType,
         deadline: offer.deadline,
+        toDueDate: Math.ceil(
+          Date.now() -
+            new Date(offer.deadline).getMilliseconds() / (1000 * 60 * 60 * 24)
+        ), // Convert milliseconds to days
         jobId: offer.jobId._id,
-        expiration: `expires in ${Math.ceil((new Date(offer.expiration).getTime() - Date.now()) / (1000 * 60 * 60 * 24))}`,
+        status: offer.status,
         isNew:
-          new Date(offer.createdAt) >
+          new Date(offer.statusHistory[1].changedAt) >
           new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // Check if the offer is within the last 3 days
       }));
 
-      setContractOffers(offers);
+      setContract(offers);
       setLoading(false);
     };
 
     if (session?.user.id) {
-      fetchContractOffers();
+      fetchContract();
     }
   }, [session?.user.id]);
 
@@ -87,40 +76,40 @@ const ProposalList = () => {
     <div>
       <div className="flex gap-10 border-b font-medium border-primary-400 mb-10 py-2">
         <span
-          onClick={() => setActiveTab("proposal-list")}
-          className={`cursor-pointer relative ${activeTab === "proposal-list" ? "active-tab" : ""}`}
+          onClick={() => setActiveTab("active-contracts")}
+          className={`cursor-pointer relative ${activeTab === "active-contracts" ? "active-tab" : ""}`}
         >
-          Submitted Proposals
+          Active Contracts
         </span>
         <span
-          onClick={() => setActiveTab("contract-offers")}
-          className={`cursor-pointer relative ${activeTab === "contract-offers" ? "active-tab" : ""}`}
+          onClick={() => setActiveTab("archived-contracts")}
+          className={`cursor-pointer relative ${activeTab === "archived-contracts" ? "active-tab" : ""}`}
         >
-          Contract Offers
+          Archived Contracts
         </span>
       </div>
-      {activeTab === "contract-offers" && (
+      {activeTab === "active-contracts" && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {loading ? (
               Array.from({ length: 6 }).map((_, index) => (
                 <CardSkeleton key={index} />
               ))
-            ) : contractOffers.length === 0 ? (
+            ) : contract.length === 0 ? (
               <div className="col-span-1 text-center">
                 No contract offers available.
               </div>
             ) : (
-              contractOffers.map((offer) => (
+              contract.map((offer) => (
                 <Card key={offer.id} className="overflow-hidden">
                   <div className="pb-3">
                     <div className="flex justify-between items-start">
                       <div className="text-2xl font-semibold">
                         {offer.title}
                       </div>
-                      {offer.expiration.includes("expires in 1") ||
-                      offer.expiration.includes("expires in 2") ||
-                      offer.expiration.includes("expires in 3") ? (
+                      {offer.deadline.includes("expires in 1") ||
+                      offer.deadline.includes("expires in 2") ||
+                      offer.deadline.includes("expires in 3") ? (
                         <div className="px-3 py-1 rounded-lg new-pin text-xs text-white bg-red-500">
                           High-priority
                         </div>
@@ -155,8 +144,7 @@ const ProposalList = () => {
                       <div className="flex items-center text-sm">
                         <ClockIcon className="h-5 w-5 mr-2 text-gray-500" />
                         <span>
-                          Deadline:{" "}
-                          {new Date(offer.deadline).toLocaleDateString()}
+                          Deadline: {new Date(offer.deadline).toDateString()}
                         </span>
                       </div>
                     </div>
@@ -164,11 +152,11 @@ const ProposalList = () => {
                   <div className="footer flex justify-between pt-3">
                     <div className="text-red-500 items-center flex py-2">
                       <ExclamationCircleIcon className="h-5 w-5 mr-1" />
-                      {offer.expiration} days
+                      {offer.toDueDate} to due date
                     </div>
                     <Link
                       className="border flex h-10 items-center rounded-lg px-4 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 aria-disabled:cursor-not-allowed aria-disabled:opacity-50 border-primary-500 hover:bg-zinc-100 text-primary-600 bg-transparent"
-                      href={`/user/offer/${offer.id}/${offer.jobId}`}
+                      href={`/user/your-contracts/${offer.id}/${offer.jobId}`}
                     >
                       View Details
                     </Link>
@@ -180,7 +168,7 @@ const ProposalList = () => {
         </div>
       )}
 
-      {activeTab === "proposal-list" && (
+      {/* {activeTab === "archived-contracts" && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {loading ? (
@@ -245,9 +233,9 @@ const ProposalList = () => {
             )}
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };
 
-export default ProposalList;
+export default ContractList;

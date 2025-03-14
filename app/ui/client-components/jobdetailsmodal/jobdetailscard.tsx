@@ -59,7 +59,7 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }) => {
                 <div className="mt-4 border-b pb-4">
                     <h3 className="text-xl p-4 font-semibold mb-2">Required Skills</h3>
                     <div className="flex flex-wrap justify-center gap-2">
-                        {job.tags.map((tag, index) => (
+                        {job.tags?.map((tag, index) => (
                             <span
                                 key={index}
                                 className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full flex items-center"

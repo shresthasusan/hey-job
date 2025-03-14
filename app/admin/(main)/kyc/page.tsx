@@ -79,7 +79,7 @@ const KYCPage = () => {
       if (res.ok) {
         const updatedDoc = await res.json();
         setUploadedDocs((prevDocs) =>
-          prevDocs.map((doc) =>
+          prevDocs?.map((doc) =>
             doc.userId === id ? { ...doc, status, updatedAt: new Date() } : doc
           )
         );
@@ -132,7 +132,7 @@ const KYCPage = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {uploadedDocs.map((doc) => (
+            {uploadedDocs?.map((doc) => (
               <tr
                 key={doc._id}
                 className="hover:bg-gray-50 cursor-pointer"

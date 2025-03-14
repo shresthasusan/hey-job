@@ -2,7 +2,6 @@
 
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { use } from "react";
 
 const SearchInput = () => {
   const searchParams = useSearchParams(); // Retrieve search parameters from the URL

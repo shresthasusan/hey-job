@@ -14,6 +14,7 @@ interface RequestBody {
   tags: string[];
   location: string;
   fileUrls: string[];
+
 }
 
 export async function POST(req: NextRequest) {
@@ -22,12 +23,12 @@ export async function POST(req: NextRequest) {
 
     const userData = req.headers.get("user");
     const user = userData ? JSON.parse(userData) : null;
-    if (!user.emailVerified) {
+    // if (!user.emailVerified) {
 
 
-      return NextResponse.json({ message: `Unauthorized email not verified` }, { status: 400 });
-    }
-    const fullName = user.name + " " + user.lastname;
+    //   return NextResponse.json({ message: `Unauthorized email not verified` }, { status: 400 });
+    // }
+    const fullName = user.name + " " + user.lastName;
     const userId = user.id;
     const {
       title,
@@ -54,6 +55,7 @@ export async function POST(req: NextRequest) {
       location,
       fileUrls,
       status,
+
 
     });
     const responseData = {

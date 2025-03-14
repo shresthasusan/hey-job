@@ -24,7 +24,9 @@ const page = ({ searchParams }: Props) => {
 
   return (
     <div className="flex-col flex w-full gap-10">
-      <SearchBar />
+      <Suspense>
+        <SearchBar />
+      </Suspense>
       <div className="flex">
         <div className="border-r-2 px-14 w-1/4 relative ">
           <ExpertiseFilter />

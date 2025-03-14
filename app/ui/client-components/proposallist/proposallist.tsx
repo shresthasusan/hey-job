@@ -169,7 +169,7 @@ const AllProposalsList: React.FC<AllProposalsListProps> = ({ jobId }) => {
                   </div>
                 </div>
                 <div className="flex justify-center gap-2 mt-4 mb-4">
-                  {job.tags.map((tag, index) => (
+                  {job.tags?.map((tag, index) => (
                     <span
                       key={index}
                       className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full flex items-center"
@@ -197,7 +197,7 @@ const AllProposalsList: React.FC<AllProposalsListProps> = ({ jobId }) => {
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {proposals.map((proposal) => (
+                {proposals?.map((proposal) => (
                   <div
                     key={`${proposal._id}-${proposal.userId}`}
                     className="border-dotted border-2 border-gray-300 p-4 rounded-lg shadow hover:shadow-lg transition-shadow duration-300 bg-white cursor-pointer"

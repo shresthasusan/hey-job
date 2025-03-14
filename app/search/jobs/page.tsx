@@ -3,8 +3,7 @@ import SearchBar from "@/app/ui/dashboard-components/job-list/searchBar";
 import PostingSkeleton from "@/app/ui/dashboard-components/skeletons/postingSkeleton";
 
 import ExpertiseFilter from "@/app/ui/filter/experitise-level/expertiseFilter";
-import { useSearchParams } from "next/navigation";
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense } from "react";
 
 interface searchParams {
   title: string;

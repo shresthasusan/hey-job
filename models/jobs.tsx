@@ -72,12 +72,15 @@ const jobsSchema = new Schema<IJobs>(
       enum: ["in-progress", "active", "completed", "canceled"],
       default: "active",
     },
-    statusHistory: [
-      {
-        status: { type: String, required: true, default: "active" },
-        changedAt: { type: Date, default: Date.now },
-      },
-    ],
+    statusHistory: {
+      type: [
+        {
+          status: { type: String, required: true },
+          changedAt: { type: Date, default: Date.now },
+        },
+      ],
+      default: [{ status: "pending", changedAt: new Date() }], // ✅ Default value for the array itself
+    },
   },
   { timestamps: true }
 );
