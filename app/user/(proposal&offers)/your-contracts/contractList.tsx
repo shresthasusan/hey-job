@@ -45,7 +45,7 @@ const ContractList = () => {
       const { data } = await response.json();
 
       // Map the response data to the Contract structure
-      const offers = data.map((offer: any) => ({
+      const offers = data?.map((offer: any) => ({
         id: offer._id,
         title: offer.jobId?.title, // Extract title from jobId
         company: offer.clientDetails?.fullName, // Extract company name from clientDetails
