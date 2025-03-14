@@ -142,7 +142,7 @@ const TimeLine = ({ project_todo, contractId }: Props) => {
                 e.stopPropagation();
                 setIsAddTimelineItemOpen(true);
               }}
-              className="text-sm font-medium text-blue-600 hover:text-blue-800 flex items-center"
+              className="text-sm font-medium text-primary-600 hover:text-primary-800 flex items-center"
             >
               <PlusIcon className="h-4 w-4 mr-1" />
               Add Task

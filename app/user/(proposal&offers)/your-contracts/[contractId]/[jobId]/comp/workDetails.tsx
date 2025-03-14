@@ -1,25 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import {
-  ArrowLeftIcon,
-  CalendarDaysIcon,
-  CheckCircleIcon,
-  ChevronDownIcon,
-  ChevronUpIcon,
-  ClockIcon,
-  DocumentPlusIcon,
-  DocumentTextIcon,
-  PaperAirplaneIcon,
-  PhoneIcon,
-  PlusIcon,
-  SignalIcon,
-  UserIcon,
-} from "@heroicons/react/24/outline";
 import JobDetails from "./jobDetails";
 import TimeLine from "./timeLine";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
+import Requirements from "./Requirements";
+import Deliveries from "./deliveries";
+import FileSection from "./fileSection";
+import ClientDashboard from "@/app/ui/dashboard-components/talent-posting/dashboard";
+import ClientInfomation from "./clientInfomation";
+import CommunicationSection from "./communicationSection";
 
 interface Props {
   contractId: string;
@@ -81,119 +71,28 @@ export default function ContractDetailsPage({ contractId, jobId }: Props) {
             project_todo={contract?.project_todo}
           />
           {/* Requirements Section */}
-          {/* <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
-            <div
-              className="p-4 border-b border-gray-200 flex justify-between items-center cursor-pointer hover:bg-gray-50"
-              onClick={() => toggleSection("requirements")}
-            >
-              <h2 className="text-lg font-semibold">Project Requirements</h2>
-              {expandedSections.requirements ? (
-                <ChevronUpIcon className="h-5 w-5 text-gray-500" />
-              ) : (
-                <ChevronDownIcon className="h-5 w-5 text-gray-500" />
-              )}
-            </div>
-            {expandedSections.requirements && (
-              <div className="p-4">
-                <ul className="space-y-2">
-                  {contract.requirements.map((req, index) => (
-                    <li key={index} className="flex items-start">
-                      <CheckCircleIcon className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                      <span className="text-gray-700">{req}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div> */}
-
+          <Requirements requirements={contract?.requirements} />
           {/* Deliverables Section */}
-          {/* <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
-            <div
-              className="p-4 border-b border-gray-200 flex justify-between items-center cursor-pointer hover:bg-gray-50"
-              onClick={() => toggleSection("deliverables")}
-            >
-              <h2 className="text-lg font-semibold">Deliverables</h2>
-              {expandedSections.deliverables ? (
-                <ChevronUpIcon className="h-5 w-5 text-gray-500" />
-              ) : (
-                <ChevronDownIcon className="h-5 w-5 text-gray-500" />
-              )}
-            </div>
-            {expandedSections.deliverables && (
-              <div className="p-4">
-                <ul className="space-y-2">
-                  {contract.deliverables.map((del, index) => (
-                    <li key={index} className="flex items-start">
-                      <DocumentTextIcon className="h-5 w-5 text-blue-500 mr-2 mt-0.5 flex-shrink-0" />
-                      <span className="text-gray-700">{del}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div> */}
-
+          <Deliveries
+            deliverables={contract?.deliveries}
+            contractId={contractId}
+          />
           {/* Files Section */}
-          {/* <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
-            <div
-              className="p-4 border-b border-gray-200 flex justify-between items-center cursor-pointer hover:bg-gray-50"
-              onClick={() => toggleSection("files")}
-            >
-              <h2 className="text-lg font-semibold">Project Files</h2>
-              {expandedSections.files ? (
-                <ChevronUpIcon className="h-5 w-5 text-gray-500" />
-              ) : (
-                <ChevronDownIcon className="h-5 w-5 text-gray-500" />
-              )}
-            </div>
-          </div> */}
+          <FileSection
+            files={contract?.project_files}
+            contractId={contractId}
+          />
         </div>
 
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Client Information */}
-
-          {/* <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
-            <div className="p-4 border-b border-gray-200">
-              <h2 className="text-lg font-semibold">Client Information</h2>
-            </div>
-            <div className="p-4">
-              <div className="flex items-center mb-4">
-                <div className="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 mr-3">
-                  <UserIcon className="h-6 w-6" />
-                </div>
-                <div>
-                  <p className="font-medium">{contract.client.name}</p>
-                  <p className="text-sm text-gray-600">
-                    {contract.client.position}
-                  </p>
-                </div>
-              </div>
-              <div className="space-y-3">
-                <a
-                  href={`mailto:${contract.client.email}`}
-                  className="flex items-center text-sm text-gray-700 hover:text-blue-600"
-                >
-                  <DocumentPlusIcon className="h-4 w-4 mr-2 text-gray-500" />
-                  {contract.client.email}
-                </a>
-                <a
-                  href={`tel:${contract.client.phone}`}
-                  className="flex items-center text-sm text-gray-700 hover:text-blue-600"
-                >
-                  <PhoneIcon className="h-4 w-4 mr-2 text-gray-500" />
-                  {contract.client.phone}
-                </a>
-                <button className="flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 mt-2">
-                  <PaperAirplaneIcon className="h-4 w-4 mr-1" />
-                  Send Message
-                </button>
-              </div>
-            </div>
-          </div> */}
-
+          <ClientInfomation jobId={jobId} />
           {/* Communication Section */}
+          <CommunicationSection
+            contractId={contractId}
+            meetings={contract?.meetings}
+          />
           {/* <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
             <div
               className="p-4 border-b border-gray-200 flex justify-between items-center cursor-pointer hover:bg-gray-50"
