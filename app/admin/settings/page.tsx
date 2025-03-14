@@ -50,7 +50,7 @@ const AdminSettingsPage = () => {
             { label: "Enable Dark Mode", name: "darkMode" },
             { label: "Enable Auto Backup", name: "autoBackup" },
             { label: "Enable Two-Factor Authentication", name: "twoFactorAuth" },
-          ].map((setting) => (
+          ]?.map((setting) => (
             <div key={setting.name} className="flex items-center justify-between p-3 bg-gray-50 shadow rounded-lg">
               <label className="text-gray-700">{setting.label}</label>
               <input

@@ -82,7 +82,7 @@ const TransactionsPage = () => {
             </thead>
             <tbody>
               {filteredTransactions.length > 0 ? (
-                filteredTransactions.map((transaction) => (
+                filteredTransactions?.map((transaction) => (
                   <tr key={transaction._id} className="border-b text-gray-800">
                     <td className="p-3">{transaction.userId.name}</td>
                     <td className="p-3">{transaction.userId.role}</td>
