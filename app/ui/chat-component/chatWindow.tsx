@@ -424,8 +424,8 @@ const ChatWindow: React.FC = () => {
           className="text-green-500 underline font-medium mx-auto mb-1"
           href={
             userData?.id === msg.sId
-              ? `/client/job-proposal/${data.jobId._id}`
-              : `/user/your-proposals`
+              ? `/user/your-contracts/${data._id}/${data.jobId._id}`
+              : `/client/job-proposal/${data.jobId._id}`
           }
         >
           View Project

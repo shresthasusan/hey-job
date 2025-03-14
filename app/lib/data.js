@@ -1,4 +1,116 @@
 /// for messages
+
+//{
+// title: "E-commerce Website Redesign",
+// status: "In Progress",
+// startDate: "March 15, 2025",
+// endDate: "May 30, 2025",
+// company: "ShopEasy Inc.",
+// description:
+//   "Complete redesign of the ShopEasy e-commerce platform with focus on user experience, mobile optimization, and improved checkout flow.",
+// budget: {
+//   total: "$7,500",
+//   paid: "$2,250",
+//   pending: "$5,250",
+//   schedule: [
+//     {
+//       milestone: "Project Initiation",
+//       amount: "$2,250 (30%)",
+//       status: "Paid",
+//       date: "March 15, 2025",
+//     },
+//     {
+//       milestone: "Design Approval",
+//       amount: "$2,250 (30%)",
+//       status: "Pending",
+//       date: "April 15, 2025",
+//     },
+//     {
+//       milestone: "Project Completion",
+//       amount: "$3,000 (40%)",
+//       status: "Pending",
+//       date: "May 30, 2025",
+//     },
+//   ],
+// },
+// timeline: [
+//   {
+//     phase: "Research & Planning",
+//     startDate: "March 15, 2025",
+//     endDate: "March 25, 2025",
+//     status: "Completed",
+//     description:
+//       "Market research, competitor analysis, and project planning.",
+//   },
+//   {
+//     phase: "Wireframing & Design",
+//     startDate: "March 26, 2025",
+//     endDate: "April 15, 2025",
+//     status: "In Progress",
+//     description: "Create wireframes and design mockups for all pages.",
+//   },
+//   {
+//     phase: "Development",
+//     startDate: "April 16, 2025",
+//     endDate: "May 15, 2025",
+//     status: "Not Started",
+//     description:
+//       "Frontend and backend implementation of the approved designs.",
+//   },
+//   {
+//     phase: "Testing & QA",
+//     startDate: "May 16, 2025",
+//     endDate: "May 25, 2025",
+//     status: "Not Started",
+//     description: "Comprehensive testing and quality assurance.",
+//   },
+//   {
+//     phase: "Deployment",
+//     startDate: "May 26, 2025",
+//     endDate: "May 30, 2025",
+//     status: "Not Started",
+//     description: "Final deployment and handover.",
+//   },
+// ],
+// client: {
+//   name: "Sarah Johnson",
+//   position: "Product Manager",
+//   email: "sarah.johnson@shopeasy.com",
+//   phone: "+1 (555) 123-4567",
+// },
+// requirements: [
+//   "Responsive design that works seamlessly on desktop, tablet, and mobile devices",
+//   "Integration with existing inventory management system",
+//   "Improved product search and filtering functionality",
+//   "Streamlined checkout process with multiple payment options",
+//   "Customer account management with order history",
+//   "Admin dashboard for content and order management",
+// ],
+// deliverables: [
+//   "Complete design files (Figma)",
+//   "Fully functional website with responsive design",
+//   "Integration with payment gateways (Stripe, PayPal)",
+//   "Admin dashboard for product and order management",
+//   "Documentation for content management",
+//   "30 days of post-launch support",
+// ],
+// nextSteps: [
+//   "Schedule kickoff meeting with client",
+//   "Gather brand assets and style guidelines",
+//   "Set up project management and communication tools",
+//   "Begin research phase",
+// ],
+// files: [
+//   { name: "Project Brief.pdf", size: "2.4 MB", date: "March 10, 2025" },
+//   { name: "Brand Guidelines.pdf", size: "5.1 MB", date: "March 10, 2025" },
+//   {
+//     name: "Current Site Analysis.xlsx",
+//     size: "1.8 MB",
+//     date: "March 12, 2025",
+//   },
+// ],
+//}
+
 const users = [
   {
     name: "John Doe",

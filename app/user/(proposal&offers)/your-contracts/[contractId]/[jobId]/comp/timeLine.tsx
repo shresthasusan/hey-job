@@ -1,29 +1,54 @@
 "use client";
+
+import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 import {
   ChevronUpIcon,
   ChevronDownIcon,
   PlusIcon,
   ClockIcon,
 } from "@heroicons/react/24/outline";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-const TimeLine = () => {
+interface TodoItem {
+  task: string;
+  deadline: string | Date;
+  status: "Pending" | "In Progress" | "Completed";
+  memo?: string;
+}
+
+interface Props {
+  project_todo: TodoItem[];
+  contractId: string; // Add contractId as a prop
+}
+
+const TimeLine = ({ project_todo, contractId }: Props) => {
+  const [todos, setTodos] = useState<TodoItem[]>([]);
+
+  useEffect(() => {
+    console.log("Initial todos from props:", project_todo);
+    setTodos(project_todo);
+  }, [project_todo]);
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Completed":
         return "bg-green-100 text-green-800";
       case "In Progress":
         return "bg-blue-100 text-blue-800";
-      case "Not Started":
-        return "bg-gray-100 text-gray-800";
-      case "Paid":
-        return "bg-green-100 text-green-800";
       case "Pending":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-gray-100 text-gray-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
   };
+
+  const [newTimelineItem, setNewTimelineItem] = useState({
+    task: "",
+    endDate: "",
+    status: "Pending" as TodoItem["status"],
+    memo: "",
+  });
+
   const [isAddTimelineItemOpen, setIsAddTimelineItemOpen] = useState(false);
   const [expandedSections, setExpandedSections] = useState({
     timeline: true,
@@ -33,122 +58,67 @@ const TimeLine = () => {
     communication: true,
     files: true,
   });
+
   const toggleSection = (section: keyof typeof expandedSections) => {
     setExpandedSections((prev) => ({
       ...prev,
       [section]: !prev[section],
     }));
   };
-  const [contract, setContract] = useState({
-    title: "E-commerce Website Redesign",
-    status: "In Progress",
-    startDate: "March 15, 2025",
-    endDate: "May 30, 2025",
-    company: "ShopEasy Inc.",
-    description:
-      "Complete redesign of the ShopEasy e-commerce platform with focus on user experience, mobile optimization, and improved checkout flow.",
-    budget: {
-      total: "$7,500",
-      paid: "$2,250",
-      pending: "$5,250",
-      schedule: [
-        {
-          milestone: "Project Initiation",
-          amount: "$2,250 (30%)",
-          status: "Paid",
-          date: "March 15, 2025",
+
+  const handleAddTimelineItem = async () => {
+    if (!newTimelineItem.task || !newTimelineItem.endDate) return;
+
+    const newTodo: TodoItem = {
+      task: newTimelineItem.task,
+      deadline: newTimelineItem.endDate,
+      status: newTimelineItem.status,
+      memo: newTimelineItem.memo || undefined,
+    };
+
+    // Optimistically update local state
+    const updatedTodos = [...todos, newTodo];
+    setTodos(updatedTodos);
+
+    try {
+      // Send PATCH request with the full updated todos array
+      const response = await fetchWithAuth("/api/project-details", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
         },
-        {
-          milestone: "Design Approval",
-          amount: "$2,250 (30%)",
-          status: "Pending",
-          date: "April 15, 2025",
-        },
-        {
-          milestone: "Project Completion",
-          amount: "$3,000 (40%)",
-          status: "Pending",
-          date: "May 30, 2025",
-        },
-      ],
-    },
-    timeline: [
-      {
-        phase: "Research & Planning",
-        startDate: "March 15, 2025",
-        endDate: "March 25, 2025",
-        status: "Completed",
-        description:
-          "Market research, competitor analysis, and project planning.",
-      },
-      {
-        phase: "Wireframing & Design",
-        startDate: "March 26, 2025",
-        endDate: "April 15, 2025",
-        status: "In Progress",
-        description: "Create wireframes and design mockups for all pages.",
-      },
-      {
-        phase: "Development",
-        startDate: "April 16, 2025",
-        endDate: "May 15, 2025",
-        status: "Not Started",
-        description:
-          "Frontend and backend implementation of the approved designs.",
-      },
-      {
-        phase: "Testing & QA",
-        startDate: "May 16, 2025",
-        endDate: "May 25, 2025",
-        status: "Not Started",
-        description: "Comprehensive testing and quality assurance.",
-      },
-      {
-        phase: "Deployment",
-        startDate: "May 26, 2025",
-        endDate: "May 30, 2025",
-        status: "Not Started",
-        description: "Final deployment and handover.",
-      },
-    ],
-    client: {
-      name: "Sarah Johnson",
-      position: "Product Manager",
-      email: "sarah.johnson@shopeasy.com",
-      phone: "+1 (555) 123-4567",
-    },
-    requirements: [
-      "Responsive design that works seamlessly on desktop, tablet, and mobile devices",
-      "Integration with existing inventory management system",
-      "Improved product search and filtering functionality",
-      "Streamlined checkout process with multiple payment options",
-      "Customer account management with order history",
-      "Admin dashboard for content and order management",
-    ],
-    deliverables: [
-      "Complete design files (Figma)",
-      "Fully functional website with responsive design",
-      "Integration with payment gateways (Stripe, PayPal)",
-      "Admin dashboard for product and order management",
-      "Documentation for content management",
-      "30 days of post-launch support",
-    ],
-    nextSteps: [
-      "Schedule kickoff meeting with client",
-      "Gather brand assets and style guidelines",
-      "Set up project management and communication tools",
-      "Begin research phase",
-    ],
-    files: [
-      { name: "Project Brief.pdf", size: "2.4 MB", date: "March 10, 2025" },
-      { name: "Brand Guidelines.pdf", size: "5.1 MB", date: "March 10, 2025" },
-      {
-        name: "Current Site Analysis.xlsx",
-        size: "1.8 MB",
-        date: "March 12, 2025",
-      },
-    ],
-  });
+        body: JSON.stringify({
+          contractId,
+          updates: {
+            project_todo: updatedTodos,
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update project todos");
+      }
+
+      const data = await response.json();
+      console.log("Project updated successfully:", data);
+
+      // Reset form and close dialog
+      setNewTimelineItem({
+        task: "",
+        endDate: "",
+        status: "Pending",
+        memo: "",
+      });
+      setIsAddTimelineItemOpen(false);
+    } catch (error) {
+      console.error("Error updating project todos:", error);
+      // Revert local state on failure
+      setTodos(todos);
+      alert("Failed to add task. Please try again.");
+    }
+  };
+
+  // Rest of the component (render logic) remains the same
   return (
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
       <div
@@ -175,41 +145,175 @@ const TimeLine = () => {
               className="text-sm font-medium text-blue-600 hover:text-blue-800 flex items-center"
             >
               <PlusIcon className="h-4 w-4 mr-1" />
-              Add Phase
+              Add Task
             </button>
           </div>
           <div className="space-y-6">
-            {contract.timeline.map((phase, index) => (
-              <div
-                key={index}
-                className="relative pl-8 pb-6 border-l-2 border-gray-200 last:pb-0"
-              >
+            {todos && todos.length > 0 ? (
+              todos.map((todo, index) => (
                 <div
-                  className={`absolute left-[-8px] top-0 w-4 h-4 rounded-full border-2 border-white ${
-                    phase.status === "Completed"
-                      ? "bg-green-500"
-                      : phase.status === "In Progress"
-                        ? "bg-blue-500"
-                        : "bg-gray-300"
-                  }`}
-                ></div>
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-                  <h3 className="font-medium">{phase.phase}</h3>
-                  <span
-                    className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusColor(phase.status)}`}
-                  >
-                    {phase.status}
-                  </span>
+                  key={index}
+                  className="relative pl-8 pb-6 border-l-2 border-gray-200 last:pb-0"
+                >
+                  <div
+                    className={`absolute left-[-8px] top-0 w-4 h-4 rounded-full border-2 border-white ${
+                      todo.status === "Completed"
+                        ? "bg-green-500"
+                        : todo.status === "In Progress"
+                          ? "bg-blue-500"
+                          : "bg-gray-300"
+                    }`}
+                  ></div>
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                    <h3 className="font-medium">{todo.task}</h3>
+                    <span
+                      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusColor(todo.status)}`}
+                    >
+                      {todo.status}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600 mt-1">
+                    <ClockIcon className="inline-block h-4 w-4 mr-1 text-gray-500" />
+                    Due by{" "}
+                    {typeof todo.deadline === "string"
+                      ? todo.deadline
+                      : new Date(todo.deadline).toLocaleDateString("en-US", {
+                          month: "long",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                  </p>
+                  {todo.memo && (
+                    <p className="text-sm text-gray-600 mt-2">{todo.memo}</p>
+                  )}
                 </div>
-                <p className="text-sm text-gray-600 mt-1">
-                  <ClockIcon className="inline-block h-4 w-4 mr-1 text-gray-500" />
-                  {phase.startDate} - {phase.endDate}
-                </p>
-                <p className="text-sm text-gray-600 mt-2">
-                  {phase.description}
-                </p>
+              ))
+            ) : (
+              <p className="text-gray-500">No tasks available.</p>
+            )}
+          </div>
+        </div>
+      )}
+      {isAddTimelineItemOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-25 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-md w-full p-6 shadow-xl">
+            <div className="mb-4">
+              <h3 className="text-lg font-medium">Add Timeline Task</h3>
+              <p className="text-gray-500 mt-1">
+                Add a new task to the project timeline.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label
+                  htmlFor="task-name"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Task Name
+                </label>
+                <input
+                  type="text"
+                  id="task-name"
+                  value={newTimelineItem.task}
+                  onChange={(e) =>
+                    setNewTimelineItem({
+                      ...newTimelineItem,
+                      task: e.target.value,
+                    })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="e.g., User Testing"
+                />
               </div>
-            ))}
+
+              <div>
+                <label
+                  htmlFor="end-date"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  End Date
+                </label>
+                <input
+                  type="date"
+                  id="end-date"
+                  value={newTimelineItem.endDate}
+                  onChange={(e) =>
+                    setNewTimelineItem({
+                      ...newTimelineItem,
+                      endDate: e.target.value,
+                    })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="status"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Status
+                </label>
+                <select
+                  id="status"
+                  value={newTimelineItem.status}
+                  onChange={(e) =>
+                    setNewTimelineItem({
+                      ...newTimelineItem,
+                      status: e.target.value as TodoItem["status"],
+                    })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="Pending">Pending</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Completed">Completed</option>
+                </select>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="memo"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Memo (Optional)
+                </label>
+                <textarea
+                  id="memo"
+                  value={newTimelineItem.memo}
+                  onChange={(e) =>
+                    setNewTimelineItem({
+                      ...newTimelineItem,
+                      memo: e.target.value,
+                    })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Additional notes..."
+                  rows={3}
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={() => setIsAddTimelineItemOpen(false)}
+                className="px-4 py-2 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium text-sm"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAddTimelineItem}
+                disabled={!newTimelineItem.task || !newTimelineItem.endDate}
+                className={`px-4 py-2 rounded-md text-white font-medium text-sm ${
+                  !newTimelineItem.task || !newTimelineItem.endDate
+                    ? "bg-blue-400 cursor-not-allowed"
+                    : "bg-blue-600 hover:bg-blue-700"
+                }`}
+              >
+                Add to Timeline
+              </button>
+            </div>
           </div>
         </div>
       )}
