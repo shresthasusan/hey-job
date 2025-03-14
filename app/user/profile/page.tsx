@@ -1,7 +1,7 @@
 "use client";
 
 import React, { Suspense } from "react";
-import DisplayProfile from "@/app/ui/client-components/clientProfile";
+import DisplayProfile from "@/app/ui/user-component/displayprofile";
 
 const UserProfile: React.FC = () => {
   return (
