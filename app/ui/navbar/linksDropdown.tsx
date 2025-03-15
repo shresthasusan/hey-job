@@ -132,11 +132,12 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
                      h-24 w-24"
             >
               <Image
-                src={session?.user?.profilePicture || "/images/image.png"}
-                alt="profile"
-                width={150}
-                height={150}
-                className="rounded-full "
+              src={session?.user?.profilePicture || "/images/image.png"}
+              alt="profile"
+              width={96}
+              height={96}
+              className="object-cover rounded-full h-full w-full"
+               
               />
             </div>
 
