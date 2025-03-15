@@ -425,7 +425,7 @@ const ChatWindow: React.FC = () => {
           href={
             userData?.id === msg.sId
               ? `/user/your-contracts/${data._id}/${data.jobId._id}`
-              : `/client/job-proposal/${data.jobId._id}`
+              : `/client/your-contracts/${data._id}/${data.jobId._id}`
           }
         >
           View Project
