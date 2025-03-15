@@ -1,19 +1,29 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
-const PaymentSuccess = () => {
+interface PaymentDetails {
+  transaction_code: string;
+  status: string;
+  total_amount: string;
+  transaction_uuid: string;
+  product_code: string;
+  [key: string]: any;
+}
+
+const PaymentSuccessContent = () => {
   const searchParams = useSearchParams();
   const data = searchParams.get("data");
-  const [paymentDetails, setPaymentDetails] = useState<any>(null);
+  const [paymentDetails, setPaymentDetails] = useState<PaymentDetails | null>(
+    null
+  );
 
   useEffect(() => {
     if (data) {
       try {
-        // Decode the Base64 JSON data from eSewa
-        const decodedData = atob(decodeURIComponent(data as string));
-        const parsedData = JSON.parse(decodedData);
+        const decodedData = decodeURIComponent(data);
+        const parsedData = JSON.parse(atob(decodedData)) as PaymentDetails;
         setPaymentDetails(parsedData);
       } catch (error) {
         console.error("Error parsing payment data:", error);
@@ -51,7 +61,6 @@ const PaymentSuccess = () => {
           </p>
         </div>
 
-        {/* Display all payment data */}
         <div className="mt-6 text-left w-full">
           <h3 className="text-lg font-semibold">Full Payment Data:</h3>
           <pre className="bg-gray-200 p-4 rounded-md text-sm overflow-x-auto">
@@ -60,6 +69,18 @@ const PaymentSuccess = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+const PaymentSuccess = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="text-center p-10">Loading payment details...</div>
+      }
+    >
+      <PaymentSuccessContent />
+    </Suspense>
   );
 };
 

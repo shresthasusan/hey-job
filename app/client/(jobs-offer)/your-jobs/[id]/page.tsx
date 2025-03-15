@@ -1,12 +1,12 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import { Button } from "../../../../ui/button";
 import AllJobsList from "@/app/ui/client-components/all-jobs/clientJobList";
+import { useAuth } from "@/app/providers";
 
 const YourJobsPage = ({ params }: { params: { id: string } }) => {
   const { id } = params;
-  const { data: session } = useSession();
+  const { session, status } = useAuth();
   return (
     <>
       <div className="mx-auto text-center">

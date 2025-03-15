@@ -336,9 +336,9 @@ const ChatWindow: React.FC = () => {
               {msg.sId === userData?.id
                 ? `${userData?.username}`
                 : `${chatUser.username}`}
-              <p className="text-sm">
+              <span className="text-sm">
                 Offer send at: {convertTimestamp(msg.createdAt)}
-              </p>
+              </span>
             </p>
           </p>
         </span>

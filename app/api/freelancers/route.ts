@@ -15,6 +15,7 @@ export async function GET(req: NextRequest) {
   const savedFreelancers = searchParams.get("savedFreelancers");
   const params = searchParams.get("talentName");
   const individualUserId = searchParams.get("userId"); // New parameter for individual freelancer
+  const isSaved = searchParams.get('s')
 
   if (!session) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -30,18 +31,34 @@ export async function GET(req: NextRequest) {
       // Fetch individual freelancer data by userId
       const freelancer = await FreelancerInfo.findOne({ userId: individualUserId });
       if (freelancer) {
+        // Check if the freelancer profile is saved by the current user
+        const Saved = await SavedFreelancers.exists({ userId: userId, freelancerId: freelancer._id });
+
         const user = await User.findOne({ _id: freelancer.userId });
+
+        if (isSaved) {
+          const freelancerWithDetails = {
+            freelancerId: freelancer._id, // Include freelancer ID
+            ...freelancer.toObject(),    // Include freelancer details
+            saved: Saved ? true : false, // Set saved flag based on whether it's saved
+            profilePicture: user?.profilePicture || "/images/avatar.png", // Include profile picture
+          };
+          return NextResponse.json({ freelancer: freelancerWithDetails });
+
+        }
         const freelancerWithDetails = {
           freelancerId: freelancer._id, // Include freelancer ID
           ...freelancer.toObject(),    // Include freelancer details
           saved: false,                // Default to false for individual fetch
           profilePicture: user?.profilePicture || "/images/avatar.png", // Include profile picture
         };
+
         return NextResponse.json({ freelancer: freelancerWithDetails });
       } else {
         return NextResponse.json({ message: "Freelancer not found" }, { status: 404 });
       }
     }
+
 
     if (!params) {
       if (bestMatches) {

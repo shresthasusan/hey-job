@@ -5,7 +5,7 @@ import {
   DocumentCheckIcon,
   UserIcon,
 } from "@heroicons/react/24/outline";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/app/providers";
 import { Button } from "../../button";
 
 // import { useRouter } from "next/router";
@@ -16,7 +16,7 @@ import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 
 const WelcomeText = () => {
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { session, status } = useAuth();
   const userName = session?.user.name;
 
   const id = session?.user.id;

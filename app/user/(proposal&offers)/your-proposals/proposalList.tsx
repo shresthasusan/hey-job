@@ -10,13 +10,13 @@ import {
   CurrencyDollarIcon,
   ExclamationCircleIcon,
 } from "@heroicons/react/24/outline";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/app/providers";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
 const ProposalList = () => {
   const [activeTab, setActiveTab] = useState("proposal-list");
-  const { data: session } = useSession();
+  const { session, status } = useAuth();
   const [loading, setLoading] = useState(true);
 
   interface ContractOffer {

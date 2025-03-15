@@ -1,10 +1,10 @@
 import { useEffect } from "react";
-import { useSession } from "next-auth/react";
 import { authenticateWithFirebase } from "@/app/lib/firebase";
 import { fetchWithAuth } from "../lib/fetchWIthAuth";
+import { useAuth } from "../providers";
 
 const useFirebaseAuth = () => {
-    const { data: session } = useSession();
+    const { session, status } = useAuth();
 
     useEffect(() => {
         const fetchFirebaseToken = async () => {

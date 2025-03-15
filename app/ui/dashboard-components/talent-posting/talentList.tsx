@@ -1,17 +1,15 @@
 "use client";
 
-import { useState, useEffect, useContext } from "react";
-import { HeartIcon as Unliked, MapPinIcon } from "@heroicons/react/24/outline";
-import { HeartIcon as Liked } from "@heroicons/react/24/solid";
+import { MapPinIcon } from "@heroicons/react/24/outline";
+import { useState, useEffect } from "react";
 import StarRating from "../../starRating";
 import PostingSkeleton from "../skeletons/postingSkeleton";
 import SaveButton from "../../saveButton";
-import Loading from "@/app/client/(dashboard)/loading";
-import { Appcontext } from "@/app/context/appContext";
 import Image from "next/image";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
+import { useRouter } from "next/navigation";
 
-const truncateString = (str: any, num: any) => {
+const truncateString = (str: string, num: number) => {
   if (str.length <= num) {
     return str;
   }
@@ -24,7 +22,7 @@ interface Props {
   query?: string;
 }
 
-type Freelancer = {
+interface Freelancer {
   userId?: string;
   fullName?: string;
   email?: string;
@@ -36,12 +34,12 @@ type Freelancer = {
   rate: string;
   saved: boolean;
   profilePicture: string;
-};
+}
 
 const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
   const [data, setData] = useState<Freelancer[]>([]);
-  const [loading, setLoading] = useState(true); // Add loading state
-  const { setTalentData, setTalentDetailsVisible } = useContext(Appcontext);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -50,7 +48,6 @@ const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
       setLoading(true);
       try {
         const params = new URLSearchParams();
-
         if (bestMatches) params.append("bestMatches", "true");
         if (savedFreelancers) params.append("savedFreelancers", "true");
         if (query) {
@@ -64,9 +61,7 @@ const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
           headers: {
             "Content-Type": "application/json",
           },
-          next: {
-            revalidate: 3600, // 1 hour
-          },
+          next: { revalidate: 3600 },
         });
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -86,15 +81,18 @@ const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
       controller.abort();
     };
   }, [query, bestMatches, savedFreelancers]);
-  const LoadTalentDetails = (talent: Freelancer) => {
-    setTalentData(talent);
-    setTalentDetailsVisible(true);
-    console.log("Job details loaded:", talent);
+
+  const loadFreelancerDetails = (freelancer: Freelancer) => {
+    const params = new URLSearchParams(window.location.search);
+    params.set("freelancerId", freelancer.userId || "");
+    router.push(`?${params.toString()}`, { scroll: false });
+    console.log("Freelancer details loaded:", freelancer);
   };
+
   return (
     <div className="flex flex-col mt-8">
       {loading ? (
-        <PostingSkeleton /> // Show the loading component when fetching data
+        <PostingSkeleton />
       ) : data.length === 0 ? (
         <p className="text-center text-gray-500">No freelancers found.</p>
       ) : (
@@ -102,13 +100,13 @@ const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
           <div key={index} className="relative">
             <div
               className="flex flex-col gap-1 p-5 border-t-2 border-gray-200 group"
-              onClick={() => LoadTalentDetails(freelancer)}
+              onClick={() => loadFreelancerDetails(freelancer)}
             >
               <div className="flex gap-3 items-center">
-                <div className="rounded-full overflow-hidden w-[90px] h-[90px] flex items-center ">
+                <div className="rounded-full overflow-hidden w-[90px] h-[90px] flex items-center">
                   <Image
                     src={freelancer.profilePicture}
-                    alt={"freelancer dp"}
+                    alt="freelancer dp"
                     width={90}
                     height={90}
                   />
@@ -154,7 +152,7 @@ const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
             <SaveButton
               itemId={freelancer.userId}
               saved={freelancer.saved}
-              itemType={"freelancer"}
+              itemType="freelancer"
             />
           </div>
         ))

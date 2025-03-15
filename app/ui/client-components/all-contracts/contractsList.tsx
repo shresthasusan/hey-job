@@ -1,7 +1,7 @@
 "use client";
 
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/app/providers";
 import React, { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -46,7 +46,7 @@ const ContractsList: React.FC<ContractsListProps> = () => {
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const { data: session } = useSession();
+  const { session } = useAuth();
   const status = searchParams.get("status") || "";
   const paymentType = searchParams.get("paymentType") || "";
   const search = searchParams.get("search") || "";

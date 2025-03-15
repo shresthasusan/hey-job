@@ -1,52 +1,55 @@
-"use client"
-import { fetchWithAuth } from "@/app/lib/fetchWIthAuth"
-import { useSession } from "next-auth/react"
-import Image from "next/image"
-import { useEffect, useState } from "react"
+"use client";
+import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
+import { useAuth } from "@/app/providers";
+import Image from "next/image";
+import { useEffect, useState } from "react";
 
-export default function DisplayClientProfile() {
-  const { data: session } = useSession()
-  const [userData, setUserData] = useState<any>(null)
-  const [clientData, setClientData] = useState<any>(null)
-  const [activeTab, setActiveTab] = useState("personal")
-
+export default function DisplayProfile() {
+  const { session, status } = useAuth();
+  const [userData, setUserData] = useState<any>(null);
+  const [clientData, setClientData] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState("personal");
   // Fetch user data
   useEffect(() => {
     if (session?.user?.id) {
       const fetchUserData = async () => {
         try {
-          const res = await fetchWithAuth(`/api/user?userId=${session?.user.id}`)
-          const data = await res.json()
-          setUserData(data)
+          const res = await fetchWithAuth(
+            `/api/user?userId=${session?.user.id}`
+          );
+          const data = await res.json();
+          setUserData(data);
         } catch (error) {
-          console.error("Error fetching user data:", error)
+          console.error("Error fetching user data:", error);
         }
-      }
-      fetchUserData()
+      };
+      fetchUserData();
     }
-  }, [session])
+  }, [session]);
 
   // Fetch client data
   useEffect(() => {
     if (session?.user?.id) {
       const fetchClientData = async () => {
         try {
-          const res = await fetchWithAuth(`/api/clientInfo?userId=${session?.user.id}`)
-          const data = await res.json()
-          setClientData(data.client) // Extract client object
+          const res = await fetchWithAuth(
+            `/api/clientInfo?userId=${session?.user.id}`
+          );
+          const data = await res.json();
+          setClientData(data.client); // Extract client object
         } catch (error) {
-          console.error("Error fetching client data:", error)
+          console.error("Error fetching client data:", error);
         }
-      }
-      fetchClientData()
+      };
+      fetchClientData();
     }
-  }, [session])
+  }, [session]);
 
   // Get user initials for avatar fallback
   const getInitials = () => {
-    if (!userData?.name) return "U"
-    return `${userData.name.charAt(0)}${userData.lastName ? userData.lastName.charAt(0) : ""}`
-  }
+    if (!userData?.name) return "U";
+    return `${userData.name.charAt(0)}${userData.lastName ? userData.lastName.charAt(0) : ""}`;
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
@@ -92,11 +95,16 @@ export default function DisplayClientProfile() {
               </div>
               {clientData && (
                 <div className="flex flex-wrap gap-2 mt-3">
-                  {clientData.industry?.slice(0, 3).map((industry: string, i: number) => (
-                    <span key={i} className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">
-                      {industry}
-                    </span>
-                  ))}
+                  {clientData.industry
+                    ?.slice(0, 3)
+                    .map((industry: string, i: number) => (
+                      <span
+                        key={i}
+                        className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full"
+                      >
+                        {industry}
+                      </span>
+                    ))}
                   {clientData.industry?.length > 3 && (
                     <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
                       +{clientData.industry.length - 3} more
@@ -129,7 +137,9 @@ export default function DisplayClientProfile() {
                   ) : (
                     <line x1="15" y1="9" x2="9" y2="15"></line>
                   )}
-                  {!userData?.kycVerified && <line x1="9" y1="9" x2="15" y2="15"></line>}
+                  {!userData?.kycVerified && (
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                  )}
                 </svg>
                 KYC {userData?.kycVerified ? "Verified" : "Pending"}
               </span>
@@ -156,7 +166,9 @@ export default function DisplayClientProfile() {
                   ) : (
                     <line x1="15" y1="9" x2="9" y2="15"></line>
                   )}
-                  {!userData?.emailVerified && <line x1="9" y1="9" x2="15" y2="15"></line>}
+                  {!userData?.emailVerified && (
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                  )}
                 </svg>
                 Email {userData?.emailVerified ? "Verified" : "Pending"}
               </span>
@@ -203,7 +215,9 @@ export default function DisplayClientProfile() {
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                   <circle cx="12" cy="7" r="4"></circle>
                 </svg>
-                <h2 className="text-xl font-semibold text-gray-800">Personal Information</h2>
+                <h2 className="text-xl font-semibold text-gray-800">
+                  Personal Information
+                </h2>
               </div>
             </div>
             <div className="p-6">
@@ -223,7 +237,9 @@ export default function DisplayClientProfile() {
                   </svg>
                   <div>
                     <p className="font-medium text-gray-800">Phone</p>
-                    <p className="text-gray-600">{userData?.phone || "Not provided"}</p>
+                    <p className="text-gray-600">
+                      {userData?.phone || "Not provided"}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
@@ -243,7 +259,9 @@ export default function DisplayClientProfile() {
                   </svg>
                   <div>
                     <p className="font-medium text-gray-800">Country</p>
-                    <p className="text-gray-600">{userData?.country || "Not provided"}</p>
+                    <p className="text-gray-600">
+                      {userData?.country || "Not provided"}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
@@ -257,13 +275,22 @@ export default function DisplayClientProfile() {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   >
-                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                    <rect
+                      x="2"
+                      y="2"
+                      width="20"
+                      height="20"
+                      rx="5"
+                      ry="5"
+                    ></rect>
                     <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
                     <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
                   </svg>
                   <div>
                     <p className="font-medium text-gray-800">City</p>
-                    <p className="text-gray-600">{userData?.city || "Not provided"}</p>
+                    <p className="text-gray-600">
+                      {userData?.city || "Not provided"}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
@@ -282,7 +309,9 @@ export default function DisplayClientProfile() {
                   </svg>
                   <div>
                     <p className="font-medium text-gray-800">Postal Code</p>
-                    <p className="text-gray-600">{userData?.zipPostalCode || "Not provided"}</p>
+                    <p className="text-gray-600">
+                      {userData?.zipPostalCode || "Not provided"}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -308,7 +337,9 @@ export default function DisplayClientProfile() {
                   <line x1="8" y1="2" x2="8" y2="6"></line>
                   <line x1="3" y1="10" x2="21" y2="10"></line>
                 </svg>
-                <h2 className="text-xl font-semibold text-gray-800">Account Information</h2>
+                <h2 className="text-xl font-semibold text-gray-800">
+                  Account Information
+                </h2>
               </div>
             </div>
             <div className="p-6">
@@ -329,7 +360,9 @@ export default function DisplayClientProfile() {
                   </svg>
                   <div>
                     <p className="font-medium text-gray-800">Email</p>
-                    <p className="text-gray-600">{userData?.email || "Not provided"}</p>
+                    <p className="text-gray-600">
+                      {userData?.email || "Not provided"}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
@@ -348,7 +381,9 @@ export default function DisplayClientProfile() {
                   </svg>
                   <div>
                     <p className="font-medium text-gray-800">KYC Verified</p>
-                    <p className="text-gray-600">{userData?.kycVerified ? "Yes" : "No"}</p>
+                    <p className="text-gray-600">
+                      {userData?.kycVerified ? "Yes" : "No"}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
@@ -367,7 +402,9 @@ export default function DisplayClientProfile() {
                   </svg>
                   <div>
                     <p className="font-medium text-gray-800">Email Verified</p>
-                    <p className="text-gray-600">{userData?.emailVerified ? "Yes" : "No"}</p>
+                    <p className="text-gray-600">
+                      {userData?.emailVerified ? "Yes" : "No"}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -395,7 +432,9 @@ export default function DisplayClientProfile() {
                   <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                   <polyline points="9 22 9 12 15 12 15 22"></polyline>
                 </svg>
-                <h2 className="text-xl font-semibold text-gray-800">Company Information</h2>
+                <h2 className="text-xl font-semibold text-gray-800">
+                  Company Information
+                </h2>
               </div>
             </div>
             <div className="p-6">
@@ -416,7 +455,9 @@ export default function DisplayClientProfile() {
                   </svg>
                   <div>
                     <p className="font-medium text-gray-800">Full Name</p>
-                    <p className="text-gray-600">{clientData?.fullName || "Not provided"}</p>
+                    <p className="text-gray-600">
+                      {clientData?.fullName || "Not provided"}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
@@ -430,12 +471,21 @@ export default function DisplayClientProfile() {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   >
-                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                    <rect
+                      x="2"
+                      y="7"
+                      width="20"
+                      height="14"
+                      rx="2"
+                      ry="2"
+                    ></rect>
                     <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
                   </svg>
                   <div>
                     <p className="font-medium text-gray-800">Company</p>
-                    <p className="text-gray-600">{clientData?.isCompany ? "Yes" : "No"}</p>
+                    <p className="text-gray-600">
+                      {clientData?.isCompany ? "Yes" : "No"}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
@@ -454,7 +504,9 @@ export default function DisplayClientProfile() {
                   </svg>
                   <div>
                     <p className="font-medium text-gray-800">Location</p>
-                    <p className="text-gray-600">{clientData?.location || "Not provided"}</p>
+                    <p className="text-gray-600">
+                      {clientData?.location || "Not provided"}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
@@ -475,7 +527,9 @@ export default function DisplayClientProfile() {
                   </svg>
                   <div>
                     <p className="font-medium text-gray-800">Company Size</p>
-                    <p className="text-gray-600">{clientData?.companySize || "Not provided"}</p>
+                    <p className="text-gray-600">
+                      {clientData?.companySize || "Not provided"}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
@@ -495,7 +549,9 @@ export default function DisplayClientProfile() {
                   <div>
                     <p className="font-medium text-gray-800">Average Budget</p>
                     <p className="text-gray-600">
-                      {clientData?.averageBudget ? `$${clientData.averageBudget}` : "Not provided"}
+                      {clientData?.averageBudget
+                        ? `$${clientData.averageBudget}`
+                        : "Not provided"}
                     </p>
                   </div>
                 </div>
@@ -515,7 +571,8 @@ export default function DisplayClientProfile() {
                   <div>
                     <p className="font-medium text-gray-800">Rating</p>
                     <p className="text-gray-600">
-                      {clientData?.rating !== undefined && clientData?.rating !== null
+                      {clientData?.rating !== undefined &&
+                      clientData?.rating !== null
                         ? `${clientData.rating} / 5`
                         : "Not rated yet"}
                     </p>
@@ -542,7 +599,9 @@ export default function DisplayClientProfile() {
                   <polyline points="16 18 22 12 16 6"></polyline>
                   <polyline points="8 6 2 12 8 18"></polyline>
                 </svg>
-                <h2 className="text-xl font-semibold text-gray-800">Industry & Skills</h2>
+                <h2 className="text-xl font-semibold text-gray-800">
+                  Industry & Skills
+                </h2>
               </div>
             </div>
             <div className="p-6">
@@ -552,7 +611,10 @@ export default function DisplayClientProfile() {
                   <div className="flex flex-wrap gap-2">
                     {clientData?.industry?.length > 0 ? (
                       clientData.industry.map((industry: string, i: number) => (
-                        <span key={i} className="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full">
+                        <span
+                          key={i}
+                          className="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full"
+                        >
                           {industry}
                         </span>
                       ))
@@ -563,16 +625,25 @@ export default function DisplayClientProfile() {
                 </div>
                 <hr className="my-4" />
                 <div>
-                  <h3 className="font-medium text-gray-800 mb-2">Preferred Skills</h3>
+                  <h3 className="font-medium text-gray-800 mb-2">
+                    Preferred Skills
+                  </h3>
                   <div className="flex flex-wrap gap-2">
                     {clientData?.preferredSkills?.length > 0 ? (
-                      clientData.preferredSkills.map((skill: string, i: number) => (
-                        <span key={i} className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full">
-                          {skill}
-                        </span>
-                      ))
+                      clientData.preferredSkills.map(
+                        (skill: string, i: number) => (
+                          <span
+                            key={i}
+                            className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full"
+                          >
+                            {skill}
+                          </span>
+                        )
+                      )
                     ) : (
-                      <p className="text-gray-500">No preferred skills provided</p>
+                      <p className="text-gray-500">
+                        No preferred skills provided
+                      </p>
                     )}
                   </div>
                 </div>
@@ -582,6 +653,5 @@ export default function DisplayClientProfile() {
         </div>
       )}
     </div>
-  )
+  );
 }
-

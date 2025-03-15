@@ -8,13 +8,12 @@ import { createFirebaseUser, db, storage } from "../../../lib/firebase"; // Impo
 import Image from "next/image";
 
 import { doc, updateDoc } from "firebase/firestore";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/app/providers";
 import useFirebaseAuth from "@/app/hooks/useFirebaseAuth";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 
 const ProfileUploadForm = () => {
-  const { data: session } = useSession();
-
+  const { session, status } = useAuth();
   useFirebaseAuth();
   createFirebaseUser(
     session?.user.name + " " + session?.user.lastName || "",
@@ -33,8 +32,6 @@ const ProfileUploadForm = () => {
     profilePicture: string;
   }
 
-  // const { data: session } = useSession();
-
   const [formData, setFormData] = useState<formData>({
     dob: "",
     country: "",
@@ -46,14 +43,6 @@ const ProfileUploadForm = () => {
     profilePicture: "",
   });
   const router = useRouter();
-
-  // const userId = session?.user?.id;
-  // useEffect(() => {
-  //   setFormData({
-  //     ...formData,
-  //     userId: userId,
-  //   });
-  // }, [userId, formData]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
