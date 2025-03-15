@@ -2,20 +2,11 @@ import FreelancerList from "@/app/ui/dashboard-components/talent-posting/talentL
 import { Suspense } from "react";
 import Loading from "../loading";
 
-interface searchParams {
-  title: string;
-}
 
-interface Props {
-  searchParams?: searchParams | undefined;
-}
 
-const page = ({ searchParams }: Props) => {
-  const query = searchParams?.title || "";
+const page = ( ) => {
   return (
-    <Suspense fallback={<Loading />}>
-      <FreelancerList query={query} savedFreelancers={true} />
-    </Suspense>
+      <FreelancerList  savedFreelancers={true} />
   );
 };
 

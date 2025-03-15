@@ -13,7 +13,7 @@ const reviewSchema = new Schema<IReview>(
     {
         projectId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Jobs",
+            ref: "Project",
             required: true,
         },
         reviewerId: {

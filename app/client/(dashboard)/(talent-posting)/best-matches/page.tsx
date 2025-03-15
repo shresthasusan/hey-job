@@ -2,12 +2,8 @@ import FreelancerList from "@/app/ui/dashboard-components/talent-posting/talentL
 import { Suspense } from "react";
 import Loading from "../loading";
 
-const page = () => {
+export default function Page() {
   return (
-    <Suspense fallback={<Loading />}>
       <FreelancerList bestMatches={true} />
-    </Suspense>
   );
-};
-
-export default page;
+}
