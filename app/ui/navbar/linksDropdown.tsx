@@ -126,18 +126,14 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
       )}
       {isOpen && (
         <>
-          <div className="p-3 flex   flex-col relative overflow-hidden  align-middle items-center ">
-            <div
-              className="  rounded-full
-                            
-                     h-24 w-24"
-            >
+            <div className="p-3 flex flex-col relative overflow-hidden align-middle items-center">
+            <div className="rounded-full h-24 w-24 overflow-hidden">
               <Image
-                src={session?.user?.profilePicture || "/images/image.png"}
-                alt="profile"
-                width={150}
-                height={150}
-                className="rounded-full "
+              src={session?.user?.profilePicture || "/images/image.png"}
+              alt="profile"
+              width={96}
+              height={96}
+              className="object-cover h-full w-full"
               />
             </div>
 
