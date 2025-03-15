@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import JobDetails from "./jobDetails";
 import TimeLine from "./timeLine";
 
@@ -11,6 +11,44 @@ import ClientInfomation from "./clientInfomation";
 import CommunicationSection from "./communicationSection";
 import Button from "./contractButton";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
+import { useAuth } from "@/app/providers";
+
+type ContractState = {
+  _id: string; // Project ID
+  jobId: {
+    _id: string; // Job ID
+    description: string;
+    title: string;
+  };
+  contractId: string;
+  freelancerId: string;
+  clientId: string;
+  project_todo: Array<{
+    _id: string;
+    task: string;
+    deadline: string; // ISO 8601 string
+    memo?: string;
+    status: "Pending" | "In Progress" | "Completed";
+  }>;
+  project_files: Array<{
+    _id: string;
+    file_name: string;
+    url: string;
+    uploaded_at: string; // ISO 8601 string
+  }>;
+  deliveries: string[];
+  requirements: string[];
+  meetings: Array<{
+    _id: string;
+    meeting_date: string; // ISO 8601 string
+    meeting_link: string;
+    scheduled_by: "freelancer" | "client";
+    notes?: string;
+  }>;
+  status: "ongoing" | "completed" | "revisions" | "canceled";
+  created_at: string; // ISO 8601 string
+  updated_at: string; // ISO 8601 string
+};
 
 interface Props {
   contractId: string;
@@ -20,30 +58,21 @@ interface Props {
 export default function ContractDetailsPage({ contractId, jobId }: Props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [contract, setContract] = useState<any>(null);
+  const [contract, setContract] = useState<ContractState | null>(null);
+  const { session } = useAuth();
 
-  const handleSuccess = () => {
-    console.log("Action completed successfully");
-    fetchProjectDetails(); // Refetch to update UI with new status
-  };
-
-  const handleError = (error: Error) => {
-    console.error("Action failed:", error.message);
-    setError(error.message);
-  };
-
-  const fetchProjectDetails = async () => {
+  const fetchProjectDetails = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetchWithAuth(
         `/api/project-details?contractId=${contractId}`,
-        {
-          method: "GET",
-        }
+        { method: "GET" }
       );
+
       if (!response.ok) {
         throw new Error("Failed to fetch project details");
       }
+
       const { project } = await response.json();
       setContract(project);
       setError(null);
@@ -53,13 +82,23 @@ export default function ContractDetailsPage({ contractId, jobId }: Props) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [contractId]); // ✅ Dependency: contractId
 
   useEffect(() => {
     if (contractId) {
       fetchProjectDetails();
     }
-  }, [contractId]);
+  }, [contractId, fetchProjectDetails]); // ✅ Dependency: fetchProjectDetails
+
+  const handleSuccess = () => {
+    console.log("Action completed successfully");
+    fetchProjectDetails(); // ✅ No more issues!
+  };
+
+  const handleError = (error: Error) => {
+    console.error("Action failed:", error.message);
+    setError(error.message);
+  };
 
   if (loading) {
     return <div className="container mx-auto py-8 px-4">Loading...</div>;
@@ -84,6 +123,8 @@ export default function ContractDetailsPage({ contractId, jobId }: Props) {
         return "bg-gray-100 text-gray-800";
     }
   };
+  const userRole =
+    contract?.freelancerId === session?.user.id ? "freelancer" : "client";
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -103,15 +144,17 @@ export default function ContractDetailsPage({ contractId, jobId }: Props) {
         <div className="lg:col-span-2 space-y-6">
           <TimeLine
             contractId={contractId}
-            project_todo={contract?.project_todo}
+            project_todo={contract?.project_todo || []}
+            userRole={userRole}
+            projectStatus={"ongoing"}
           />
           <Requirements requirements={contract?.requirements} />
           <Deliveries
-            deliverables={contract?.deliveries}
+            deliverables={contract?.deliveries || []}
             contractId={contractId}
           />
           <FileSection
-            files={contract?.project_files}
+            files={contract?.project_files || []}
             contractId={contractId}
           />
         </div>
@@ -119,12 +162,8 @@ export default function ContractDetailsPage({ contractId, jobId }: Props) {
           <ClientInfomation jobId={jobId} />
           <CommunicationSection
             contractId={contractId}
-            meetings={contract?.meetings}
-            userRole={
-              contract?.freelancerId === "current-user-id"
-                ? "freelancer"
-                : "client"
-            } // Replace with auth logic
+            meetings={contract?.meetings || []}
+            userRole={userRole} // Replace with auth logic
           />
           <div className="flex gap-3">
             <Button

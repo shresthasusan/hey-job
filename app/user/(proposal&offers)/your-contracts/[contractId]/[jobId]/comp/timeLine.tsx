@@ -10,6 +10,7 @@ import {
 import React, { useState, useEffect } from "react";
 
 interface TodoItem {
+  _id?: string; // Added _id for updating specific tasks
   task: string;
   deadline: string | Date;
   status: "Pending" | "In Progress" | "Completed";
@@ -18,11 +19,20 @@ interface TodoItem {
 
 interface Props {
   project_todo: TodoItem[];
-  contractId: string; // Add contractId as a prop
+  contractId: string;
+  userRole: "client" | "freelancer";
+  projectStatus: "ongoing" | "completed" | "revisions" | "canceled";
 }
 
-const TimeLine = ({ project_todo, contractId }: Props) => {
+const TimeLine = ({
+  project_todo,
+  contractId,
+  userRole,
+  projectStatus,
+}: Props) => {
   const [todos, setTodos] = useState<TodoItem[]>([]);
+  const [isAddTimelineItemOpen, setIsAddTimelineItemOpen] = useState(false);
+  const [expandedSections, setExpandedSections] = useState({ timeline: true });
 
   useEffect(() => {
     console.log("Initial todos from props:", project_todo);
@@ -49,25 +59,18 @@ const TimeLine = ({ project_todo, contractId }: Props) => {
     memo: "",
   });
 
-  const [isAddTimelineItemOpen, setIsAddTimelineItemOpen] = useState(false);
-  const [expandedSections, setExpandedSections] = useState({
-    timeline: true,
-    budget: true,
-    requirements: true,
-    deliverables: true,
-    communication: true,
-    files: true,
-  });
-
   const toggleSection = (section: keyof typeof expandedSections) => {
-    setExpandedSections((prev) => ({
-      ...prev,
-      [section]: !prev[section],
-    }));
+    setExpandedSections((prev) => ({ ...prev, [section]: !prev[section] }));
   };
 
+  // Freelancer can add tasks if project is ongoing or in revisions
   const handleAddTimelineItem = async () => {
     if (!newTimelineItem.task || !newTimelineItem.endDate) return;
+    if (
+      userRole !== "freelancer" ||
+      (projectStatus !== "ongoing" && projectStatus !== "revisions")
+    )
+      return;
 
     const newTodo: TodoItem = {
       task: newTimelineItem.task,
@@ -76,33 +79,23 @@ const TimeLine = ({ project_todo, contractId }: Props) => {
       memo: newTimelineItem.memo || undefined,
     };
 
-    // Optimistically update local state
     const updatedTodos = [...todos, newTodo];
     setTodos(updatedTodos);
 
     try {
-      // Send PATCH request with the full updated todos array
       const response = await fetchWithAuth("/api/project-details", {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           contractId,
-          updates: {
-            project_todo: updatedTodos,
-          },
+          updates: { project_todo: updatedTodos },
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to update project todos");
-      }
+      if (!response.ok) throw new Error("Failed to update project todos");
 
       const data = await response.json();
       console.log("Project updated successfully:", data);
-
-      // Reset form and close dialog
       setNewTimelineItem({
         task: "",
         endDate: "",
@@ -112,13 +105,50 @@ const TimeLine = ({ project_todo, contractId }: Props) => {
       setIsAddTimelineItemOpen(false);
     } catch (error) {
       console.error("Error updating project todos:", error);
-      // Revert local state on failure
-      setTodos(todos);
+      setTodos(todos); // Revert on failure
       alert("Failed to add task. Please try again.");
     }
   };
 
-  // Rest of the component (render logic) remains the same
+  // Freelancer can update task status if project is ongoing or in revisions
+  const handleStatusChange = async (
+    todoIndex: number,
+    newStatus: TodoItem["status"]
+  ) => {
+    if (
+      userRole !== "freelancer" ||
+      (projectStatus !== "ongoing" && projectStatus !== "revisions")
+    )
+      return;
+
+    const updatedTodos = todos.map((todo, idx) =>
+      idx === todoIndex ? { ...todo, status: newStatus } : todo
+    );
+    setTodos(updatedTodos);
+
+    try {
+      const response = await fetchWithAuth("/api/project-details", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contractId,
+          updates: { project_todo: updatedTodos },
+        }),
+      });
+
+      if (!response.ok) throw new Error("Failed to update task status");
+      console.log("Task status updated successfully");
+    } catch (error) {
+      console.error("Error updating task status:", error);
+      setTodos(todos); // Revert on failure
+      alert("Failed to update task status. Please try again.");
+    }
+  };
+
+  const isEditable =
+    userRole === "freelancer" &&
+    (projectStatus === "ongoing" || projectStatus === "revisions");
+
   return (
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
       <div
@@ -136,18 +166,21 @@ const TimeLine = ({ project_todo, contractId }: Props) => {
       </div>
       {expandedSections.timeline && (
         <div className="p-4">
-          <div className="flex justify-end mb-4">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsAddTimelineItemOpen(true);
-              }}
-              className="text-sm font-medium text-primary-600 hover:text-primary-800 flex items-center"
-            >
-              <PlusIcon className="h-4 w-4 mr-1" />
-              Add Task
-            </button>
-          </div>
+          {/* Add Task Button - Only for freelancer if ongoing or revisions */}
+          {isEditable && (
+            <div className="flex justify-end mb-4">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsAddTimelineItemOpen(true);
+                }}
+                className="text-sm font-medium text-primary-600 hover:text-primary-800 flex items-center"
+              >
+                <PlusIcon className="h-4 w-4 mr-1" />
+                Add Task
+              </button>
+            </div>
+          )}
           <div className="space-y-6">
             {todos && todos.length > 0 ? (
               todos.map((todo, index) => (
@@ -166,11 +199,29 @@ const TimeLine = ({ project_todo, contractId }: Props) => {
                   ></div>
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                     <h3 className="font-medium">{todo.task}</h3>
-                    <span
-                      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusColor(todo.status)}`}
-                    >
-                      {todo.status}
-                    </span>
+                    {/* Status Dropdown - Only for freelancer if editable */}
+                    {isEditable ? (
+                      <select
+                        value={todo.status}
+                        onChange={(e) =>
+                          handleStatusChange(
+                            index,
+                            e.target.value as TodoItem["status"]
+                          )
+                        }
+                        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusColor(todo.status)}`}
+                      >
+                        <option value="Pending">Pending</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Completed">Completed</option>
+                      </select>
+                    ) : (
+                      <span
+                        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusColor(todo.status)}`}
+                      >
+                        {todo.status}
+                      </span>
+                    )}
                   </div>
                   <p className="text-sm text-gray-600 mt-1">
                     <ClockIcon className="inline-block h-4 w-4 mr-1 text-gray-500" />
@@ -192,9 +243,15 @@ const TimeLine = ({ project_todo, contractId }: Props) => {
               <p className="text-gray-500">No tasks available.</p>
             )}
           </div>
+          {/* Read-only notice for completed or canceled */}
+          {(projectStatus === "completed" || projectStatus === "canceled") && (
+            <p className="text-sm text-gray-500 italic mt-4">
+              This project is {projectStatus}. No edits allowed.
+            </p>
+          )}
         </div>
       )}
-      {isAddTimelineItemOpen && (
+      {isAddTimelineItemOpen && isEditable && (
         <div className="fixed inset-0 bg-black bg-opacity-25 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg max-w-md w-full p-6 shadow-xl">
             <div className="mb-4">
@@ -203,7 +260,6 @@ const TimeLine = ({ project_todo, contractId }: Props) => {
                 Add a new task to the project timeline.
               </p>
             </div>
-
             <div className="space-y-4">
               <div>
                 <label
@@ -226,7 +282,6 @@ const TimeLine = ({ project_todo, contractId }: Props) => {
                   placeholder="e.g., User Testing"
                 />
               </div>
-
               <div>
                 <label
                   htmlFor="end-date"
@@ -247,7 +302,6 @@ const TimeLine = ({ project_todo, contractId }: Props) => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
-
               <div>
                 <label
                   htmlFor="status"
@@ -271,7 +325,6 @@ const TimeLine = ({ project_todo, contractId }: Props) => {
                   <option value="Completed">Completed</option>
                 </select>
               </div>
-
               <div>
                 <label
                   htmlFor="memo"
@@ -294,7 +347,6 @@ const TimeLine = ({ project_todo, contractId }: Props) => {
                 />
               </div>
             </div>
-
             <div className="flex justify-end gap-3 mt-6">
               <button
                 onClick={() => setIsAddTimelineItemOpen(false)}

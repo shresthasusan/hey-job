@@ -19,12 +19,13 @@ interface MeetingItem {
 interface Props {
   meetings: MeetingItem[]; // Allow undefined
   contractId: string;
-  userRole?: "freelancer" | "client"; // Make required to match schema
+  userRole: "freelancer" | "client"; // Make required to match schema
 }
 
 const CommunicationSection = ({
   meetings: initialMeetings, // Default to empty array
   contractId,
+  userRole,
 }: Props) => {
   const [meetings, setMeetings] = useState<MeetingItem[]>(initialMeetings);
   const [isScheduleOpen, setIsScheduleOpen] = useState(false);
@@ -58,7 +59,7 @@ const CommunicationSection = ({
     const newMeetingData: MeetingItem = {
       meeting_date: newMeeting.meeting_date,
       meeting_link: newMeeting.meeting_link,
-      scheduled_by: "freelancer", // Use the passed userRole
+      scheduled_by: userRole, // Use the passed userRole
       notes: newMeeting.notes || undefined,
     };
 
@@ -154,9 +155,9 @@ const CommunicationSection = ({
                               minute: "2-digit",
                             })}
                         {" • Scheduled by "}
-                        {meeting.scheduled_by === "freelancer"
+                        {meeting.scheduled_by === userRole
                           ? "You"
-                          : "Client"}
+                          : meeting.scheduled_by}
                       </p>
                       {meeting.notes && (
                         <p className="text-sm text-gray-600 mt-1">
