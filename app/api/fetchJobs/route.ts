@@ -19,6 +19,7 @@ export async function GET(req: NextRequest) {
   const experience = searchParams.get('Experience');
   const jobId = searchParams.get('jobId');
   const clientId = searchParams.get('userId'); // Get userId from query parameters
+  const isSaved = searchParams.get('s');
 
   const userId = session?.user.id;
 
@@ -37,8 +38,16 @@ export async function GET(req: NextRequest) {
       if (!job) {
         return NextResponse.json({ message: "Job not found" }, { status: 404 });
       }
-
       const proposalCount = await proposal.countDocuments({ jobId });
+
+      if (isSaved) {
+        const Saved = await SavedJobs.exists({ userId, jobId: jobId }); // Check if the job is saved by the user
+        if (Saved) {
+          return NextResponse.json({ ...job.toObject(), proposalCount, isSaved: true }); // Add the isSaved flag
+        } else {
+          return NextResponse.json({ ...job.toObject(), proposalCount, isSaved: false }); // Add the isSaved flag
+        }
+      }
 
       return NextResponse.json({ ...job.toObject(), proposalCount });
     }
@@ -62,36 +71,36 @@ export async function GET(req: NextRequest) {
     // Fetch jobs based on query parameters
     if (!title) {
       if (bestMatches) {
-      // Step 1: Retrieve freelancer's industries and skills
-      const freelancerInfo = await FreelancerInfo.findOne({ userId: userId }).select("industries skills");
+        // Step 1: Retrieve freelancer's industries and skills
+        const freelancerInfo = await FreelancerInfo.findOne({ userId: userId }).select("industries skills");
 
-      if (!freelancerInfo) {
-        console.log("Freelancer not found");
-        return;
-      }
+        if (!freelancerInfo) {
+          console.log("Freelancer not found");
+          return;
+        }
 
-      // Step 2: Extract relevant industry-related skills from mapping
-      const relatedSkills = freelancerInfo.industries.flatMap(industry => industrySkillsMapping[industry as keyof typeof industrySkillsMapping] || []);
+        // Step 2: Extract relevant industry-related skills from mapping
+        const relatedSkills = freelancerInfo.industries.flatMap(industry => industrySkillsMapping[industry as keyof typeof industrySkillsMapping] || []);
 
-      // Step 3: Query jobs where requiredSkills match freelancer's skills or industry-related skills
-      const matchingJobs = await Jobs.find({
-        tags : { $in: [...freelancerInfo.skills, ...relatedSkills] },
-        
-        userId: { $ne: userId },
-        status: 'active'
-      });
-      
-      // Step 4: Fetch other jobs excluding the matching jobs
-      const otherJobs = await Jobs.find({
-        _id: { $nin: matchingJobs.map(job => job._id) },
-        userId: { $ne: userId },
-        status: 'active'
-      });
+        // Step 3: Query jobs where requiredSkills match freelancer's skills or industry-related skills
+        const matchingJobs = await Jobs.find({
+          tags: { $in: [...freelancerInfo.skills, ...relatedSkills] },
 
-      // Combine matching jobs and other jobs
-      jobs = [...matchingJobs, ...otherJobs];
+          userId: { $ne: userId },
+          status: 'active'
+        });
 
-        
+        // Step 4: Fetch other jobs excluding the matching jobs
+        const otherJobs = await Jobs.find({
+          _id: { $nin: matchingJobs.map(job => job._id) },
+          userId: { $ne: userId },
+          status: 'active'
+        });
+
+        // Combine matching jobs and other jobs
+        jobs = [...matchingJobs, ...otherJobs];
+
+
       } else if (mostRecent) {
         jobs = await Jobs.find({
           userId: { $ne: userId },

@@ -72,7 +72,7 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
               currentMode?.startsWith("/search/jobs")) && (
               <>
                 <li>
-                  <Link href={"/user/your-contracts"}>
+                  <Link href={"/user/your-contracts?tab=active-contracts"}>
                     <p className=" p-3 hover:bg-slate-100">Your Contracts</p>
                   </Link>
                 </li>
