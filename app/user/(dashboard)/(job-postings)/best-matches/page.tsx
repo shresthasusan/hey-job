@@ -7,9 +7,7 @@ import { Suspense } from "react";
 const page = () => {
   return (
     // Wrapping JobList component with Suspense to show a fallback while loading
-    <Suspense fallback={<PostingSkeleton />}>
       <JobList bestMatches={true} />
-    </Suspense>
   );
 };
 
