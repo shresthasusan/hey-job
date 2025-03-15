@@ -259,10 +259,7 @@ const ChatWindow: React.FC = () => {
               </span>{" "}
               Bid Amount
             </p>
-            <p className="text-green-700 text-xl ml-2">
-              {" "}
-              $ {data.jobId.budget}
-            </p>
+            <p className="text-green-700 text-xl ml-2"> $ {data.bidAmount}</p>
           </span>
           <span className="bg-gray-100 p-3 px-4 rounded-lg w-1/2">
             <p className="text-sm mb-1 flex items-center gap-2 text-gray-500">
@@ -335,7 +332,8 @@ const ChatWindow: React.FC = () => {
             <p>
               {msg.sId === userData?.id
                 ? `${userData?.username}`
-                : `${chatUser.username}`}
+                : `${chatUser.username}`}{" "}
+              <br />
               <span className="text-sm">
                 Offer send at: {convertTimestamp(msg.createdAt)}
               </span>

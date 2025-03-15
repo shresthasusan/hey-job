@@ -139,6 +139,16 @@ export default function ContractDetailsPage({ contractId, jobId }: Props) {
         >
           {contract?.status || "Active"}
         </span>
+        {contract?.status === "revisions" && (
+          <span
+            className={`inline-flex items-center ml-5 rounded-full px-3 py-1 text-sm font-medium text-gray-100 bg-blue-400`}
+          >
+            {" "}
+            {userRole == "client"
+              ? "Review the work and mark the project complete to proceed to payment"
+              : "The project submited for review for client."}
+          </span>
+        )}
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
@@ -148,7 +158,12 @@ export default function ContractDetailsPage({ contractId, jobId }: Props) {
             userRole={userRole}
             projectStatus={contract?.status}
           />
-          <Requirements requirements={contract?.requirements} />
+          <Requirements
+            requirements={contract?.requirements}
+            contractId={contractId}
+            userRole={userRole}
+            projectStatus={contract?.status}
+          />
           <Deliveries
             deliverables={contract?.deliveries || []}
             contractId={contractId}
