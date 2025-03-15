@@ -10,11 +10,12 @@ import {
   UserIcon,
   KeyIcon,
   ArrowLeftStartOnRectangleIcon,
-  BackwardIcon
+  BackwardIcon,
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
+import { useAuth } from "@/app/providers";
 
 interface NavItemProps {
   href: string;
@@ -40,7 +41,7 @@ const NavItem: React.FC<NavItemProps> = ({ href, icon, label, isActive }) => (
 );
 
 const SettingsSidebar: React.FC = () => {
-  const { data: session } = useSession(); // Get session data
+  const { session, status } = useAuth();
   const pathname = usePathname(); // Get current route
   const [adminRole, setAdminRole] = useState<string | null>(null);
 
@@ -119,7 +120,7 @@ const SettingsSidebar: React.FC = () => {
               isActive={pathname === "/admin/settings/manage-admins"}
             />
           )}
-          
+
           <NavItem
             href="/admin/settings/#"
             icon={<BoltIcon className="w-6 h-6" />}

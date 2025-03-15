@@ -3,12 +3,12 @@
 import { useState } from "react";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "@/app/lib/firebase";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
+import { useAuth } from "../providers";
 
 const KYCForm = () => {
-  const { data: session } = useSession();
+  const { session, status } = useAuth();
   const [uploading, setUploading] = useState(false);
 
   const [formData, setFormData] = useState({

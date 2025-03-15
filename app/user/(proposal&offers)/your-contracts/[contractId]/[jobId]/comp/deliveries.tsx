@@ -10,12 +10,12 @@ import {
 import React, { useState, useEffect } from "react";
 
 interface Props {
-  deliverables?: string[]; // Allow undefined
+  deliverables: string[]; // Allow undefined
   contractId: string;
 }
 
 const Deliveries = ({
-  deliverables: initialDeliverables = [],
+  deliverables: initialDeliverables,
   contractId,
 }: Props) => {
   const [deliverables, setDeliverables] =
@@ -107,7 +107,7 @@ const Deliveries = ({
             </button>
           </div>
           <ul className="space-y-2">
-            {deliverables.length > 0 ? (
+            {deliverables?.length > 0 ? (
               deliverables.map((del, index) => (
                 <li key={index} className="flex items-start">
                   <DocumentTextIcon className="h-5 w-5 text-primary-500 mr-2 mt-0.5 flex-shrink-0" />

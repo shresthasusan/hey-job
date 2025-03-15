@@ -1,11 +1,11 @@
 "use client";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/app/providers";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
 export default function DisplayProfile() {
-  const { data: session } = useSession();
+  const { session, status } = useAuth();
   const [userData, setUserData] = useState<any>(null);
   const [clientData, setClientData] = useState<any>(null);
 

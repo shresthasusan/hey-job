@@ -12,7 +12,8 @@ import {
   ArrowLeftStartOnRectangleIcon,
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
+import { useAuth } from "@/app/providers";
 
 interface NavItemProps {
   href: string;
@@ -39,8 +40,7 @@ const NavItem: React.FC<NavItemProps> = ({ href, icon, label, isActive }) => (
 
 const Sidebar: React.FC = () => {
   const pathname = usePathname(); // Get current route
-  const { data: session } = useSession(); // Get session data
-
+  const { session, status } = useAuth();
   return (
     <div className="left-0 top-0 h-screen px-5 w-1/6 bg-white shadow-md text-black">
       <nav className="flex flex-col h-full py-6">

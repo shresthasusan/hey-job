@@ -5,7 +5,7 @@ import JobDetails from "./job-details";
 import Terms from "./term";
 import CoverLetter from "./cover-letter";
 import Duration from "./duration";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/app/providers";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import app from "@/app/lib/firebase";
 import { Button } from "../button";
@@ -17,18 +17,17 @@ interface ProposalFormProps {
 }
 
 const ProposalForm = ({ jobId }: ProposalFormProps) => {
-  const { data: session } = useSession();
+  const { session, status } = useAuth();
   const [bidAmount, setBidAmount] = useState<string>("");
   const [coverLetter, setCoverLetter] = useState<string>("");
   const [duration, setDuration] = useState<string>("");
   const [files, setFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
-   const [alert, setAlert] = useState<{
-      type: "success" | "error";
-      message: string;
-    } | null>(null);
-  
+  const [alert, setAlert] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
 
   const storage = getStorage(app); // Firebase Storage reference
 
@@ -94,10 +93,9 @@ const ProposalForm = ({ jobId }: ProposalFormProps) => {
         type: "error",
         message: error.message || "Error uploading files",
       });
-     
 
       setFiles([]); // Clear selected files after submission
-    }   finally {
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -135,7 +133,7 @@ const ProposalForm = ({ jobId }: ProposalFormProps) => {
           {isSubmitting ? "Submitting..." : "Submit Proposal"}
         </Button>
       </form>
-      {alert && <Alert type={alert.type} message={alert.message} />}{" "} 
+      {alert && <Alert type={alert.type} message={alert.message} />}{" "}
     </div>
   );
 };

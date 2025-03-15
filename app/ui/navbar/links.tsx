@@ -6,11 +6,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
 import LinksDropdown from "./linksDropdown";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/app/providers";
 
 const Links = () => {
-  const { data: session } = useSession();
-
+  const { session, status } = useAuth();
   const currentPath = usePathname();
   const [isDropdownVisible, setDropdownVisible] = useState(0);
   return (

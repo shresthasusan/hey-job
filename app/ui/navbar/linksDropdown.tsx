@@ -8,7 +8,7 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { signOut } from "next-auth/react";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/app/providers";
 import NotificationsPage from "../dashboard-components/job-list/notification";
 
 interface Props {
@@ -18,8 +18,7 @@ interface Props {
 }
 
 const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
-  const { data: session, status } = useSession();
-
+  const { session, status } = useAuth();
   return (
     <>
       {isDropdownVisible === 1 && (
