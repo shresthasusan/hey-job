@@ -1,10 +1,11 @@
 "use client";
 
+import { Session } from "next-auth";
 import { SessionProvider, useSession } from "next-auth/react";
 import { createContext, useContext, ReactNode } from "react";
 
 interface AuthContextType {
-  session: any;
+  session: Session | null;
   status: "loading" | "authenticated" | "unauthenticated";
 }
 
