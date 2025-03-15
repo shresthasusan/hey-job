@@ -3,6 +3,7 @@ import { connectMongoDB } from "@/app/lib/mongodb";
 import ProjectDetails from "@/models/projectDetails";
 import Jobs from "@/models/jobs";// Assuming this model exists
 import Contract from "@/models/contract"; // Assuming this model exists
+import { startSession } from "mongoose";
 
 export async function GET(req: NextRequest) {
     try {
@@ -117,60 +118,102 @@ export async function PATCH(req: NextRequest) {
             }
         }
 
-        // Handle completed or canceled status updates
+        // Handle status updates
         if ("status" in updates) {
             const newStatus = updates.status;
-            if (!["completed", "canceled"].includes(newStatus)) {
+            const validStatuses = ["ongoing", "completed", "revisions", "canceled"];
+            if (!validStatuses.includes(newStatus)) {
                 return NextResponse.json(
-                    { message: "Status must be 'completed' or 'canceled'" },
+                    { message: "Invalid status value" },
                     { status: 400 }
                 );
             }
 
-            // Authorization: Freelancer can mark as completed, either can cancel
-            if (newStatus === "completed" && !isFreelancer) {
+            // Prevent updates if already in a final state
+            if (project.status === "completed" || project.status === "canceled") {
                 return NextResponse.json(
-                    { message: "Only the freelancer can mark the project as completed" },
+                    { message: "Cannot update status of a completed or canceled project" },
                     { status: 403 }
                 );
             }
 
+            // Role-based status validation
+            if (isFreelancer) {
+                if (newStatus === "revisions" && project.status === "ongoing") {
+                    project.status = "revisions";
+                } else if (newStatus === "ongoing" && project.status === "revisions") {
+                    project.status = "ongoing"; // Withdraw action
+                } else if (newStatus === "canceled") {
+                    project.status = "canceled";
+                } else {
+                    return NextResponse.json(
+                        { message: "Freelancer can only set status to 'revisions', 'ongoing' (from revisions), or 'canceled'" },
+                        { status: 403 }
+                    );
+                }
+            } else if (isClient) {
+                if (newStatus === "completed") {
+                    project.status = "completed";
+                } else if (newStatus === "canceled") {
+                    project.status = "canceled";
+                } else {
+                    return NextResponse.json(
+                        { message: "Client can only set status to 'completed' or 'canceled'" },
+                        { status: 403 }
+                    );
+                }
+            }
+
             // Update ProjectDetails
-            project.status = newStatus;
             project.updated_at = new Date();
 
-            // Update Job
-            const job = await Jobs.findById(project.jobId);
-            if (!job) {
-                return NextResponse.json({ message: "Associated job not found" }, { status: 404 });
+            // Only update Jobs and Contract for "completed" or "canceled"
+            if (newStatus === "completed" || newStatus === "canceled") {
+                const session = await startSession();
+                try {
+                    await session.withTransaction(async () => {
+                        // Update Job
+                        const job = await Jobs.findById(project.jobId).session(session);
+                        if (!job) {
+                            throw new Error("Associated job not found");
+                        }
+                        job.status = newStatus;
+                        job.statusHistory = job.statusHistory || [];
+                        job.statusHistory.push({
+                            status: newStatus,
+                            changedAt: new Date(),
+                        });
+
+                        // Update Contract
+                        const contract = await Contract.findOne({ _id: contractId }).session(session);
+                        if (!contract) {
+                            throw new Error("Contract not found");
+                        }
+                        contract.status = newStatus;
+                        contract.updated_at = new Date();
+                        contract.statusHistory = contract.statusHistory || [];
+                        contract.statusHistory.push({
+                            status: newStatus,
+                            updatedBy: userId,
+                            updatedAt: new Date(),
+                        });
+
+                        // Save all changes within the transaction
+                        await Promise.all([
+                            project.save({ session }),
+                            job.save({ session }),
+                            contract.save({ session }),
+                        ]);
+                    });
+                } catch (error) {
+                    await session.endSession();
+                    throw error;
+                }
+                await session.endSession();
+            } else {
+                // For "revisions" or "ongoing", only save ProjectDetails
+                await project.save();
             }
-            job.status = newStatus === "completed" ? "completed" : "canceled";
-
-            // Push to Job statusHistory
-            job.statusHistory = job.statusHistory || [];
-            job.statusHistory.push({
-                status: newStatus,
-                changedAt: new Date(),
-            });
-
-            // Update Contract
-            const contract = await Contract.findOne({ _id: contractId });
-            if (!contract) {
-                return NextResponse.json({ message: "Contract not found" }, { status: 404 });
-            }
-            contract.status = newStatus === "completed" ? "completed" : "canceled";
-            contract.updated_at = new Date();
-
-            // Push to Contract statusHistory
-            contract.statusHistory = contract.statusHistory || [];
-            contract.statusHistory.push({
-                status: newStatus,
-                updatedBy: userId,
-                updatedAt: new Date(),
-            });
-
-            // Save all changes
-            await Promise.all([project.save(), job.save(), contract.save()]);
         } else {
             // If no status update, save only project changes
             project.updated_at = new Date();
@@ -178,8 +221,14 @@ export async function PATCH(req: NextRequest) {
         }
 
         return NextResponse.json({ message: "Project updated successfully", project }, { status: 200 });
-    } catch (error) {
+    } catch (error: any) {
         console.error(error);
-        return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+        return NextResponse.json(
+            { message: error.message || "Internal server error" },
+            { status: error.message === "Contract not found" || error.message === "Associated job not found" ? 404 : 500 }
+        );
     }
 }
+
+
+

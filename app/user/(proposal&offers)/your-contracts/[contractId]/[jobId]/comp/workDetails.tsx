@@ -146,16 +146,20 @@ export default function ContractDetailsPage({ contractId, jobId }: Props) {
             contractId={contractId}
             project_todo={contract?.project_todo || []}
             userRole={userRole}
-            projectStatus={"ongoing"}
+            projectStatus={contract?.status}
           />
           <Requirements requirements={contract?.requirements} />
           <Deliveries
             deliverables={contract?.deliveries || []}
             contractId={contractId}
+            userRole={userRole}
+            projectStatus={"ongoing"}
           />
           <FileSection
             files={contract?.project_files || []}
             contractId={contractId}
+            userRole={userRole}
+            projectStatus={contract?.status}
           />
         </div>
         <div className="space-y-6">
@@ -164,36 +168,141 @@ export default function ContractDetailsPage({ contractId, jobId }: Props) {
             contractId={contractId}
             meetings={contract?.meetings || []}
             userRole={userRole} // Replace with auth logic
+            projectStatus={contract?.status}
           />
           <div className="flex gap-3">
-            <Button
-              action="completed"
+            <ProjectActions
               contractId={contractId}
+              userRole={userRole}
+              projectStatus={contract?.status}
               onSuccess={handleSuccess}
               onError={handleError}
-              disabled={
-                contract?.status === "completed" ||
-                contract?.status === "canceled"
-              } // Disable if already completed/canceled
             />
-            <Button
-              action="canceled"
-              contractId={contractId}
-              onSuccess={handleSuccess}
-              onError={handleError}
-              disabled={
-                contract?.status === "completed" ||
-                contract?.status === "canceled"
-              } // Disable if already completed/canceled
-            >
-              Cancel Now
-            </Button>
           </div>
         </div>
       </div>
     </div>
   );
 }
+
+// ProjectActions component for button rendering
+interface ProjectActionsProps {
+  contractId: string;
+  userRole: "freelancer" | "client";
+  projectStatus?: "ongoing" | "completed" | "revisions" | "canceled";
+  onSuccess?: () => void;
+  onError?: (error: Error) => void;
+}
+
+const ProjectActions: React.FC<ProjectActionsProps> = ({
+  contractId,
+  userRole,
+  projectStatus,
+  onSuccess,
+  onError,
+}) => {
+  const renderButtons = () => {
+    const buttons = [];
+    const buttonClass = "mr-2"; // Margin between buttons
+
+    // Final states: no actions allowed
+    if (projectStatus === "completed" || projectStatus === "canceled") {
+      return (
+        <p className="text-gray-500 italic">
+          Project is {projectStatus}. No further actions available.
+        </p>
+      );
+    }
+
+    // Freelancer buttons
+    if (userRole === "freelancer") {
+      if (projectStatus === "ongoing") {
+        buttons.push(
+          <Button
+            key="revisions"
+            action="revisions"
+            contractId={contractId}
+            userRole={userRole}
+            projectStatus={projectStatus}
+            onSuccess={onSuccess}
+            onError={onError}
+            className={buttonClass}
+          />
+        );
+      }
+      if (projectStatus === "revisions") {
+        buttons.push(
+          <Button
+            key="withdraw"
+            action="withdraw"
+            contractId={contractId}
+            userRole={userRole}
+            projectStatus={projectStatus}
+            onSuccess={onSuccess}
+            onError={onError}
+            className={buttonClass}
+          />
+        );
+      }
+      buttons.push(
+        <Button
+          key="canceled"
+          action="canceled"
+          contractId={contractId}
+          userRole={userRole}
+          projectStatus={projectStatus}
+          onSuccess={onSuccess}
+          onError={onError}
+          className={buttonClass}
+        />
+      );
+    }
+
+    // Client buttons
+    if (userRole === "client") {
+      buttons.push(
+        <Button
+          key="completed"
+          action="completed"
+          contractId={contractId}
+          userRole={userRole}
+          projectStatus={projectStatus}
+          onSuccess={onSuccess}
+          onError={onError}
+          className={buttonClass}
+        />
+      );
+      buttons.push(
+        <Button
+          key="canceled"
+          action="canceled"
+          contractId={contractId}
+          userRole={userRole}
+          projectStatus={projectStatus}
+          onSuccess={onSuccess}
+          onError={onError}
+          className={buttonClass}
+        />
+      );
+    }
+
+    return buttons.length > 0 ? (
+      <div className="flex flex-wrap gap-2">{buttons}</div>
+    ) : (
+      <p className="text-gray-500 italic">
+        No actions available for your role.
+      </p>
+    );
+  };
+
+  return (
+    <div className="mt-4">
+      <h3 className="text-lg font-semibold mb-2">Project Actions</h3>
+      {renderButtons()}
+    </div>
+  );
+};
+
 {
   /* <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
   <div

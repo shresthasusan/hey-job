@@ -21,7 +21,7 @@ interface Props {
   project_todo: TodoItem[];
   contractId: string;
   userRole: "client" | "freelancer";
-  projectStatus: "ongoing" | "completed" | "revisions" | "canceled";
+  projectStatus?: "ongoing" | "completed" | "revisions" | "canceled";
 }
 
 const TimeLine = ({
