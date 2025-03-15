@@ -20,7 +20,7 @@ const userSchema = new Schema<IUserReview>(
     { timestamps: true }
 );
 
-const User: Model<IUserReview> =
+const UserReview: Model<IUserReview> =
     mongoose.models.User || mongoose.model<IUserReview>("User", userSchema);
 
-export default User;
+export default UserReview;
