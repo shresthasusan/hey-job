@@ -769,7 +769,7 @@ const industrySkillsMapping = {
     "Django",
     "Flask",
   ],
-  "Web Development": [
+"Web Development": [
     "JavaScript",
     "React",
     "Node.js",

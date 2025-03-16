@@ -72,7 +72,8 @@ export async function GET(req: NextRequest) {
     if (!title) {
       if (bestMatches) {
         // Step 1: Retrieve freelancer's industries and skills
-        const freelancerInfo = await FreelancerInfo.findOne({ userId: userId }).select("industries skills");
+        const freelancerInfo = await FreelancerInfo.
+        findOne({ userId: userId }).select("industries skills");
 
         if (!freelancerInfo) {
           console.log("Freelancer not found");
@@ -80,7 +81,8 @@ export async function GET(req: NextRequest) {
         }
 
         // Step 2: Extract relevant industry-related skills from mapping
-        const relatedSkills = freelancerInfo.industries.flatMap(industry => industrySkillsMapping[industry as keyof typeof industrySkillsMapping] || []);
+        const relatedSkills = freelancerInfo.industries.flatMap(industry => 
+          industrySkillsMapping[industry as keyof typeof industrySkillsMapping] || []);
 
         // Step 3: Query jobs where requiredSkills match freelancer's skills or industry-related skills
         const matchingJobs = await Jobs.find({
