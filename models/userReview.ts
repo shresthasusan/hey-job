@@ -1,4 +1,4 @@
-import mongoose, { Model, Schema} from 'mongoose';
+import mongoose, { Model, Schema } from 'mongoose';
 
 
 interface IUserReview extends Document {

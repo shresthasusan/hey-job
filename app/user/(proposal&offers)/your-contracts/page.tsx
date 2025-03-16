@@ -6,7 +6,7 @@ const page = () => {
   return (
     <div className="max-w-screen-xl mx-auto mt-20">
       <h1 className="text-4xl font-medium mb-10">My contracts</h1>
-      <Suspense fallback={<>loading...</>}>
+      <Suspense>
         <ContractList />
       </Suspense>
     </div>

@@ -1,6 +1,5 @@
 // File: app/user/(proposal&offers)/your-contracts/comp/ContractList.tsx
 "use client";
-
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";

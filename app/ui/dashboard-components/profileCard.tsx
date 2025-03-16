@@ -10,6 +10,7 @@ interface Props {
 }
 
 const ProfileCard = ({ mode }: Props) => {
+  // Use the useSession hook to get session data and status
   const { session, status } = useAuth();
   // const { data: user } = useFetch<User>(`user/${session?.user.id}`);
 

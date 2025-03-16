@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import useFetch from "../hooks/useFetch";
 import Link from "next/link";
-import { useAuth } from "../providers";
+import { useAuth } from "@/app/providers";
 import { usePathname, useRouter } from "next/navigation"; // ✅ Use this instead of next/router
 import { fetchWithAuth } from "../lib/fetchWIthAuth";
 

@@ -3,7 +3,6 @@ import { authOptions } from "@/app/lib/auth";
 import User from "@/models/user";
 import { connectMongoDB } from "@/app/lib/mongodb";
 import { NextRequest, NextResponse } from "next/server";
-import EmailVerification from "@/app/email-required/component";
 
 export async function GET(req: NextRequest) {
     try {
@@ -51,9 +50,9 @@ export async function GET(req: NextRequest) {
                 country: 1,
                 city: 1,
                 phone: 1,
-                zipPostalCode: 1,
-                kycVerified: 1,
                 emailVerified: 1,
+                kycVerified: 1,
+                zipPostalCode: 1,
                 createdAt: 1,
                 dob: 1,
             };

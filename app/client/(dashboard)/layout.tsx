@@ -80,7 +80,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </div>
-      <TalentDetailsSlider />
+      <Suspense>
+        <TalentDetailsSlider />
+      </Suspense>
     </>
   );
 }

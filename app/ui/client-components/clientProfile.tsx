@@ -4,7 +4,7 @@ import { useAuth } from "@/app/providers";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-export default function DisplayProfile() {
+export default function DisplayClientProfile() {
   const { session, status } = useAuth();
   const [userData, setUserData] = useState<any>(null);
   const [clientData, setClientData] = useState<any>(null);
@@ -175,89 +175,6 @@ export default function DisplayProfile() {
             </div>
           </div>
         </div>
-
-        {/* Personal Information */}
-        <div className="border-t pt-4 mb-6">
-          <h3 className="text-xl font-semibold mb-4">Personal Information</h3>
-          <div className="grid grid-cols-4 gap-4 text-gray-700">
-            <p>
-              <span className="font-semibold">Phone:</span>{" "}
-              {userData?.phone || "Not provided"}
-            </p>
-            <p>
-              <span className="font-semibold">Country:</span>{" "}
-              {userData?.country || "Not provided"}
-            </p>
-            <p>
-              <span className="font-semibold">City:</span>{" "}
-              {userData?.city || "Not provided"}
-            </p>
-            <p>
-              <span className="font-semibold">Postal Code:</span>{" "}
-              {userData?.zipPostalCode || "Not provided"}
-            </p>
-          </div>
-        </div>
-
-        {/* Account Information */}
-        <div className="border-t pt-4">
-          <h3 className="text-xl font-semibold mb-4">Account Information</h3>
-          <div className="grid grid-cols-2 gap-4 text-gray-700">
-            <p>
-              <span className="font-semibold">Email:</span>{" "}
-              {userData?.email || "Not provided"}
-            </p>
-            <p>
-              <span className="font-semibold">KYC Verified:</span>{" "}
-              {userData?.kycVerified ? "Yes" : "No"}
-            </p>
-            <p>
-              <span className="font-semibold">Email Verified:</span>{" "}
-              {userData?.emailVerified ? "Yes" : "No"}
-            </p>
-          </div>
-        </div>
-
-        {/* Client Information */}
-        {clientData && (
-          <div className="border-t pt-6 mt-6">
-            <h2 className="text-2xl font-semibold mb-4">Client Information</h2>
-            <div className="grid grid-cols-2 gap-4 text-gray-700">
-              <p>
-                <span className="font-semibold">Full Name:</span>{" "}
-                {clientData?.fullName || "Not provided"}
-              </p>
-              <p>
-                <span className="font-semibold">Company:</span>{" "}
-                {clientData?.isCompany ? "Yes" : "No"}
-              </p>
-              <p>
-                <span className="font-semibold">Industry:</span>{" "}
-                {clientData?.industry?.join(", ") || "Not provided"}
-              </p>
-              <p>
-                <span className="font-semibold">Company Size:</span>{" "}
-                {clientData?.companySize || "Not provided"}
-              </p>
-              <p>
-                <span className="font-semibold">Average Budget:</span> $
-                {clientData?.averageBudget || "Not provided"}
-              </p>
-              <p>
-                <span className="font-semibold">Preferred Skills:</span>{" "}
-                {clientData?.preferredSkills?.join(", ") || "Not provided"}
-              </p>
-              <p>
-                <span className="font-semibold">Location:</span>{" "}
-                {clientData?.location || "Not provided"}
-              </p>
-              <p>
-                <span className="font-semibold">Rating:</span>{" "}
-                {clientData?.rating ?? "Not rated yet"}
-              </p>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Tabs */}
