@@ -41,9 +41,7 @@ export default function EsewaPayment() {
         },
         body: JSON.stringify({
           method: "esewa",
-          amount,
-          productName,
-          transactionId,
+          contractId: "67d578a71ff64342b4e3ba58",
         }),
       });
 

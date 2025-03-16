@@ -11,6 +11,7 @@ export interface IPayment extends Document {
     platformFee: number; // Your fee (e.g., 10%)
     transactionId: string; // From payment processor (e.g., Stripe)
     transactionCode: string; // Unique code for the transaction
+    method: string;
     status: "completed" | "failed";
     createdAt: Date;
 }
@@ -25,6 +26,7 @@ const PaymentSchema: Schema = new Schema(
         freelancerAmount: { type: Number, required: true },
         platformFee: { type: Number, required: true },
         transactionId: { type: String, required: true },
+        method: { type: String, required: true },
         transactionCode: { type: String },
         status: {
             type: String,

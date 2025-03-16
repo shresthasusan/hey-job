@@ -60,7 +60,6 @@ export const handlePayment = async (
                 failure_url: paymentData.esewaConfig.failure_url,
                 signed_field_names: paymentData.esewaConfig.signed_field_names,
                 signature: paymentData.esewaConfig.signature,
-                contractId: paymentData.esewaConfig.contractId,
             };
 
             Object.entries(esewaPayload).forEach(([key, value]) => {
