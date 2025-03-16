@@ -7,7 +7,7 @@ export interface IPayment extends Document {
     clientId: mongoose.Types.ObjectId;
     freelancerId: mongoose.Types.ObjectId;
     totalAmount: number; // Total amount paid by client
-    clientAmount: number; // Amount paid to freelancer
+    freelancerAmount: number; // Amount paid to freelancer
     platformFee: number; // Your fee (e.g., 10%)
     transactionId: string; // From payment processor (e.g., Stripe)
     transactionCode: string; // Unique code for the transaction
@@ -22,10 +22,10 @@ const PaymentSchema: Schema = new Schema(
         clientId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
         freelancerId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
         totalAmount: { type: Number, required: true },
-        clientAmount: { type: Number, required: true },
+        freelancerAmount: { type: Number, required: true },
         platformFee: { type: Number, required: true },
         transactionId: { type: String, required: true },
-        transactionCode: { type: String, required: true },
+        transactionCode: { type: String },
         status: {
             type: String,
             enum: ["completed", "failed"],

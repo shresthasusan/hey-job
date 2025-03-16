@@ -204,6 +204,7 @@ export default function ContractDetailsPage({ contractId, jobId }: Props) {
               projectStatus={contract?.status}
               onSuccess={handleSuccess}
               onError={handleError}
+              clientId={contract?.clientId}
             />
           </div>
         </div>
@@ -217,11 +218,13 @@ interface ProjectActionsProps {
   contractId: string;
   userRole: "freelancer" | "client";
   projectStatus?: "ongoing" | "completed" | "revisions" | "canceled";
+  clientId?: string;
   onSuccess?: () => void;
   onError?: (error: Error) => void;
 }
 
 const ProjectActions: React.FC<ProjectActionsProps> = ({
+  clientId,
   contractId,
   userRole,
   projectStatus,
@@ -237,7 +240,7 @@ const ProjectActions: React.FC<ProjectActionsProps> = ({
         buttons.push(
           <Link
             key="proceed-to-payment"
-            href={`/paymentBilling/${contractId}/gateway-select`}
+            href={`/paymentBilling/${contractId}/gateway-select/${clientId}`}
             className={`${buttonClass} bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600`}
           >
             Proceed to Payment

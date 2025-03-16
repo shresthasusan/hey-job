@@ -7,9 +7,11 @@ import {
   CreditCardIcon,
   ReceiptPercentIcon,
 } from "@heroicons/react/24/outline";
+import { handlePayment } from "../lib/handlePayment";
+import { fetchWithAuth } from "../lib/fetchWIthAuth";
 
 const paymentMethods = [
-  { name: "eSewa", color: "bg-green-500" },
+  { name: "esewa", color: "bg-green-500" },
   { name: "Khalti", color: "bg-purple-500" },
 ];
 
@@ -50,42 +52,67 @@ const buttonVariants = {
   hover: { scale: 1.02, transition: { duration: 0.2 } },
 };
 
-function Payment({ price = 1000 }) {
+function Payment({
+  contractId,
+  userId,
+}: {
+  contractId: string;
+  userId: string;
+}) {
   const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const { push } = useRouter();
   const pathname = usePathname();
   const [billDetails, setBillDetails] = useState({
-    basePrice: price,
+    basePrice: 0,
     serviceCharge: 0,
     tax: 0,
     total: 0,
   });
 
   useEffect(() => {
-    // Calculate service charge (3%)
-    const serviceCharge = price * 0.03;
-    // Calculate tax (13% VAT for example)
-    const tax = price * 0.13;
-    // Calculate total
-    const total = price + serviceCharge + tax;
+    const fetchPrice = async () => {
+      try {
+        const response = await fetchWithAuth(
+          `/api/fetch-contracts?contractId=${contractId}&clientId=${userId}`
+        );
+        const { data } = await response.json();
+        const price = data.price;
 
-    setBillDetails({
-      basePrice: price,
-      serviceCharge,
-      tax,
-      total,
+        // Calculate service charge (3%)
+        const serviceCharge = price * 0.03;
+        // Calculate tax (13% VAT for example)
+        const tax = price * 0.13;
+        // Calculate total
+        const total = price + serviceCharge + tax;
+
+        setBillDetails({
+          basePrice: price,
+          serviceCharge,
+          tax,
+          total,
+        });
+      } catch (error) {
+        console.error("Error fetching price:", error);
+      }
+    };
+
+    fetchPrice();
+  }, [contractId, userId]);
+
+  const proceedPayment = async (method: string) => {
+    setIsLoading(true);
+    setError(null);
+
+    await handlePayment(contractId, method, (errorMessage) => {
+      setError(errorMessage);
+      setIsLoading(false);
     });
-  }, [price]);
 
-  const handlePayment = (method: string) => {
-    switch (method) {
-      case "eSewa":
-        push(`${pathname}/esewa`);
-        break;
-      case "Khalti":
-        push(`${pathname}/khalti`);
-        break;
-    }
+    // Note: For eSewa, the page will redirect; no need to set loading false here
+    // For Khalti, add logic to reset loading if no redirect occurs
   };
 
   const formatCurrency = (amount: number) => {
@@ -177,7 +204,7 @@ function Payment({ price = 1000 }) {
         </motion.div>
 
         <div className="grid gap-4 mt-4">
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="sync">
             {paymentMethods.map((method, index) => (
               <motion.div
                 key={method.name}
@@ -207,7 +234,7 @@ function Payment({ price = 1000 }) {
         </div>
 
         <div className="mt-6">
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="sync">
             {selectedMethod && (
               <motion.div
                 className="w-full"
@@ -220,7 +247,7 @@ function Payment({ price = 1000 }) {
               >
                 <button
                   className="w-full px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-lg font-medium relative overflow-hidden"
-                  onClick={() => handlePayment(selectedMethod)}
+                  onClick={() => proceedPayment(selectedMethod)}
                 >
                   <motion.span
                     initial={{ opacity: 0 }}

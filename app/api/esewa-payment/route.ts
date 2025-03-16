@@ -1,13 +1,18 @@
 import { NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
+import Contract from "@/models/contract";
+import Payment from "@/models/payment";// Assuming this is defined elsewhere
 import { generateEsewaSignature } from "../../lib/generateEsewaSignature";
-import { PaymentRequestData } from "../../../types/PaymentRequestData";
+import { PaymentRequestData } from "@/types/PaymentRequestData";
+import { connectMongoDB } from "@/app/lib/mongodb";
 
 function validateEnvironmentVariables() {
   const requiredEnvVars = [
     "NEXT_PUBLIC_BASE_URL",
     "NEXT_PUBLIC_ESEWA_MERCHANT_CODE",
     "NEXT_PUBLIC_ESEWA_SECRET_KEY",
+    "NEXT_PUBLIC_SUCCESS_URL",
+    "NEXT_PUBLIC_FAILURE_URL",
   ];
   for (const envVar of requiredEnvVars) {
     if (!process.env[envVar]) {
@@ -19,10 +24,22 @@ function validateEnvironmentVariables() {
 export async function POST(req: Request) {
   try {
     validateEnvironmentVariables();
-    const paymentData: PaymentRequestData = await req.json();
-    const { amount, productName, transactionId, method } = paymentData;
 
-    if (!amount || !productName || !transactionId || method !== "esewa") {
+    // Get session to identify client
+    const userData = req.headers.get("user");
+    const user = userData ? JSON.parse(userData) : null;
+
+
+    if (!user || !user.id) {
+      return NextResponse.json({ message: "Unauthorized: No user data" }, { status: 401 });
+    }
+    const clientId = user.id;
+
+    // Get contractId 
+    const paymentData: PaymentRequestData = await req.json();
+    const { contractId, method } = paymentData;
+
+    if (!contractId || method !== "esewa") {
       console.error("Missing required fields or invalid method:", paymentData);
       return NextResponse.json(
         { error: "Missing required fields or invalid method" },
@@ -30,15 +47,37 @@ export async function POST(req: Request) {
       );
     }
 
+    await connectMongoDB();
+
     console.log("Initiating eSewa payment");
+    // Fetch contract details
+    const contract = await Contract.findById(contractId).select("jobId freelancerId price status");
+    if (!contract) {
+      return NextResponse.json({ error: "Contract not found" }, { status: 404 });
+    }
+    if (contract.status === "completed") {
+      return NextResponse.json({ error: "Contract already paid" }, { status: 400 });
+    }
+
+    const jobId = contract.jobId;
+    const freelancerId = contract.freelancerId;
+    const amount = contract.price;
+
+    const taxAmount = amount * 0.13; // 13% tax 
+    const platformFee = amount * 0.03; // 3% fee
+    const clientAmount = amount + platformFee + taxAmount; // Amount paid by client
+    const freelancerCut = amount * 0.10; // 10% cut from freelancer
+    const freelancerAmount = amount - freelancerCut; // Amount to freelancer
+
+    console.log("Initiating eSewa payment for contract:", contractId);
     const transactionUuid = `${Date.now()}-${uuidv4()}`;
     const esewaConfig = {
-      amount: amount,
-      tax_amount: "0",
-      total_amount: amount,
+      amount: amount.toString(),
+      tax_amount: taxAmount.toString(),
+      total_amount: clientAmount.toString(),
       transaction_uuid: transactionUuid,
-      product_code: process.env.NEXT_PUBLIC_ESEWA_MERCHANT_CODE,
-      product_service_charge: "0",
+      product_code: process.env.NEXT_PUBLIC_ESEWA_MERCHANT_CODE!,
+      product_service_charge: platformFee.toString(),
       product_delivery_charge: "0",
       success_url: `${process.env.NEXT_PUBLIC_SUCCESS_URL}`,
       failure_url: `${process.env.NEXT_PUBLIC_FAILURE_URL}`,
