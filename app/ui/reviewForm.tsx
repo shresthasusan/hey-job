@@ -1,75 +1,83 @@
-"use client"
-import { useState, useEffect } from "react"
-import type React from "react"
+"use client";
+import { useState, useEffect } from "react";
+import type React from "react";
 
-import { fetchWithAuth } from "../lib/fetchWIthAuth"
-import SliderRating from "./dashboard-components/rating-card/slider"
-import Emoji from "./dashboard-components/rating-card/Emoji"
+import { fetchWithAuth } from "../lib/fetchWIthAuth";
+import SliderRating from "./dashboard-components/rating-card/slider";
+import Emoji from "./dashboard-components/rating-card/Emoji";
 
 interface ReviewFormProps {
-  projectId: string
-  reviewerId: string
-  revieweeId: string
+  projectId: string;
+  reviewerId: string;
+  revieweeId: string;
 }
 
 const ReviewForm = ({ projectId, reviewerId, revieweeId }: ReviewFormProps) => {
-  const [rating, setRating] = useState(5)
-  const [comment, setComment] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [message, setMessage] = useState("")
-  const [messageType, setMessageType] = useState<"success" | "error" | null>(null)
-  const [submitted, setSubmitted] = useState(false)
-  const [animateRating, setAnimateRating] = useState(false)
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState<"success" | "error" | null>(
+    null
+  );
+  const [submitted, setSubmitted] = useState(false);
+  const [animateRating, setAnimateRating] = useState(false);
 
   // Trigger animation when component mounts
   useEffect(() => {
-    setAnimateRating(true)
-  }, [])
+    setAnimateRating(true);
+  }, []);
 
   const submitReview = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setMessage("")
-    setMessageType(null)
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
+    setMessageType(null);
 
     try {
       const res = await fetchWithAuth("/api/reviews", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ projectId, reviewerId, revieweeId, rating, comment }),
-      })
+        body: JSON.stringify({
+          projectId,
+          reviewerId,
+          revieweeId,
+          rating,
+          comment,
+        }),
+      });
 
-      const data = await res.json()
-      setLoading(false)
+      const data = await res.json();
+      setLoading(false);
 
       if (data.success) {
-        setMessage("Review submitted successfully!")
-        setMessageType("success")
-        setComment("")
-        setSubmitted(true)
+        setMessage("Review submitted successfully!");
+        setMessageType("success");
+        setComment("");
+        setSubmitted(true);
 
         // Reset form after 3 seconds
         setTimeout(() => {
-          setSubmitted(false)
-          setMessage("")
-        }, 3000)
+          setSubmitted(false);
+          setMessage("");
+        }, 3000);
       } else {
-        setMessage(`Error: ${data.message || "Failed to submit review"}`)
-        setMessageType("error")
+        setMessage(`Error: ${data.message || "Failed to submit review"}`);
+        setMessageType("error");
       }
     } catch (error) {
-      setLoading(false)
-      setMessage("An unexpected error occurred. Please try again.")
-      setMessageType("error")
+      setLoading(false);
+      setMessage("An unexpected error occurred. Please try again.");
+      setMessageType("error");
     }
-  }
+  };
 
   const handleRatingChange = (newRating: number) => {
-    setRating(newRating)
+    setRating(newRating);
     // Reset animation to trigger it again
-    setAnimateRating(false)
-    setTimeout(() => setAnimateRating(true), 50)
-  }
+    setAnimateRating(false);
+    setTimeout(() => setAnimateRating(true), 50);
+  };
 
   return (
     <div className="bg-white rounded-xl shadow-lg overflow-hidden w-full max-w-md border border-gray-100">
@@ -87,7 +95,9 @@ const ReviewForm = ({ projectId, reviewerId, revieweeId }: ReviewFormProps) => {
           >
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
           </svg>
-          <h2 className="text-xl font-semibold text-gray-800">Submit a Review</h2>
+          <h2 className="text-xl font-semibold text-gray-800">
+            Submit a Review
+          </h2>
         </div>
       </div>
 
@@ -109,18 +119,23 @@ const ReviewForm = ({ projectId, reviewerId, revieweeId }: ReviewFormProps) => {
                 <polyline points="22 4 12 14.01 9 11.01"></polyline>
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-gray-900">Thank you for your review!</h3>
-            <p className="text-gray-600 text-center mt-2">Your feedback helps improve our community.</p>
+            <h3 className="text-lg font-medium text-gray-900">
+              Thank you for your review!
+            </h3>
+            <p className="text-gray-600 text-center mt-2">
+              Your feedback helps improve our community.
+            </p>
           </div>
         ) : (
           <form onSubmit={submitReview} className="space-y-6">
             <div className="space-y-4">
-              <label className="block text-sm font-medium text-gray-700">Your Rating</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Your Rating
+              </label>
 
               <div className="flex flex-col items-center space-y-6">
                 {/* Rating Card */}
-                <div className="w-full flex justify-center">
-                </div>
+                <div className="w-full flex justify-center"></div>
 
                 {/* Emoji Feedback */}
                 <div className="flex justify-center">
@@ -153,7 +168,9 @@ const ReviewForm = ({ projectId, reviewerId, revieweeId }: ReviewFormProps) => {
             </div>
 
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">Your Review</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Your Review
+              </label>
               <div className="relative">
                 <textarea
                   value={comment}
@@ -161,7 +178,9 @@ const ReviewForm = ({ projectId, reviewerId, revieweeId }: ReviewFormProps) => {
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-[120px] transition duration-200"
                   placeholder="Share your experience working on this project..."
                 />
-                <div className="absolute bottom-3 right-3 text-xs text-gray-400">{comment.length} characters</div>
+                <div className="absolute bottom-3 right-3 text-xs text-gray-400">
+                  {comment.length} characters
+                </div>
               </div>
             </div>
 
@@ -176,7 +195,11 @@ const ReviewForm = ({ projectId, reviewerId, revieweeId }: ReviewFormProps) => {
                 <div className="flex">
                   <div className="flex-shrink-0">
                     {messageType === "success" ? (
-                      <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                      <svg
+                        className="h-5 w-5 text-green-400"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
                         <path
                           fillRule="evenodd"
                           d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -184,7 +207,11 @@ const ReviewForm = ({ projectId, reviewerId, revieweeId }: ReviewFormProps) => {
                         />
                       </svg>
                     ) : (
-                      <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                      <svg
+                        className="h-5 w-5 text-red-400"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
                         <path
                           fillRule="evenodd"
                           d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
@@ -237,8 +264,7 @@ const ReviewForm = ({ projectId, reviewerId, revieweeId }: ReviewFormProps) => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ReviewForm
-
+export default ReviewForm;

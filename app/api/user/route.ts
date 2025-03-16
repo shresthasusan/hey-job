@@ -50,6 +50,8 @@ export async function GET(req: NextRequest) {
                 country: 1,
                 city: 1,
                 phone: 1,
+                emailVerified: 1,
+                kycVerified: 1,
                 zipPostalCode: 1,
                 createdAt: 1,
                 dob: 1,

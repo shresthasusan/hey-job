@@ -6,7 +6,7 @@ import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { PaintBrushIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import { fetchWithAuth } from "../lib/fetchWIthAuth";
-import { useAuth } from "../providers";
+import { useAuth } from "@/app/providers";
 
 const ProfilePictureUploader: React.FC = () => {
   const { session, status } = useAuth();

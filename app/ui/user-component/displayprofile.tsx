@@ -1,10 +1,12 @@
+"use client";
+
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
-import { useAuth } from "@/app/providers";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
 export default function DisplayProfile() {
-  const { session, status } = useAuth();
+  const { data: session } = useSession();
   const [userData, setUserData] = useState<any>(null);
   const [freelancerData, setFreelancerData] = useState<any>(null);
   const [activeTab, setActiveTab] = useState("personal");
@@ -96,8 +98,8 @@ export default function DisplayProfile() {
             <div className="h-32 w-32 rounded-full border-4 border-white bg-gray-100 overflow-hidden">
               {userData?.profilePicture ? (
                 <Image
-                  width={500}
-                  height={500}
+                  width={300}
+                  height={300}
                   src={userData.profilePicture || "/placeholder.svg"}
                   alt={userData?.name || "User"}
                   className="h-full w-full object-cover"
@@ -230,6 +232,7 @@ export default function DisplayProfile() {
           </button>
         </div>
       </div>
+
       {activeTab === "personal" && userData && (
         <div className="space-y-6">
           {/* Personal Information Card */}
@@ -489,167 +492,165 @@ export default function DisplayProfile() {
                 <p className="text-gray-500">No work experience provided.</p>
               )}
             </div>
+          </div>
 
-            {/* Project Portfolio Card */}
-            <div className="bg-white rounded-xl shadow-md overflow-hidden">
-              <div className="px-6 py-4 border-b">
-                <div className="flex items-center gap-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 text-blue-500"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline points="14 2 14 8 20 8"></polyline>
-                    <line x1="16" y1="13" x2="8" y2="13"></line>
-                    <line x1="16" y1="17" x2="8" y2="17"></line>
-                    <polyline points="10 9 9 9 8 9"></polyline>
-                  </svg>
-                  <h2 className="text-xl font-semibold text-gray-800">
-                    Project Portfolio
-                  </h2>
-                </div>
-              </div>
-              <div className="p-6">
-                {freelancerData?.projectPortfolio?.length > 0 ? (
-                  <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
-                    {freelancerData.projectPortfolio.map(
-                      (project: any, index: number) => (
-                        <div
-                          key={index}
-                          className="bg-white border rounded-lg overflow-hidden shadow-sm"
-                        >
-                          <div className="h-3 bg-blue-500"></div>
-                          <div className="p-4">
-                            <h3 className="font-semibold text-lg mb-2 text-gray-800">
-                              {project.projectTitle}
-                            </h3>
-                            <p className="text-sm text-gray-600 mb-3">
-                              {project.projectDescription}
-                            </p>
-
-                            {/* Technologies Used */}
-                            {project.technologies &&
-                              project.technologies.length > 0 && (
-                                <div className="mb-3">
-                                  <div className="flex flex-wrap gap-1">
-                                    {project.technologies.map(
-                                      (tech: string, techIndex: number) => (
-                                        <span
-                                          key={techIndex}
-                                          className="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded-full"
-                                        >
-                                          {tech}
-                                        </span>
-                                      )
-                                    )}
-                                  </div>
-                                </div>
-                              )}
-
-                            {/* Project Attachment */}
-                            {project.portfolioFiles && (
-                              <button
-                                onClick={() =>
-                                  setSelectedAttachment(project.portfolioFiles)
-                                }
-                                className="mt-2 inline-flex items-center text-sm text-blue-600 hover:text-blue-800"
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  className="h-4 w-4 mr-1"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                >
-                                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                  <polyline points="7 10 12 15 17 10"></polyline>
-                                  <line x1="12" y1="15" x2="12" y2="3"></line>
-                                </svg>
-                                View Attachment
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      )
-                    )}
-                  </div>
-                ) : (
-                  <p className="text-gray-500">No projects added.</p>
-                )}
+          {/* Project Portfolio Card */}
+          <div className="bg-white rounded-xl shadow-md overflow-hidden">
+            <div className="px-6 py-4 border-b">
+              <div className="flex items-center gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 text-blue-500"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                  <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                <h2 className="text-xl font-semibold text-gray-800">
+                  Project Portfolio
+                </h2>
               </div>
             </div>
-
-            {/* Education Card */}
-            <div className="bg-white rounded-xl shadow-md overflow-hidden">
-              <div className="px-6 py-4 border-b">
-                <div className="flex items-center gap-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 text-blue-500"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
-                    <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
-                  </svg>
-                  <h2 className="text-xl font-semibold text-gray-800">
-                    Education
-                  </h2>
-                </div>
-              </div>
-              <div className="p-6">
-                {freelancerData?.education?.length > 0 ? (
-                  <div className="space-y-6">
-                    {freelancerData.education.map((edu: any, index: number) => (
+            <div className="p-6">
+              {freelancerData?.projectPortfolio?.length > 0 ? (
+                <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
+                  {freelancerData.projectPortfolio.map(
+                    (project: any, index: number) => (
                       <div
                         key={index}
-                        className={index > 0 ? "pt-6 border-t" : ""}
+                        className="bg-white border rounded-lg overflow-hidden shadow-sm"
                       >
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
-                          <h3 className="font-semibold text-lg text-gray-800">
-                            {edu.degree}
+                        <div className="h-3 bg-blue-500"></div>
+                        <div className="p-4">
+                          <h3 className="font-semibold text-lg mb-2 text-gray-800">
+                            {project.projectTitle}
                           </h3>
-                          <span className="mt-1 md:mt-0 px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
-                            {edu.duration}
-                          </span>
+                          <p className="text-sm text-gray-600 mb-3">
+                            {project.projectDescription}
+                          </p>
+
+                          {/* Technologies Used */}
+                          {project.technologies &&
+                            project.technologies.length > 0 && (
+                              <div className="mb-3">
+                                <div className="flex flex-wrap gap-1">
+                                  {project.technologies.map(
+                                    (tech: string, techIndex: number) => (
+                                      <span
+                                        key={techIndex}
+                                        className="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded-full"
+                                      >
+                                        {tech}
+                                      </span>
+                                    )
+                                  )}
+                                </div>
+                              </div>
+                            )}
+
+                          {/* Project Attachment */}
+                          {project.portfolioFiles && (
+                            <button
+                              onClick={() =>
+                                setSelectedAttachment(project.portfolioFiles)
+                              }
+                              className="mt-2 inline-flex items-center text-sm text-blue-600 hover:text-blue-800"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-4 w-4 mr-1"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                              </svg>
+                              View Attachment
+                            </button>
+                          )}
                         </div>
-                        <p className="text-gray-600 flex items-center">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-4 w-4 mr-1 inline"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                          </svg>
-                          {edu.institution}
-                        </p>
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-500">
-                    No education details provided.
-                  </p>
-                )}
+                    )
+                  )}
+                </div>
+              ) : (
+                <p className="text-gray-500">No projects added.</p>
+              )}
+            </div>
+          </div>
+
+          {/* Education Card */}
+          <div className="bg-white rounded-xl shadow-md overflow-hidden">
+            <div className="px-6 py-4 border-b">
+              <div className="flex items-center gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 text-blue-500"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                  <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                </svg>
+                <h2 className="text-xl font-semibold text-gray-800">
+                  Education
+                </h2>
               </div>
+            </div>
+            <div className="p-6">
+              {freelancerData?.education?.length > 0 ? (
+                <div className="space-y-6">
+                  {freelancerData.education.map((edu: any, index: number) => (
+                    <div
+                      key={index}
+                      className={index > 0 ? "pt-6 border-t" : ""}
+                    >
+                      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
+                        <h3 className="font-semibold text-lg text-gray-800">
+                          {edu.degree}
+                        </h3>
+                        <span className="mt-1 md:mt-0 px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
+                          {edu.duration}
+                        </span>
+                      </div>
+                      <p className="text-gray-600 flex items-center">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-4 w-4 mr-1 inline"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                        {edu.institution}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500">No education details provided.</p>
+              )}
             </div>
           </div>
         </div>
@@ -692,8 +693,8 @@ export default function DisplayProfile() {
               ) : typeof selectedAttachment === "string" &&
                 selectedAttachment.match(/\.(jpeg|jpg|gif|png)$/i) ? (
                 <Image
-                  height={500}
-                  width={500}
+                  width={300}
+                  height={300}
                   src={selectedAttachment || "/placeholder.svg"}
                   alt="Project Attachment"
                   className="max-w-full max-h-[70vh] mx-auto object-contain"

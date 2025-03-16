@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "../providers";
+import { useAuth } from "@/app/providers";
 
 interface Props {
   name?: boolean;

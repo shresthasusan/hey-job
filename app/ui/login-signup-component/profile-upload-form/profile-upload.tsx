@@ -32,6 +32,8 @@ const ProfileUploadForm = () => {
     profilePicture: string;
   }
 
+  // const { session, status } = useAuth();
+
   const [formData, setFormData] = useState<formData>({
     dob: "",
     country: "",
