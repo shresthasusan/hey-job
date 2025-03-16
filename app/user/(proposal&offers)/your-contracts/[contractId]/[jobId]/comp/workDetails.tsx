@@ -237,7 +237,7 @@ const ProjectActions: React.FC<ProjectActionsProps> = ({
         buttons.push(
           <Link
             key="proceed-to-payment"
-            href={`/paymentBilling/${contractId}`}
+            href={`/paymentBilling/${contractId}/gateway-select`}
             className={`${buttonClass} bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600`}
           >
             Proceed to Payment
