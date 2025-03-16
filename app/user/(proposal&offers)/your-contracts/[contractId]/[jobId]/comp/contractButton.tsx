@@ -44,6 +44,7 @@ const Button: React.FC<ButtonProps> = ({
 
     // Client-specific actions
     if (userRole === "client") {
+      if (projectStatus === "revisions" && action === "completed") return false;
       if (action === "completed") return true; // Client can complete from any non-final state
       if (action === "canceled") return true;
       return false;
