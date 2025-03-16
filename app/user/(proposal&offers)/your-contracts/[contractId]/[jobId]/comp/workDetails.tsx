@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import JobDetails from "./jobDetails";
 import TimeLine from "./timeLine";
@@ -229,23 +230,20 @@ const ProjectActions: React.FC<ProjectActionsProps> = ({
 }) => {
   const renderButtons = () => {
     const buttons = [];
-    const buttonClass = "mr-2"; // Margin between buttons
+    const buttonClass = "mr-2";
 
-    // Handle completed state differently for client and freelancer
     if (projectStatus === "completed") {
       if (userRole === "client") {
-        // Client: Proceed to Payment button
         buttons.push(
-          <a
+          <Link
             key="proceed-to-payment"
-            href={`/payment/${contractId}`}
+            href={`/paymentBilling/${contractId}`}
             className={`${buttonClass} bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600`}
           >
             Proceed to Payment
-          </a>
+          </Link>
         );
       } else if (userRole === "freelancer") {
-        // Freelancer: Notify payment pending
         return (
           <p className="text-yellow-500 italic">
             Payment is pending at client side.
@@ -257,7 +255,6 @@ const ProjectActions: React.FC<ProjectActionsProps> = ({
       ) : null;
     }
 
-    // Final state: canceled (no actions)
     if (projectStatus === "canceled") {
       return (
         <p className="text-gray-500 italic">
@@ -266,7 +263,6 @@ const ProjectActions: React.FC<ProjectActionsProps> = ({
       );
     }
 
-    // Freelancer buttons
     if (userRole === "freelancer") {
       if (projectStatus === "ongoing") {
         buttons.push(
@@ -310,7 +306,6 @@ const ProjectActions: React.FC<ProjectActionsProps> = ({
       );
     }
 
-    // Client buttons
     if (userRole === "client") {
       buttons.push(
         <Button
