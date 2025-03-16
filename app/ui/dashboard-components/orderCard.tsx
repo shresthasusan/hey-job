@@ -4,24 +4,25 @@ import { useEffect, useState } from "react";
 import { CheckBadgeIcon, ClockIcon } from "@heroicons/react/24/solid";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 import { useSession } from "next-auth/react";
+import { useAuth } from "@/app/providers";
 
 interface Props {
-  userId: string;
   mode: string;
 }
 
-const OrderCard = ({ userId, mode }: Props) => {
+const OrderCard = ({ mode }: Props) => {
   const [activeCount, setActiveCount] = useState(0);
   const [completeCount, setCompleteCount] = useState(0);
 
-
-  const { data: session } = useSession();
-  userId = session?.user?.id || userId;
+  const { session } = useAuth();
+  const userId = session?.user?.id;
 
   useEffect(() => {
     const fetchContractData = async () => {
       try {
-        const response = await fetchWithAuth(`/api/contractsFetchwithcount?userId=${userId}`);
+        const response = await fetchWithAuth(
+          `/api/contractsFetchwithcount?userId=${userId}`
+        );
         const data = await response.json();
         setActiveCount(data.activeCount || 0);
         setCompleteCount(data.completeCount || 0);
@@ -53,8 +54,7 @@ const OrderCard = ({ userId, mode }: Props) => {
 
         {/* Completed Orders with Green Background */}
         <div className="bg-sucess-400 text-sucess-600 relative rounded-3xl p-[3px] pl-10">
-          <p>{completeCount} Completed
-          </p>
+          <p>{completeCount} Completed</p>
           <CheckBadgeIcon className="h-4 w-5 absolute -translate-y-[50%]  left-3 top-1/2 " />
         </div>
       </div>
