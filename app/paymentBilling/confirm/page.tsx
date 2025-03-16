@@ -21,7 +21,7 @@ const PaymentConfirmContent = () => {
     const confirmPayment = async () => {
       try {
         const response = await fetchWithAuth(
-          `/api/esewa/callback?data=${data}`,
+          `/api/esewa-payment/callback?data=${data}`,
           {
             method: "GET",
             redirect: "manual", // Handle redirect manually
