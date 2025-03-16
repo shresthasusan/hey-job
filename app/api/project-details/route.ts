@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectMongoDB } from "@/app/lib/mongodb";
 import ProjectDetails from "@/models/projectDetails";
-import Jobs from "@/models/jobs";// Assuming this model exists
+import Jobs from "@/models/jobs"; // Assuming this model exists
 import Contract from "@/models/contract"; // Assuming this model exists
 import { startSession } from "mongoose";
 
@@ -183,25 +183,29 @@ export async function PATCH(req: NextRequest) {
                             changedAt: new Date(),
                         });
 
-                        // Update Contract
-                        const contract = await Contract.findOne({ _id: contractId }).session(session);
-                        if (!contract) {
-                            throw new Error("Contract not found");
+                        // Update Contract only if newStatus is "canceled"
+                        if (newStatus === "canceled") {
+                            const contract = await Contract.findOne({ _id: contractId }).session(session);
+                            if (!contract) {
+                                throw new Error("Contract not found");
+                            }
+                            contract.status = newStatus;
+                            contract.updated_at = new Date();
+                            contract.statusHistory = contract.statusHistory || [];
+                            contract.statusHistory.push({
+                                status: newStatus,
+                                updatedBy: userId,
+                                updatedAt: new Date(),
+                            });
+
+                            // Save contract changes
+                            await contract.save({ session });
                         }
-                        contract.status = newStatus;
-                        contract.updated_at = new Date();
-                        contract.statusHistory = contract.statusHistory || [];
-                        contract.statusHistory.push({
-                            status: newStatus,
-                            updatedBy: userId,
-                            updatedAt: new Date(),
-                        });
 
                         // Save all changes within the transaction
                         await Promise.all([
                             project.save({ session }),
                             job.save({ session }),
-                            contract.save({ session }),
                         ]);
                     });
                 } catch (error) {
@@ -228,6 +232,3 @@ export async function PATCH(req: NextRequest) {
         );
     }
 }
-
-
-
