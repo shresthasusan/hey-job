@@ -2,6 +2,7 @@
 
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 import { useAuth } from "@/app/providers";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 export default function DisplayProfile() {
@@ -96,7 +97,9 @@ export default function DisplayProfile() {
           <div className="flex flex-col md:flex-row items-start md:items-end -mt-16 gap-4">
             <div className="h-32 w-32 rounded-full border-4 border-white bg-gray-100 overflow-hidden">
               {userData?.profilePicture ? (
-                <img
+                <Image
+                  width={128}
+                  height={128}
                   src={userData.profilePicture || "/placeholder.svg"}
                   alt={userData?.name || "User"}
                   className="h-full w-full object-cover"
@@ -689,7 +692,9 @@ export default function DisplayProfile() {
                 ></iframe>
               ) : typeof selectedAttachment === "string" &&
                 selectedAttachment.match(/\.(jpeg|jpg|gif|png)$/i) ? (
-                <img
+                <Image
+                  height={128}
+                  width={128}
                   src={selectedAttachment || "/placeholder.svg"}
                   alt="Project Attachment"
                   className="max-w-full max-h-[70vh] mx-auto object-contain"
