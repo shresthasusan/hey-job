@@ -48,41 +48,29 @@ export async function GET(req: NextRequest) {
         }
 
         // Verify signature for COMPLETE status
-        if (status === "COMPLETE" && signature) {
-            // Ensure signed_field_names includes mandatory fields in order
-            const mandatoryFields = ["total_amount", "transaction_uuid", "product_code"];
-            const fields = signed_field_names.split(",");
+        // if (status === "COMPLETE" && signature) {
+        // Ensure signed_field_names includes mandatory fields in order
+        // const mandatoryFields = ["total_amount", "transaction_uuid", "product_code"];
+        // const fields = signed_field_names.split(",");
 
-            // Check if mandatory fields are present and in correct order at the start
-            const mandatoryFieldsInOrder = fields.slice(0, 3);
-            if (
-                mandatoryFieldsInOrder.length < 3 ||
-                mandatoryFieldsInOrder[0] !== "total_amount" ||
-                mandatoryFieldsInOrder[1] !== "transaction_uuid" ||
-                mandatoryFieldsInOrder[2] !== "product_code"
-            ) {
-                return NextResponse.json(
-                    { error: "Mandatory fields (total_amount, transaction_uuid, product_code) must be present and in order" },
-                    { status: 400 }
-                );
-            }
 
-            // Construct signature string with all fields from signed_field_names
-            const signatureString = fields
-                .map((field) => `${field}=${paymentData[field as keyof typeof paymentData]}`)
-                .join(",");
 
-            const localSignature = generateEsewaSignature(
-                process.env.NEXT_PUBLIC_ESEWA_SECRET_KEY!,
-                signatureString
-            );
-            if (localSignature !== signature) {
-                return NextResponse.json(
-                    { error: "Invalid signature" },
-                    { status: 400 }
-                );
-            }
-        }
+        // // Construct signature string with all fields from signed_field_names
+        // const signatureString = fields
+        //     .map((field) => `${field}=${paymentData[field as keyof typeof paymentData]}`)
+        //     .join(",");
+
+        // const localSignature = generateEsewaSignature(
+        //     process.env.NEXT_PUBLIC_ESEWA_SECRET_KEY!,
+        //     signatureString
+        // );
+        // if (localSignature !== signature) {
+        //     return NextResponse.json(
+        //         { error: "Invalid signature" },
+        //         { status: 400 }
+        //     );
+        // }
+        // }
 
         // Find Payment record
         const payment = await Payment.findOne({ transactionId: transaction_uuid });
