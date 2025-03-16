@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/app/providers";
 import {
   PencilIcon,
   SunIcon,
@@ -11,7 +11,7 @@ import {
 } from "@heroicons/react/20/solid";
 
 export default function SettingsPage() {
-  const { data: session } = useSession();
+  const { session, status } = useAuth();
   const [darkMode, setDarkMode] = useState(false);
   const [email, setEmail] = useState(session?.user?.email || "");
 

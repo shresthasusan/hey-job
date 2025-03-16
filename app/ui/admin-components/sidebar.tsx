@@ -39,7 +39,7 @@ const NavItem: React.FC<NavItemProps> = ({ href, icon, label, isActive }) => (
 
 const Sidebar: React.FC = () => {
   const pathname = usePathname(); // Get current route
-  const { data: session } = useSession(); // Get session data
+  const { session, status } = useAuth(); // Get session data
 
   return (
     <div className="left-0 top-0 h-screen px-5 w-1/6 bg-white shadow-md text-black">

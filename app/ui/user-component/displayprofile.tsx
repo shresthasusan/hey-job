@@ -1,9 +1,9 @@
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/app/providers";
 import { useEffect, useState } from "react";
 
 export default function DisplayProfile() {
-  const { data: session } = useSession();
+  const { session, status } = useAuth();
   const [userData, setUserData] = useState<any>(null);
   const [freelancerData, setFreelancerData] = useState<any>(null);
 
@@ -12,7 +12,9 @@ export default function DisplayProfile() {
     if (session?.user?.id) {
       const fetchUserData = async () => {
         try {
-          const res = await fetchWithAuth(`/api/user?userId=${session?.user.id}`);
+          const res = await fetchWithAuth(
+            `/api/user?userId=${session?.user.id}`
+          );
           const data = await res.json();
           setUserData(data);
         } catch (error) {
@@ -28,7 +30,9 @@ export default function DisplayProfile() {
     if (session?.user?.id) {
       const fetchFreelancerData = async () => {
         try {
-          const res = await fetchWithAuth(`/api/freelancers?userId=${session?.user.id}`);
+          const res = await fetchWithAuth(
+            `/api/freelancers?userId=${session?.user.id}`
+          );
           const data = await res.json();
           setFreelancerData(data.freelancer); // Extract freelancer object
         } catch (error) {
@@ -52,7 +56,9 @@ export default function DisplayProfile() {
             />
           </div>
           <div>
-            <h2 className="text-3xl font-semibold">{userData?.name} {userData?.lastName}</h2>
+            <h2 className="text-3xl font-semibold">
+              {userData?.name} {userData?.lastName}
+            </h2>
             <p className="text-lg text-gray-500">{userData?.email}</p>
           </div>
         </div>
@@ -61,10 +67,22 @@ export default function DisplayProfile() {
         <div className="border-t pt-4 mb-6">
           <h3 className="text-xl font-semibold mb-4">Personal Information</h3>
           <div className="grid grid-cols-4 gap-4 text-gray-700">
-            <p><span className="font-semibold">Phone:</span> {userData?.phone || "Not provided"}</p>
-            <p><span className="font-semibold">Country:</span> {userData?.country || "Not provided"}</p>
-            <p><span className="font-semibold">City:</span> {userData?.city || "Not provided"}</p>
-            <p><span className="font-semibold">Postal Code:</span> {userData?.zipPostalCode || "Not provided"}</p>
+            <p>
+              <span className="font-semibold">Phone:</span>{" "}
+              {userData?.phone || "Not provided"}
+            </p>
+            <p>
+              <span className="font-semibold">Country:</span>{" "}
+              {userData?.country || "Not provided"}
+            </p>
+            <p>
+              <span className="font-semibold">City:</span>{" "}
+              {userData?.city || "Not provided"}
+            </p>
+            <p>
+              <span className="font-semibold">Postal Code:</span>{" "}
+              {userData?.zipPostalCode || "Not provided"}
+            </p>
           </div>
         </div>
 
@@ -72,23 +90,42 @@ export default function DisplayProfile() {
         <div className="border-t pt-4">
           <h3 className="text-xl font-semibold mb-4">Account Information</h3>
           <div className="grid grid-cols-2 gap-4 text-gray-700">
-            <p><span className="font-semibold">Email:</span> {userData?.email || "Not provided"}</p>
-            <p><span className="font-semibold">KYC Verified:</span> {userData?.kycVerified ? "Yes" : "No"}</p>
-            <p><span className="font-semibold">Email Verified:</span> {userData?.emailVerified ? "Yes" : "No"}</p>
+            <p>
+              <span className="font-semibold">Email:</span>{" "}
+              {userData?.email || "Not provided"}
+            </p>
+            <p>
+              <span className="font-semibold">KYC Verified:</span>{" "}
+              {userData?.kycVerified ? "Yes" : "No"}
+            </p>
+            <p>
+              <span className="font-semibold">Email Verified:</span>{" "}
+              {userData?.emailVerified ? "Yes" : "No"}
+            </p>
           </div>
         </div>
 
         {/* Freelancer Information */}
         {freelancerData && (
           <div className="border-t pt-6 mt-6">
-            <h2 className="text-2xl font-semibold mb-4">Freelancer Information</h2>
+            <h2 className="text-2xl font-semibold mb-4">
+              Freelancer Information
+            </h2>
 
             {/* Skills & Industries */}
             <div className="border-t pt-4 mb-6">
-              <h3 className="text-xl font-semibold mb-4">Skills & Industries</h3>
+              <h3 className="text-xl font-semibold mb-4">
+                Skills & Industries
+              </h3>
               <div className="grid grid-cols-2 gap-4 text-gray-700">
-                <p><span className="font-semibold">Skills:</span> {freelancerData?.skills?.join(", ") || "Not provided"}</p>
-                <p><span className="font-semibold">Industries:</span> {freelancerData?.industries?.join(", ") || "Not provided"}</p>
+                <p>
+                  <span className="font-semibold">Skills:</span>{" "}
+                  {freelancerData?.skills?.join(", ") || "Not provided"}
+                </p>
+                <p>
+                  <span className="font-semibold">Industries:</span>{" "}
+                  {freelancerData?.industries?.join(", ") || "Not provided"}
+                </p>
               </div>
             </div>
 
@@ -96,13 +133,17 @@ export default function DisplayProfile() {
             <div className="border-t pt-4 mb-6">
               <h3 className="text-xl font-semibold mb-4">Work Experience</h3>
               {freelancerData?.workExperience?.length > 0 ? (
-                freelancerData?.workExperience.map((work: any, index: number) => (
-                  <div key={index} className="mb-4">
-                    <p className="font-semibold">{work.company} - {work.position}</p>
-                    <p className="text-gray-600">{work.duration}</p>
-                    <p>{work.description}</p>
-                  </div>
-                ))
+                freelancerData?.workExperience.map(
+                  (work: any, index: number) => (
+                    <div key={index} className="mb-4">
+                      <p className="font-semibold">
+                        {work.company} - {work.position}
+                      </p>
+                      <p className="text-gray-600">{work.duration}</p>
+                      <p>{work.description}</p>
+                    </div>
+                  )
+                )
               ) : (
                 <p className="text-gray-500">No work experience provided.</p>
               )}
@@ -112,12 +153,14 @@ export default function DisplayProfile() {
             <div className="border-t pt-4 mb-6">
               <h3 className="text-xl font-semibold mb-4">Project Portfolio</h3>
               {freelancerData?.projectPortfolio?.length > 0 ? (
-                freelancerData?.projectPortfolio.map((project: any, index: number) => (
-                  <div key={index} className="mb-4">
-                    <p className="font-semibold">{project.title}</p>
-                    <p className="text-gray-600">{project.description}</p>
-                  </div>
-                ))
+                freelancerData?.projectPortfolio.map(
+                  (project: any, index: number) => (
+                    <div key={index} className="mb-4">
+                      <p className="font-semibold">{project.title}</p>
+                      <p className="text-gray-600">{project.description}</p>
+                    </div>
+                  )
+                )
               ) : (
                 <p className="text-gray-500">No projects added.</p>
               )}
@@ -129,7 +172,9 @@ export default function DisplayProfile() {
               {freelancerData?.education?.length > 0 ? (
                 freelancerData?.education.map((edu: any, index: number) => (
                   <div key={index} className="mb-4">
-                    <p className="font-semibold">{edu.institution} - {edu.degree}</p>
+                    <p className="font-semibold">
+                      {edu.institution} - {edu.degree}
+                    </p>
                     <p className="text-gray-600">{edu.duration}</p>
                   </div>
                 ))

@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import useFetch from "../hooks/useFetch";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/app/providers";
 import { usePathname, useRouter } from "next/navigation"; // ✅ Use this instead of next/router
 import { fetchWithAuth } from "../lib/fetchWIthAuth";
 
@@ -12,7 +12,7 @@ export interface KYCStatusResponse {
 }
 
 const KYCStatus: React.FC = () => {
-  const { data: session, status } = useSession();
+  const { session, status } = useAuth();
 
   const [isVisible, setIsVisible] = useState(true);
   const router = useRouter(); // ✅ Use useRouter from next/navigation

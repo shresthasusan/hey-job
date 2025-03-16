@@ -1,9 +1,17 @@
-'use client';
-import React, { useEffect, useState, useRef } from 'react';
-import { ClockIcon, CurrencyDollarIcon, MapPinIcon, TagIcon, UserIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
-import { getTimeAgo } from '../../dashboard-components/job-list/jobList';
-import { useSession } from 'next-auth/react';
-import { fetchWithAuth } from '@/app/lib/fetchWIthAuth';
+"use client";
+import React, { useEffect, useState, useRef } from "react";
+import {
+  ClockIcon,
+  CurrencyDollarIcon,
+  MapPinIcon,
+  TagIcon,
+  UserIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from "@heroicons/react/24/outline";
+import { getTimeAgo } from "../../dashboard-components/job-list/jobList";
+import { useAuth } from "@/app/providers";
+import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 
 interface Job {
   id: string;
@@ -20,7 +28,7 @@ interface Job {
 const ProjectCarousel: React.FC = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const { data: session } = useSession();
+  const { session, status } = useAuth();
   const carouselRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -28,11 +36,16 @@ const ProjectCarousel: React.FC = () => {
       // Fetch jobs posted by the user
       const fetchJobs = async () => {
         try {
-          const response = await fetchWithAuth(`/api/fetchJobs?userId=${session?.user.id}`);
+          const response = await fetchWithAuth(
+            `/api/fetchJobs?userId=${session?.user.id}`
+          );
           const data = await response.json();
           console.log("Fetched jobs:", data.jobs); // Log the fetched jobs
           // Sort jobs by creation date in descending order
-          const sortedJobs = data.jobs.sort((a: Job, b: Job) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+          const sortedJobs = data.jobs.sort(
+            (a: Job, b: Job) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
           setJobs(sortedJobs);
         } catch (error) {
           console.error("Error fetching jobs:", error);
@@ -47,13 +60,13 @@ const ProjectCarousel: React.FC = () => {
 
   const scrollLeft = () => {
     if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+      carouselRef.current.scrollBy({ left: -300, behavior: "smooth" });
     }
   };
 
   const scrollRight = () => {
     if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+      carouselRef.current.scrollBy({ left: 300, behavior: "smooth" });
     }
   };
 
@@ -69,15 +82,23 @@ const ProjectCarousel: React.FC = () => {
         </div>
       ) : (
         <div className="relative">
-          <button onClick={scrollLeft} className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-200 p-2 rounded-full shadow-md hover:bg-gray-300 transition-colors duration-300">
+          <button
+            onClick={scrollLeft}
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-200 p-2 rounded-full shadow-md hover:bg-gray-300 transition-colors duration-300"
+          >
             <ChevronLeftIcon className="w-6 h-6 text-gray-600" />
           </button>
-          <div ref={carouselRef} className="flex overflow-x-auto space-x-4 p-6 scrollbar-hide">
+          <div
+            ref={carouselRef}
+            className="flex overflow-x-auto space-x-4 p-6 scrollbar-hide"
+          >
             {jobs.map((job) => (
-              <div key={job.id} className="min-w-[300px] border p-4 rounded-lg shadow hover:shadow-lg transition-shadow duration-300 bg-white">
+              <div
+                key={job.id}
+                className="min-w-[300px] border p-4 rounded-lg shadow hover:shadow-lg transition-shadow duration-300 bg-white"
+              >
                 <h2 className="text-xl font-semibold mb-2 items-center">
                   {job.title}
-                 
                 </h2>
                 <p className="text-gray-700 mb-2">{job.description}</p>
                 <div className="flex items-center mb-2">
@@ -98,21 +119,30 @@ const ProjectCarousel: React.FC = () => {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {job.tags.map((tag, index) => (
-                    <span key={index} className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full flex items-center">
+                    <span
+                      key={index}
+                      className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full flex items-center"
+                    >
                       <TagIcon className="w-4 h-4 mr-1" />
                       {tag}
                     </span>
                   ))}
                 </div>
-                <div className="mt-2 "> {job.proposalCount > 0 && (
+                <div className="mt-2 ">
+                  {" "}
+                  {job.proposalCount > 0 && (
                     <span className="ml-2 relative text-xs bg-green-500 text-white px-2 py-1 rounded-full">
                       {job.proposalCount} proposals
                     </span>
-                  )}</div>
+                  )}
+                </div>
               </div>
             ))}
           </div>
-          <button onClick={scrollRight} className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-200 p-2 rounded-full shadow-md hover:bg-gray-300 transition-colors duration-300">
+          <button
+            onClick={scrollRight}
+            className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-200 p-2 rounded-full shadow-md hover:bg-gray-300 transition-colors duration-300"
+          >
             <ChevronRightIcon className="w-6 h-6 text-gray-600" />
           </button>
         </div>

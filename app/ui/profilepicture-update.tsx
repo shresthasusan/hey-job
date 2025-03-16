@@ -6,10 +6,10 @@ import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { PaintBrushIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import { fetchWithAuth } from "../lib/fetchWIthAuth";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/app/providers";
 
 const ProfilePictureUploader: React.FC = () => {
-  const { data: session } = useSession();
+  const { session, status } = useAuth();
   const [currentProfilePic, setCurrentProfilePic] = useState<string | null>(
     session?.user?.profilePicture || null
   );

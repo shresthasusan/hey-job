@@ -15,11 +15,11 @@ import SaveButton from "../saveButton";
 import Link from "next/link";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 import useFetch from "@/app/hooks/useFetch";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/app/providers";
 import ApplyProposalButton from "./apply-proposal-button";
 
 const JobDetailsSlider: React.FC = () => {
-  const { data: session } = useSession();
+  const { session, status } = useAuth();
   const {
     jobData: job,
     jobDetailsVisible,
@@ -31,9 +31,7 @@ const JobDetailsSlider: React.FC = () => {
     interviewing: "Loading...",
   });
 
-
   //fetch proposal when the panel opens
-
 
   // Fetch job stats when the panel opens
   useEffect(() => {
@@ -161,11 +159,9 @@ const JobDetailsSlider: React.FC = () => {
           <h3 className="text-lg  mb-2">Activity on this job</h3>
           <div className="text-gray-700 space-y-1">
             <p>
-               <strong>Proposals: </strong> {jobStats.proposals}
+              <strong>Proposals: </strong> {jobStats.proposals}
             </p>
-            <p>
-              
-            </p>
+            <p></p>
           </div>
         </div>
 
@@ -176,15 +172,15 @@ const JobDetailsSlider: React.FC = () => {
             <div className="flex items-center space-x-2">
               <DocumentTextIcon className="w-5 h-5 text-gray-600" />
               {job.fileUrls.map((url, index) => (
-          <a
-            key={index}
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 hover:underline"
-          >
-            View Attachment {index + 1}
-          </a>
+                <a
+                  key={index}
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline"
+                >
+                  View Attachment {index + 1}
+                </a>
               ))}
             </div>
           ) : (

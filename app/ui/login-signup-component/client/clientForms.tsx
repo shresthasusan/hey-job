@@ -1,7 +1,7 @@
 "use client";
 
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/app/providers";
 import { Button } from "@/app/ui/button";
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
@@ -22,7 +22,7 @@ interface ClientFormData {
 
 const ClientForm = () => {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { session, status } = useAuth();
 
   // Initial form data
   const initialFormData: ClientFormData = {

@@ -11,7 +11,7 @@ import {
   ShieldCheckIcon,
 } from "@heroicons/react/24/outline";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/app/providers";
 import AcceptButton from "./acceptButton";
 
 export default function ContractDetails({
@@ -22,7 +22,7 @@ export default function ContractDetails({
   const [contract, setContract] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { data: session } = useSession();
+  const { session, status } = useAuth();
 
   useEffect(() => {
     const fetchContractOffers = async () => {

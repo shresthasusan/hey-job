@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/app/providers";
 
 interface Props {
   name?: boolean;
@@ -10,7 +10,7 @@ interface Props {
 }
 
 const DisplaySessionInfo = ({ name, fullName, id, email }: Props) => {
-  const { data: session } = useSession();
+  const { session, status } = useAuth();
   const user_Name = session?.user.name;
   const full_Name = session?.user.name + " " + session?.user.lastName;
   const _id = session?.user.id;

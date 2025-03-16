@@ -1,7 +1,7 @@
 "use client";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/app/providers";
 import { useRouter } from "next/navigation";
 import { Button } from "../button";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -28,7 +28,7 @@ const DetailsForm = () => {
   const [step, setStep] = useState(0);
   const nextStep = () => setStep(step + 1);
   const prevStep = () => setStep(step - 1);
-  const { data: session } = useSession();
+  const { session, status } = useAuth();
   const id = session?.user.id;
   const [tagInput, setTagInput] = useState<string>("");
 
@@ -167,7 +167,7 @@ const DetailsForm = () => {
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm"
             />
           </div>
-            <div>
+          <div>
             <label
               htmlFor="type"
               className="block text-sm font-medium text-gray-700"
@@ -186,9 +186,8 @@ const DetailsForm = () => {
               <option value="Part-time">Part-Time (Flexible Hours)</option>
               <option value="Contract">Freelance/Project-Based</option>
               <option value="Internship">Internship (Career Starter)</option>
-
             </select>
-            </div>
+          </div>
           <div>
             <label
               htmlFor="experience"
