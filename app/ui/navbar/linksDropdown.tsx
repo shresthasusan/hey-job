@@ -19,7 +19,6 @@ interface Props {
 
 const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
   const { session, status } = useAuth();
-
   return (
     <>
       {isDropdownVisible === 1 && (
@@ -73,7 +72,7 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
               currentMode?.startsWith("/search/jobs")) && (
               <>
                 <li>
-                  <Link href={"/user/your-contracts"}>
+                  <Link href={"/user/your-contracts?tab=active-contracts"}>
                     <p className=" p-3 hover:bg-slate-100">Your Contracts</p>
                   </Link>
                 </li>
@@ -126,14 +125,18 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
       )}
       {isOpen && (
         <>
-          <div className="p-3 flex flex-col relative overflow-hidden align-middle items-center">
-            <div className="rounded-full h-24 w-24 overflow-hidden">
+          <div className="p-3 flex   flex-col relative overflow-hidden  align-middle items-center ">
+            <div
+              className="  rounded-full
+                            
+                     h-24 w-24"
+            >
               <Image
                 src={session?.user?.profilePicture || "/images/image.png"}
                 alt="profile"
-                width={96}
-                height={96}
-                className="object-cover h-full w-full"
+                width={150}
+                height={150}
+                className="rounded-full "
               />
             </div>
 

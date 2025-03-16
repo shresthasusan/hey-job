@@ -1,206 +1,359 @@
 "use client";
 
-import { HeartIcon as Unliked, MapPinIcon } from "@heroicons/react/24/outline";
-import { useState, useEffect, use, useContext } from "react";
+import {
+  ArrowLeftIcon,
+  MapPinIcon,
+  ClockIcon,
+  CurrencyDollarIcon,
+  UserIcon,
+  TagIcon,
+  DocumentTextIcon,
+} from "@heroicons/react/24/outline";
+import { useEffect, useState } from "react";
 import SaveButton from "../../saveButton";
-import { Appcontext } from "@/app/context/appContext";
-import PostingSkeleton from "../skeletons/postingSkeleton";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
+import { useAuth } from "@/app/providers";
+import ApplyProposalButton from "../apply-proposal-button";
+import { useRouter, useSearchParams } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 
-const truncateString = (str: string, num: number) => {
-  if (str.length <= num) {
-    return str;
-  }
-  return str.slice(0, num) + "... ";
-};
-
-interface Props {
-  bestMatches?: boolean;
-  mostRecent?: boolean;
-  savedJobs?: boolean;
-  query?: string;
-}
-
-export interface Job {
+interface Job {
+  _id: string;
   title: string;
-  time: string;
   type: string;
   experience: string;
-  budget: number; // Changed from string to number to match the provided data structure
+  budget: string;
   description: string;
   tags: string[];
   location: string;
-  saved: boolean;
-  jobId: string; // Added jobId field to match the provided data structure
+  saved?: boolean;
   createdAt: string;
   fullName: string;
   fileUrls: string[];
   status: string;
+  statusHistory?: { status: string; changedAt: string }[];
+  proposalCount?: number;
 }
 
+const JobDetailsSlider: React.FC = () => {
+  const { session } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const jobId = searchParams.get("jobId");
 
-export const getTimeAgo = (dateString: string) => {
-  const units = [
-    { label: "year", seconds: 31536000 },
-    { label: "month", seconds: 2592000 },
-    { label: "day", seconds: 86400 },
-    { label: "hour", seconds: 3600 },
-    { label: "minute", seconds: 60 },
-  ];
+  const [job, setJob] = useState<Job | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const diffInSeconds = Math.floor(
-    (new Date().getTime() - new Date(dateString).getTime()) / 1000
-  );
-  if (diffInSeconds < 60) return "just now";
-
-  for (const unit of units) {
-    const value = Math.floor(diffInSeconds / unit.seconds);
-    if (value >= 1) return `${value} ${unit.label}${value > 1 ? "s" : ""} ago`;
-  }
-
-  return "just now";
-};
-
-// JobList component definition
-const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
-  // State variable to store fetched job data, initialized as an empty array
-  const [data, setData] = useState<Job[]>([]);
-  const [loading, setLoading] = useState(true); // Add loading state
-  const {
-    setJobData,
-    setJobDetailsVisible,
-    // jobData,
-    // jobDetailsVisible,
-  } = useContext(Appcontext);
-
-  // useEffect hook to fetch job data when the component mounts
+  // Fetch job data based on jobId from URL
   useEffect(() => {
-    // Create an AbortController to allow aborting the fetch request
-    const controller = new AbortController();
+    if (!jobId) {
+      setJob(null);
+      return;
+    }
 
-    // Async function to fetch job data from the API
-    const fetchData = async () => {
+    const fetchJobData = async () => {
       setLoading(true);
       try {
-        // Build the query string based on the passed props
-        const params = new URLSearchParams();
-        if (bestMatches) params.append("bestMatches", "true");
-        if (mostRecent) params.append("mostRecent", "true");
-        if (savedJobs) params.append("savedJobs", "true");
-        if (query) {
-          const queryParams = new URLSearchParams(query);
-          queryParams.forEach((value, key) => {
-            params.append(key, value);
-          });
-        }
-
         const response = await fetchWithAuth(
-          `/api/fetchJobs?${params.toString()}`,
+          `/api/fetchJobs?jobId=${jobId}&s=true`,
           {
-            method: "GET",
-            next: { revalidate: 3600 }, // Supports Next.js revalidation
+            next: { revalidate: 60 },
           }
         );
+        const jobData = await response.json();
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const { jobs } = await response.json();
-        setData(jobs);
+        setJob(jobData);
       } catch (error) {
-        // Log any errors that occur during the fetch
-        console.error("Error fetching jobs:", error);
+        console.error("Error fetching job data:", error);
+        setJob(null);
       } finally {
         setLoading(false);
       }
     };
 
-    // Call the fetchData function to fetch job data
-    fetchData();
+    fetchJobData();
+  }, [jobId]);
 
-    // Cleanup function to abort the fetch request if the component unmounts
-    return () => {
-      controller.abort();
-    };
-  }, [query, bestMatches, mostRecent, savedJobs]); // Empty dependency array means this effect runs once when the component mounts
-
-  const loadJobDetails = (job: Job) => {
-    setJobData(job);
-    setJobDetailsVisible(true);
-    console.log("Job details loaded:", job);
+  const onClose = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("jobId");
+    router.push(`?${params.toString()}`, { scroll: false });
   };
 
-  return (
-    <div className="flex  flex-col mt-8 w-full ">
-      {loading ? (
-        <PostingSkeleton />
-      ) : data.length === 0 ? (
-        <p className="text-center text-gray-500 mt-5">
-          No jobs found. Try adjusting your search criteria.
-        </p>
-      ) : (
-        data.map((job, index) => (
-          <div key={index} className="relative">
-            <div
-              className={`flex flex-col gap-1  p-5 border-t-2  border-gray-200 group`}
-              onClick={() => loadJobDetails(job)}
-            >
-              <p className="text-xs text-gray-400">
-                {" "}
-                Posted {getTimeAgo(job.createdAt)}
-              </p>
-              <div className="flex items-center justify-between ">
-                <h1 className="text-2xl text-gray-500  font-medium group-hover:text-primary-500 transition-all duration-250">
-                  {job.title}
-                </h1>
-                {/* {job.saved ? (
-                <Liked className="w-6 h-6 text-red-600 " />
-              ) : (
-                <Unliked className="w-6 h-6  " />
-              )} */}
-              </div>
-              <p className="text-xs mt-2 text-gray-400">
-                {job.type} - {job.experience} - Est. Budget: {job.budget}
-              </p>
-              <p className="text-black my-5 ">
-                {truncateString(job.description, 400)}
-                {job.description.length > 400 ? (
-                  <button className="text-primary-700 hover:text-primary-500">
-                    Read More
-                  </button>
-                ) : null}
-              </p>
-              <div className="flex justify-start gap-5 flex-wrap items-center">
-                {job.tags.map((tag, index) => (
-                  <div
-                    key={index}
-                    className="bg-slate-200 text-slate-500 p-3 flex flex-wrap justify-center items-center  rounded-2xl"
-                  >
-                    {tag}
-                  </div>
-                ))}
-              </div>
-              <div className="flex justify-between items-center mt-5">
-                <p className="text-sm mt-5 flex font-medium  text-gray-500">
-                  <MapPinIcon className="w-5 h-5 " /> {job.location}
-                </p>
-                {job.status !== "active" && (
-                  <p className="text-red-500 text-sm mt-2">
-                    This job is no longer active
+  const getTimeAgo = (dateString: string) => {
+    const diffInSeconds = Math.floor(
+      (new Date().getTime() - new Date(dateString).getTime()) / 1000
+    );
 
-                  </p>
-                )}
+    const units = [
+      { label: "year", seconds: 31536000 },
+      { label: "month", seconds: 2592000 },
+      { label: "day", seconds: 86400 },
+      { label: "hour", seconds: 3600 },
+      { label: "minute", seconds: 60 },
+    ];
+
+    for (const unit of units) {
+      const value = Math.floor(diffInSeconds / unit.seconds);
+      if (value >= 1)
+        return `${value} ${unit.label}${value > 1 ? "s" : ""} ago`;
+    }
+
+    return "just now";
+  };
+
+  // Animation variants for the slider
+  const sliderVariants = {
+    hidden: { x: "100%", opacity: 0 },
+    visible: {
+      x: 0,
+      opacity: 1,
+      transition: { duration: 0.3, ease: "easeOut" },
+    },
+    exit: {
+      x: "100%",
+      opacity: 0,
+      transition: { duration: 0.3, ease: "easeIn" },
+    },
+  };
+
+  // Animation variants for the overlay
+  const overlayVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 0.3, transition: { duration: 0.3 } },
+    exit: { opacity: 0, transition: { duration: 0.3 } },
+  };
+
+  // Pulsing animation for skeleton
+  const pulseVariants = {
+    pulse: {
+      opacity: [0.4, 0.8, 0.4],
+      transition: { duration: 1.5, repeat: Infinity, ease: "easeInOut" },
+    },
+  };
+
+  if (!jobId) return null;
+
+  return (
+    <AnimatePresence>
+      {jobId && (
+        <div className="fixed inset-0 z-50 flex justify-end">
+          <motion.div
+            className="absolute inset-0 bg-black"
+            variants={overlayVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            onClick={onClose}
+          />
+          <motion.div
+            className="relative bg-white w-full max-w-4xl h-full p-6 shadow-xl overflow-y-auto rounded-l-lg"
+            variants={sliderVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+          >
+            {loading || !job ? (
+              <div className="space-y-6">
+                {/* Header Skeleton */}
+                <div className="flex items-center justify-between mb-6">
+                  <motion.div
+                    className="h-6 w-20 bg-gray-300 rounded"
+                    variants={pulseVariants}
+                    animate="pulse"
+                  />
+                  <motion.div
+                    className="h-8 w-8 bg-gray-300 rounded-full"
+                    variants={pulseVariants}
+                    animate="pulse"
+                  />
+                </div>
+                {/* Title Skeleton */}
+                <motion.div
+                  className="h-8 w-3/4 bg-gray-300 rounded"
+                  variants={pulseVariants}
+                  animate="pulse"
+                />
+                {/* Meta Info Skeleton */}
+                <div className="flex space-x-4 pb-4 border-b">
+                  <motion.div
+                    className="h-5 w-1/4 bg-gray-300 rounded"
+                    variants={pulseVariants}
+                    animate="pulse"
+                  />
+                  <motion.div
+                    className="h-5 w-1/4 bg-gray-300 rounded"
+                    variants={pulseVariants}
+                    animate="pulse"
+                  />
+                  <motion.div
+                    className="h-5 w-1/4 bg-gray-300 rounded"
+                    variants={pulseVariants}
+                    animate="pulse"
+                  />
+                  <motion.div
+                    className="h-5 w-1/4 bg-gray-300 rounded"
+                    variants={pulseVariants}
+                    animate="pulse"
+                  />
+                </div>
+                {/* Description Skeleton */}
+                <div className="mt-4 space-y-2 pb-4 border-b">
+                  <motion.div
+                    className="h-6 w-1/3 bg-gray-300 rounded"
+                    variants={pulseVariants}
+                    animate="pulse"
+                  />
+                  <motion.div
+                    className="h-4 w-full bg-gray-300 rounded"
+                    variants={pulseVariants}
+                    animate="pulse"
+                  />
+                  <motion.div
+                    className="h-4 w-5/6 bg-gray-300 rounded"
+                    variants={pulseVariants}
+                    animate="pulse"
+                  />
+                </div>
+                {/* Tags Skeleton */}
+                <div className="mt-4 pb-4 border-b">
+                  <motion.div
+                    className="h-6 w-1/3 bg-gray-300 rounded mb-2"
+                    variants={pulseVariants}
+                    animate="pulse"
+                  />
+                  <div className="flex space-x-2">
+                    <motion.div
+                      className="h-8 w-20 bg-gray-300 rounded-full"
+                      variants={pulseVariants}
+                      animate="pulse"
+                    />
+                    <motion.div
+                      className="h-8 w-20 bg-gray-300 rounded-full"
+                      variants={pulseVariants}
+                      animate="pulse"
+                    />
+                  </div>
+                </div>
+                {/* Activity Skeleton */}
+                <div className="mt-4 pb-4 border-b">
+                  <motion.div
+                    className="h-6 w-1/3 bg-gray-300 rounded mb-2"
+                    variants={pulseVariants}
+                    animate="pulse"
+                  />
+                  <motion.div
+                    className="h-4 w-1/2 bg-gray-300 rounded"
+                    variants={pulseVariants}
+                    animate="pulse"
+                  />
+                </div>
+                {/* Attachments Skeleton */}
+                <div className="mt-4 pb-4 border-b">
+                  <motion.div
+                    className="h-6 w-1/3 bg-gray-300 rounded mb-2"
+                    variants={pulseVariants}
+                    animate="pulse"
+                  />
+                  <motion.div
+                    className="h-4 w-1/2 bg-gray-300 rounded"
+                    variants={pulseVariants}
+                    animate="pulse"
+                  />
+                </div>
               </div>
-            </div>
-            <SaveButton itemId={job.jobId} saved={job.saved} itemType={"job"} />
-          </div>
-          
-        ))
+            ) : (
+              <>
+                <div className="flex items-center justify-between mb-6">
+                  <button
+                    className="text-gray-500 hover:text-gray-700 flex items-center"
+                    onClick={onClose}
+                  >
+                    <ArrowLeftIcon className="w-6 h-6 mr-1" /> <span>Back</span>
+                  </button>
+                  <SaveButton
+                    itemId={job._id}
+                    saved={job.saved}
+                    itemType="job"
+                  />
+                </div>
+                <h2 className="text-2xl mb-2">{job.title}</h2>
+                <div className="space-y-2 border-b text-sm flex pb-4 gap-5 justify-between">
+                  <div className="flex items-center">
+                    <UserIcon className="w-5 h-5 mr-2 text-gray-600" />
+                    <p className="text-gray-600">{job.fullName}</p>
+                  </div>
+                  <div className="flex items-center">
+                    <MapPinIcon className="w-5 h-5 mr-2 text-gray-600" />
+                    <p className="text-gray-600">{job.location}</p>
+                  </div>
+                  <div className="flex items-center">
+                    <ClockIcon className="w-5 h-5 mr-2 text-gray-600" />
+                    <p className="text-gray-600">{getTimeAgo(job.createdAt)}</p>
+                  </div>
+                  <div className="flex items-center">
+                    <CurrencyDollarIcon className="w-5 h-5 mr-2 text-gray-600" />
+                    <p className="text-gray-600">Est. Budget: ${job.budget}</p>
+                  </div>
+                </div>
+                <div className="mt-4 border-b pb-4">
+                  <h3 className="text-lg mb-2">Job Description</h3>
+                  <p className="text-gray-800">{job.description}</p>
+                </div>
+                <div className="mt-4 border-b pb-4">
+                  <h3 className="text-lg mb-2">Required Skills</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {job.tags.map((tag, index) => (
+                      <span
+                        key={index}
+                        className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full flex items-center"
+                      >
+                        <TagIcon className="w-4 h-4 mr-1" />
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className="mt-4 border-b pb-4">
+                  <h3 className="text-lg mb-2">Activity on this job</h3>
+                  <div className="text-gray-700 space-y-1">
+                    <p>
+                      <strong>Proposals: </strong> {job.proposalCount ?? "N/A"}
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-4 border-b pb-4">
+                  <h3 className="text-lg mb-2">Attachments</h3>
+                  {job.fileUrls && job.fileUrls.length > 0 ? (
+                    <div className="flex items-center space-x-2">
+                      <DocumentTextIcon className="w-5 h-5 text-gray-600" />
+                      {job.fileUrls.map((url, index) => (
+                        <a
+                          key={index}
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline"
+                        >
+                          View Attachment {index + 1}
+                        </a>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-600">No attachments available</p>
+                  )}
+                </div>
+                <ApplyProposalButton
+                  jobId={job._id}
+                  userId={session?.user.id}
+                />
+              </>
+            )}
+          </motion.div>
+        </div>
       )}
-    </div>
-    
+    </AnimatePresence>
   );
 };
 
-export default JobList;
+export default JobDetailsSlider;
