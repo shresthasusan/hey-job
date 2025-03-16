@@ -231,11 +231,37 @@ const ProjectActions: React.FC<ProjectActionsProps> = ({
     const buttons = [];
     const buttonClass = "mr-2"; // Margin between buttons
 
-    // Final states: no actions allowed
-    if (projectStatus === "completed" || projectStatus === "canceled") {
+    // Handle completed state differently for client and freelancer
+    if (projectStatus === "completed") {
+      if (userRole === "client") {
+        // Client: Proceed to Payment button
+        buttons.push(
+          <a
+            key="proceed-to-payment"
+            href={`/payment/${contractId}`}
+            className={`${buttonClass} bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600`}
+          >
+            Proceed to Payment
+          </a>
+        );
+      } else if (userRole === "freelancer") {
+        // Freelancer: Notify payment pending
+        return (
+          <p className="text-yellow-500 italic">
+            Payment is pending at client side.
+          </p>
+        );
+      }
+      return buttons.length > 0 ? (
+        <div className="flex flex-wrap gap-2">{buttons}</div>
+      ) : null;
+    }
+
+    // Final state: canceled (no actions)
+    if (projectStatus === "canceled") {
       return (
         <p className="text-gray-500 italic">
-          Project is {projectStatus}. No further actions available.
+          Project is canceled. No further actions available.
         </p>
       );
     }
