@@ -63,7 +63,8 @@ export async function GET(req: NextRequest) {
     if (!params) {
       if (bestMatches) {
         // Fetch best match freelancers excluding current user
-        const clientPrefferedIndustriesSkills = await clientinfo.findOne({ userId: userId }).select("industry prefferedSkills");
+        const clientPrefferedIndustriesSkills = await clientinfo.findOne
+        ({ userId: userId }).select("industry prefferedSkills");
 
         // Step 2: Construct a query to find matching freelancers
         const recommendedFreelancers = await FreelancerInfo.find({
@@ -72,7 +73,9 @@ export async function GET(req: NextRequest) {
           skills: {
             $in: [
               ...(clientPrefferedIndustriesSkills?.industry || []), // Match preferred skills
-              ...(clientPrefferedIndustriesSkills?.industry?.flatMap(industry => industrySkillsMapping[industry as keyof typeof industrySkillsMapping] || []) || []), // Match related industry skills
+              ...(clientPrefferedIndustriesSkills?.industry?.flatMap(industry => 
+                industrySkillsMapping[industry as keyof typeof industrySkillsMapping] || []) || []),
+                 // Match related industry skills
             ]
           },
         });
