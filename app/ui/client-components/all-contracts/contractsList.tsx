@@ -46,7 +46,7 @@ const ContractsList: React.FC<ContractsListProps> = () => {
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const { session, status } = useAuth();
+  const { session } = useAuth();
   const status = searchParams.get("status") || "";
   const paymentType = searchParams.get("paymentType") || "";
   const search = searchParams.get("search") || "";

@@ -13,6 +13,7 @@ import {
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import { signOut, useSession } from "next-auth/react";
+import { useAuth } from "@/app/providers";
 
 interface NavItemProps {
   href: string;
