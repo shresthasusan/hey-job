@@ -1,11 +1,11 @@
 "use client";
 
-import { MapPinIcon } from "@heroicons/react/24/outline";
-import { useState, useEffect } from "react";
+import { HeartIcon as Unliked, MapPinIcon } from "@heroicons/react/24/outline";
+import { useState, useEffect, use, useContext } from "react";
 import SaveButton from "../../saveButton";
+import { Appcontext } from "@/app/context/appContext";
 import PostingSkeleton from "../skeletons/postingSkeleton";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
-import { useRouter, useSearchParams } from "next/navigation";
 
 const truncateString = (str: string, num: number) => {
   if (str.length <= num) {
@@ -26,12 +26,12 @@ export interface Job {
   time: string;
   type: string;
   experience: string;
-  budget: number;
+  budget: number; // Changed from string to number to match the provided data structure
   description: string;
   tags: string[];
   location: string;
   saved: boolean;
-  jobId: string;
+  jobId: string; // Added jobId field to match the provided data structure
   createdAt: string;
   fullName: string;
   fileUrls: string[];
@@ -60,18 +60,28 @@ export const getTimeAgo = (dateString: string) => {
   return "just now";
 };
 
+// JobList component definition
 const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
+  // State variable to store fetched job data, initialized as an empty array
   const [data, setData] = useState<Job[]>([]);
-  const [loading, setLoading] = useState(true);
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  const [loading, setLoading] = useState(true); // Add loading state
+  const {
+    setJobData,
+    setJobDetailsVisible,
+    // jobData,
+    // jobDetailsVisible,
+  } = useContext(Appcontext);
 
+  // useEffect hook to fetch job data when the component mounts
   useEffect(() => {
+    // Create an AbortController to allow aborting the fetch request
     const controller = new AbortController();
 
+    // Async function to fetch job data from the API
     const fetchData = async () => {
       setLoading(true);
       try {
+        // Build the query string based on the passed props
         const params = new URLSearchParams();
         if (bestMatches) params.append("bestMatches", "true");
         if (mostRecent) params.append("mostRecent", "true");
@@ -87,8 +97,7 @@ const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
           `/api/fetchJobs?${params.toString()}`,
           {
             method: "GET",
-            signal: controller.signal, // Add abort signal for cleanup
-            // Remove the next: { revalidate: 3600 } option here
+            next: { revalidate: 3600 }, // Supports Next.js revalidation
           }
         );
 
@@ -97,37 +106,32 @@ const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
         }
 
         const { jobs } = await response.json();
-        if (!controller.signal.aborted) {
-          // Check if request was aborted before updating state
-          setData(jobs);
-        }
-      } catch (error: any) {
-        if (error.name !== "AbortError") {
-          console.error("Error fetching jobs:", error);
-        }
+        setData(jobs);
+      } catch (error) {
+        // Log any errors that occur during the fetch
+        console.error("Error fetching jobs:", error);
       } finally {
-        if (!controller.signal.aborted) {
-          setLoading(false);
-        }
+        setLoading(false);
       }
     };
 
+    // Call the fetchData function to fetch job data
     fetchData();
 
+    // Cleanup function to abort the fetch request if the component unmounts
     return () => {
       controller.abort();
     };
-  }, [query, bestMatches, mostRecent, savedJobs]);
-  const loadJobDetails = (jobId: string) => {
-    // Create a new URLSearchParams instance based on current search params
-    const newParams = new URLSearchParams(searchParams.toString());
-    newParams.set("jobId", jobId); // Update or add jobId
-    router.push(`?${newParams.toString()}`, { scroll: false });
-    console.log("Navigated to job details with jobId:", jobId);
+  }, [query, bestMatches, mostRecent, savedJobs]); // Empty dependency array means this effect runs once when the component mounts
+
+  const loadJobDetails = (job: Job) => {
+    setJobData(job);
+    setJobDetailsVisible(true);
+    console.log("Job details loaded:", job);
   };
 
   return (
-    <div className="flex flex-col mt-8 w-full">
+    <div className="flex  flex-col mt-8 w-full ">
       {loading ? (
         <PostingSkeleton />
       ) : data.length === 0 ? (
@@ -138,21 +142,27 @@ const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
         data.map((job, index) => (
           <div key={index} className="relative">
             <div
-              className="flex flex-col gap-1 p-5 border-t-2 border-gray-200 group"
-              onClick={() => loadJobDetails(job.jobId)}
+              className={`flex flex-col gap-1  p-5 border-t-2  border-gray-200 group`}
+              onClick={() => loadJobDetails(job)}
             >
               <p className="text-xs text-gray-400">
+                {" "}
                 Posted {getTimeAgo(job.createdAt)}
               </p>
-              <div className="flex items-center justify-between">
-                <h1 className="text-2xl text-gray-500 font-medium group-hover:text-primary-500 transition-all duration-250">
+              <div className="flex items-center justify-between ">
+                <h1 className="text-2xl text-gray-500  font-medium group-hover:text-primary-500 transition-all duration-250">
                   {job.title}
                 </h1>
+                {/* {job.saved ? (
+                <Liked className="w-6 h-6 text-red-600 " />
+              ) : (
+                <Unliked className="w-6 h-6  " />
+              )} */}
               </div>
               <p className="text-xs mt-2 text-gray-400">
                 {job.type} - {job.experience} - Est. Budget: {job.budget}
               </p>
-              <p className="text-black my-5">
+              <p className="text-black my-5 ">
                 {truncateString(job.description, 400)}
                 {job.description.length > 400 ? (
                   <button className="text-primary-700 hover:text-primary-500">
@@ -164,15 +174,15 @@ const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
                 {job.tags.map((tag, index) => (
                   <div
                     key={index}
-                    className="bg-slate-200 text-slate-500 p-3 flex flex-wrap justify-center items-center rounded-2xl"
+                    className="bg-slate-200 text-slate-500 p-3 flex flex-wrap justify-center items-center  rounded-2xl"
                   >
                     {tag}
                   </div>
                 ))}
               </div>
               <div className="flex justify-between items-center mt-5">
-                <p className="text-sm mt-5 flex font-medium text-gray-500">
-                  <MapPinIcon className="w-5 h-5" /> {job.location}
+                <p className="text-sm mt-5 flex font-medium  text-gray-500">
+                  <MapPinIcon className="w-5 h-5 " /> {job.location}
                 </p>
                 {job.status !== "active" && (
                   <p className="text-red-500 text-sm mt-2">
@@ -181,7 +191,7 @@ const JobList = ({ bestMatches, mostRecent, savedJobs, query }: Props) => {
                 )}
               </div>
             </div>
-            <SaveButton itemId={job.jobId} saved={job.saved} itemType="job" />
+            <SaveButton itemId={job.jobId} saved={job.saved} itemType={"job"} />
           </div>
         ))
       )}
