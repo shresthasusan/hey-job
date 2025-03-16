@@ -16,11 +16,10 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ message: "Missing contractId" }, { status: 400 });
         }
 
-        const project = await ProjectDetails.findOne({ contractId }).populate(
-            "jobId",
-            "title description"
-        );
-
+        const project = await ProjectDetails.findOne({ contractId }).populate([
+            { path: "jobId", select: "title description" },
+            { path: "contractId", select: "status paymentType price deadline" }
+        ]);
         if (!project) {
             return NextResponse.json({ message: "Project not found for this contract" }, { status: 404 });
         }

@@ -1,7 +1,7 @@
 "use client";
 import useFetch from "@/app/hooks/useFetch";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
-import { CalendarDaysIcon } from "@heroicons/react/24/outline";
+import { CalendarDaysIcon, UserIcon } from "@heroicons/react/24/outline";
 import React, { useEffect, useState } from "react";
 
 type Data = {
@@ -105,7 +105,15 @@ export default function JobDetails({ jobId }: { jobId: string }) {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">{job.title}</h1>
-          <p className="text-gray-600 mt-1">{job.fullName}</p>
+          <div className="flex items-center mb-4">
+            <div className="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 mr-3">
+              <UserIcon className="h-6 w-6" />
+            </div>
+            <div>
+              <p className="font-medium">{job?.fullName}</p>
+              {/* <p className="text-sm text-gray-600">{contract.client.position}</p> */}
+            </div>
+          </div>
         </div>
         <div className="flex flex-wrap gap-3">
           <span
@@ -115,7 +123,8 @@ export default function JobDetails({ jobId }: { jobId: string }) {
           </span>
           <span className="inline-flex items-center rounded-full px-3 py-1 text-sm font-medium bg-gray-100 text-gray-800">
             <CalendarDaysIcon className="h-4 w-4 mr-1" />
-            {new Date(job.statusHistory[0].changedAt).toDateString()}
+            Project Start Date:{" "}
+            {new Date(job.statusHistory[1].changedAt).toDateString()}
           </span>
         </div>
       </div>

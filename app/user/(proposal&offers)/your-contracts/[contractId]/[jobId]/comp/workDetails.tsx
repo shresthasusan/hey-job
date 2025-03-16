@@ -12,6 +12,7 @@ import CommunicationSection from "./communicationSection";
 import Button from "./contractButton";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 import { useAuth } from "@/app/providers";
+import ContractDetails from "./contractDetails";
 
 type ContractState = {
   _id: string; // Project ID
@@ -20,7 +21,13 @@ type ContractState = {
     description: string;
     title: string;
   };
-  contractId: string;
+  contractId: {
+    _id: string;
+    paymentType: string;
+    price: number;
+    deadline: string;
+    status: string;
+  };
   freelancerId: string;
   clientId: string;
   project_todo: Array<{
@@ -129,6 +136,10 @@ export default function ContractDetailsPage({ contractId, jobId }: Props) {
   return (
     <div className="container mx-auto py-8 px-4">
       <JobDetails jobId={jobId} />
+      <ContractDetails
+        contractDetails={contract?.contractId}
+        projectStatus={contract?.status}
+      />
       {/* Display Project Status */}
       <div className="mb-6">
         <h2 className="text-lg font-semibold">Project Status</h2>
@@ -178,7 +189,7 @@ export default function ContractDetailsPage({ contractId, jobId }: Props) {
           />
         </div>
         <div className="space-y-6">
-          <ClientInfomation jobId={jobId} />
+          {/* <ClientInfomation jobId={jobId} /> */}
           <CommunicationSection
             contractId={contractId}
             meetings={contract?.meetings || []}
