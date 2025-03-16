@@ -1,73 +1,89 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/lib/auth";
-import User from "@/models/user";
 import { connectMongoDB } from "@/app/lib/mongodb";
+import User from "@/models/user";
+import FreelancerInfo from "@/models/freelancerInfo";
+import ClientInfo from "@/models/clientinfo";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest) {
+type UserGrowthResponse = {
+    date: string;
+    totalUsers: number;
+    freelancers: number;
+    clients: number;
+}[];
+
+// Convert month number to name
+const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+];
+
+export async function GET(
+    req: NextRequest,
+    res: NextResponse<UserGrowthResponse | { error: string }>
+) {
+    await connectMongoDB();
+
     try {
-        await connectMongoDB();
+        const { searchParams } = new URL(req.url);
 
-        // ✅ Get the session
-        const session = await getServerSession(authOptions);
-        if (!session || !session.user?.email) {
-            return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-        }
+        // Get timeframe from query params (default: "monthly")
+        const timeframe = searchParams.get("timeframe") || "monthly";
 
-        // ✅ Parse query parameters
-        const url = new URL(req.url);
-        const queryFields = url.searchParams.get("fields"); // e.g., "email,profilePicture"
-        const userIdParam = url.searchParams.get("userId"); // e.g., "12345"
+        let groupBy: any = {};
+        let dateFormatter: (d: any) => string;
 
-        // ✅ Define restricted fields that should NEVER be exposed
-        const restrictedFields = ["password", "__v"];
-
-        // ✅ Convert query into MongoDB select object
-        let selectedFields = {};
-        if (queryFields) {
-            const fieldsArray = queryFields.split(",").map(field => field.trim());
-
-            // ✅ Remove any restricted fields from selection
-            const safeFields = fieldsArray.filter(field => !restrictedFields.includes(field));
-
-            if (safeFields.length === 0) {
-                return NextResponse.json({ message: "No valid fields selected" }, { status: 400 });
-            }
-
-            selectedFields = safeFields.reduce((acc, field) => {
-                acc[field] = 1;
-                return acc;
-            }, {} as Record<string, number>);
+        if (timeframe === "daily") {
+            groupBy = { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } };
+            dateFormatter = (d: any) => d._id; // Format YYYY-MM-DD
+        } else if (timeframe === "yearly") {
+            groupBy = { $year: "$createdAt" };
+            dateFormatter = (d: any) => `Year ${d._id}`;
         } else {
-            // ✅ If no fields are specified, return safe default fields
-            selectedFields = {
-                _id: 1,
-                name: 1,
-                lastName: 1,
-                email: 1,
-                roles: 1,
-                profilePicture: 1,
-                country: 1,
-                city: 1,
-                phone: 1,
-                zipPostalCode: 1,
-                createdAt: 1,
-                dob: 1,
+            groupBy = { $month: "$createdAt" };
+            dateFormatter = (d: any) => monthNames[d._id - 1]; // Convert month index
+        }
+
+        // Aggregate user growth from Users collection
+        const userGrowth = await User.aggregate([
+            { $group: { _id: groupBy, totalUsers: { $sum: 1 } } },
+            { $sort: { "_id": 1 } }
+        ]);
+
+        // Aggregate freelancer growth
+        const freelancerGrowth = await FreelancerInfo.aggregate([
+            { $group: { _id: groupBy, freelancers: { $sum: 1 } } },
+            { $sort: { "_id": 1 } }
+        ]);
+
+        // Aggregate client growth
+        const clientGrowth = await ClientInfo.aggregate([
+            { $group: { _id: groupBy, clients: { $sum: 1 } } },
+            { $sort: { "_id": 1 } }
+        ]);
+
+        const totalUsers = await User.countDocuments();
+        const totalFreelancers = await FreelancerInfo.countDocuments();
+        const totalClients = await ClientInfo.countDocuments();
+
+        // Merge user, freelancer, and client growth data
+        const mergedData = userGrowth.map(userData => {
+            const freelancerData = freelancerGrowth.find(d => d._id === userData._id) || { freelancers: 0 };
+            const clientData = clientGrowth.find(d => d._id === userData._id) || { clients: 0 };
+
+            return {
+                date: dateFormatter(userData),
+                users: userData.totalUsers,
+                freelancers: freelancerData.freelancers,
+                clients: clientData.clients,
+                totalUsers,
+                totalFreelancers,
+                totalClients
             };
-        }
+        });
 
-        // ✅ If userId is provided in the query parameter, fetch user based on userId
-        const userId = userIdParam || session.user.id;  // Default to session email if userId not provided
-
-        const user = await User.findOne({ _id: userId }).select(selectedFields);
-
-        if (!user) {
-            return NextResponse.json({ message: "User not found" }, { status: 404 });
-        }
-
-        return NextResponse.json(user, { status: 200 });
+        return NextResponse.json(mergedData, { status: 200 });
     } catch (error) {
-        console.error("Error fetching user:", error);
-        return NextResponse.json({ message: "Error fetching user", error }, { status: 500 });
+        console.error(error);
+        return NextResponse.json({ error: "Error fetching user growth data" }, { status: 500 });
     }
 }
