@@ -13,6 +13,7 @@ import {
   getDoc,
 } from "firebase/firestore";
 import { useAuth } from "@/app/providers";
+import UserProfileLoader from "@/app/lib/userProfileLoader";
 
 interface PaymentDetails {
   transaction_code: string;
@@ -180,6 +181,7 @@ const PaymentSuccessContent = ({ contractId, freelancerId }: Props) => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+      <UserProfileLoader />
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md text-center">
         <h2 className="text-2xl font-bold text-green-600">
           Payment Successful ✅
