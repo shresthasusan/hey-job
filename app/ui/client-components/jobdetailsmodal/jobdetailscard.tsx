@@ -1,99 +1,223 @@
-'use client';
-import React from 'react';
-import { ClockIcon, CurrencyDollarIcon, MapPinIcon, TagIcon, UserIcon } from '@heroicons/react/24/outline';
-import { getTimeAgo } from '../../dashboard-components/job-list/jobList';
-import Link from 'next/link';
+"use client"
+
+import type React from "react"
+import { useEffect, useRef } from "react"
+import {
+  ClockIcon,
+  CurrencyDollarIcon,
+  MapPinIcon,
+  TagIcon,
+  UserIcon,
+  BriefcaseIcon,
+  DocumentTextIcon,
+  PencilSquareIcon,
+  XMarkIcon,
+  UserGroupIcon,
+  ArrowTopRightOnSquareIcon,
+} from "@heroicons/react/24/outline"
+import { getTimeAgo } from "../../dashboard-components/job-list/jobList"
+import Link from "next/link"
 
 interface Job {
-    _id: string;
-    fullName: string;
-    location: string;
-    createdAt: string;
-    budget: number;
-    tags: string[];
-    title: string;
-    description: string;
-    proposalCount: number;
-    // Add other job properties as needed
+  _id: string
+  fullName: string
+  location: string
+  createdAt: string
+  budget: number
+  tags: string[]
+  title: string
+  description: string
+  proposalCount: number
+  // Add other job properties as needed
 }
 
 interface JobDetailsModalProps {
-    job: Job | null;
-    onClose: () => void;
+  job: Job | null
+  onClose: () => void
 }
 
 const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }) => {
-    if (!job) return null;
+  const modalRef = useRef<HTMLDivElement>(null)
 
-    return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white border rounded-2xl p-10 shadow-lg w-full max-w-5xl max-h-5xl overflow-y-auto">
-                <h2 className="text-4xl font-bold mb-2">{job.title}</h2>
+  useEffect(() => {
+    // Handle escape key press
+    const handleEscapeKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose()
+      }
+    }
 
-                <div className="space-y-2 border-b text-sm flex pb-4 gap-5 justify-between">
-                    <div className="flex items-center">
-                        <UserIcon className="w-5 h-5 mr-2 text-gray-600" />
-                        <p className="text-gray-600">{job.fullName}</p>
-                    </div>
-                    <div className="flex items-center">
-                        <MapPinIcon className="w-5 h-5 mr-2 text-gray-600" />
-                        <p className="text-gray-600">{job.location}</p>
-                    </div>
-                    <div className="flex items-center">
-                        <ClockIcon className="w-5 h-5 mr-2 text-gray-600" />
-                        <p className="text-gray-600">
-                            {getTimeAgo(job.createdAt)}
-                        </p>
-                    </div>
-                    <div className="flex items-center">
-                        <CurrencyDollarIcon className="w-5 h-5 mr-2 text-gray-600" />
-                        <p className="text-gray-600">Est. Budget: ${job.budget}</p>
-                    </div>
-                </div>
+    // Handle click outside modal
+    const handleClickOutside = (e: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        onClose()
+      }
+    }
 
-                <div className="mt-4 border-b pb-4">
-                    <h3 className="text-xl p-4 font-semibold mb-2">Job Description</h3>
-                    <p className="text-gray-800">{job.description}</p>
-                </div>
+    document.addEventListener("keydown", handleEscapeKey)
+    document.addEventListener("mousedown", handleClickOutside)
 
-                <div className="mt-4 border-b pb-4">
-                    <h3 className="text-xl p-4 font-semibold mb-2">Required Skills</h3>
-                    <div className="flex flex-wrap justify-center gap-2">
-                        {job.tags?.map((tag, index) => (
-                            <span
-                                key={index}
-                                className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full flex items-center"
-                            >
-                                <TagIcon className="w-4 h-4 mr-1" />
-                                {tag}
-                            </span>
-                        ))}
-                    </div>
-                </div>
+    // Prevent scrolling on body when modal is open
+    document.body.style.overflow = "hidden"
 
-                <div className="mt-4 border-b pb-4">
-                    <h3 className="text-xl text-green-600 p-4">
-                        {job.proposalCount} Proposals <Link className='underline' href={`/client/job-proposal/${job._id}`}>View all the proposals</Link>
-                    </h3>
-                </div>
+    return () => {
+      document.removeEventListener("keydown", handleEscapeKey)
+      document.removeEventListener("mousedown", handleClickOutside)
+      document.body.style.overflow = "auto"
+    }
+  }, [onClose])
 
-                <div className="mt-4 justify-between flex gap-4">
-                    <button
-                        className="px-4 py-2 bg-gray-400 text-white rounded-full hover:bg-gray-600"
-                        onClick={onClose}
-                    >
-                        Edit
-                    </button>
-                    <button
-                        className="px-4 py-2 bg-red-400 text-white rounded-full hover:bg-red-600"
-                        onClick={onClose}
-                    >
-                        Close
-                    </button>
-                </div>
+  if (!job) return null
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+      <div
+        ref={modalRef}
+        className="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col animate-in zoom-in-95 duration-200"
+      >
+        {/* Header */}
+        <div className="p-6 border-b bg-gray-50 flex justify-between items-start">
+          <div className="flex items-start space-x-4">
+            <div className="bg-primary-100 p-3 rounded-lg">
+              <BriefcaseIcon className="h-6 w-6 text-primary-600" />
             </div>
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 leading-tight">{job.title}</h2>
+              <p className="text-sm text-gray-500 mt-1">Job ID: {job._id}</p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-full p-1"
+          >
+            <XMarkIcon className="h-6 w-6" />
+          </button>
         </div>
-    );
-};
 
-export default JobDetailsModal;
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-6">
+          {/* Job Meta Information */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div className="bg-white rounded-lg border p-4 flex items-center space-x-3">
+              <UserIcon className="h-5 w-5 text-gray-500" />
+              <div>
+                <p className="text-sm text-gray-500">Posted by</p>
+                <p className="font-medium text-gray-900">{job.fullName}</p>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg border p-4 flex items-center space-x-3">
+              <MapPinIcon className="h-5 w-5 text-gray-500" />
+              <div>
+                <p className="text-sm text-gray-500">Location</p>
+                <p className="font-medium text-gray-900">{job.location || "Remote"}</p>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg border p-4 flex items-center space-x-3">
+              <ClockIcon className="h-5 w-5 text-gray-500" />
+              <div>
+                <p className="text-sm text-gray-500">Posted</p>
+                <p className="font-medium text-gray-900">{getTimeAgo(job.createdAt)}</p>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg border p-4 flex items-center space-x-3">
+              <CurrencyDollarIcon className="h-5 w-5 text-gray-500" />
+              <div>
+                <p className="text-sm text-gray-500">Budget</p>
+                <p className="font-medium text-gray-900">₹{job.budget.toLocaleString()}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Job Description */}
+          <div className="mb-6">
+            <div className="flex items-center mb-3">
+              <DocumentTextIcon className="h-5 w-5 text-primary-600 mr-2" />
+              <h3 className="text-lg font-semibold text-gray-900">Job Description</h3>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-4 border">
+              <p className="text-gray-700 whitespace-pre-line">{job.description}</p>
+            </div>
+          </div>
+
+          {/* Required Skills */}
+          <div className="mb-6">
+            <div className="flex items-center mb-3">
+              <TagIcon className="h-5 w-5 text-primary-600 mr-2" />
+              <h3 className="text-lg font-semibold text-gray-900">Required Skills</h3>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-4 border">
+              {job.tags && job.tags.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {job.tags.map((tag, index) => (
+                    <span
+                      key={index}
+                      className="bg-primary-100 text-primary-800 px-3 py-1 rounded-full text-sm font-medium flex items-center"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500 italic">No specific skills listed</p>
+              )}
+            </div>
+          </div>
+
+          {/* Proposals */}
+          <div className="mb-6">
+            <div className="flex items-center mb-3">
+              <UserGroupIcon className="h-5 w-5 text-primary-600 mr-2" />
+              <h3 className="text-lg font-semibold text-gray-900">Proposals</h3>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-4 border">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <span className="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full mr-3">
+                    {job.proposalCount} Proposals
+                  </span>
+                  <p className="text-gray-700">
+                    {job.proposalCount === 0
+                      ? "No proposals yet"
+                      : job.proposalCount === 1
+                        ? "1 freelancer has applied"
+                        : `${job.proposalCount} freelancers have applied`}
+                  </p>
+                </div>
+                <Link
+                  href={`/client/job-proposal/${job._id}`}
+                  className="inline-flex items-center text-primary-600 hover:text-primary-500 font-medium"
+                >
+                  View all proposals
+                  <ArrowTopRightOnSquareIcon className="ml-1 h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="border-t p-4 bg-gray-50 flex justify-between">
+          <button
+            className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+            onClick={onClose}
+          >
+            <PencilSquareIcon className="h-4 w-4 mr-2" />
+            Edit Job
+          </button>
+          <button
+            className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+            onClick={onClose}
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default JobDetailsModal
+

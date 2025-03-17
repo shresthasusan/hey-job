@@ -14,10 +14,16 @@ const config: Config = {
       },
       colors: {
         primary: {
+          100: '#fff3cc',
+          
+          
+          300: '#ffed99',
           400: '#fff6de',
           500: '#ffc82c',
           600: '#FFC00E',
           700: '#FFAC10',
+          800: '#FF9800',
+          
         },
         secondary: {
           400: '#FF0080',

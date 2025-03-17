@@ -13,6 +13,7 @@ import Link from "next/link";
 import TalentNavBar from "@/app/ui/dashboard-components/talent-posting/navBar";
 import UserProfileLoader from "@/app/lib/userProfileLoader";
 import TalentDetailsSlider from "@/app/ui/dashboard-components/talent-details-slider";
+import CardSkeleton from "@/app/ui/dashboard-components/skeletons/cardSkeleton";
 
 // root layout for client dashboard pages
 
@@ -64,7 +65,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </div>
               </Link>
             </div>
+          <Suspense fallback={<CardSkeleton/>}>
             <ProjectCarousel />
+          </Suspense>
             <div>
               <div className="sticky top-[75px] z-[2]  pt-5  bg-white">
                 <Suspense>

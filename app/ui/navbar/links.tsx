@@ -79,9 +79,9 @@ const Links = () => {
             {(currentPath.startsWith("/client") ||
               currentPath.startsWith("/search/talent")) && (
               <Link
-                href="/client/talents"
+                href="/client/best-matches"
                 className={clsx("hover:text-primary-600", {
-                  "text-primary-600": currentPath == "/client/talents",
+                  "text-primary-600": currentPath == "/client",
                 })}
               >
                 Talents
@@ -121,14 +121,28 @@ const Links = () => {
           )}
         </li>
         <li className=" flex align-items-center justify-center">
-          <Link
-            href="/user/analytics" // Assuming this is the correct path for Analytics
-            className={clsx("hover:text-primary-600", {
+            {(currentPath.startsWith("/user") ||
+            currentPath.startsWith("/search/jobs")) && (
+            <Link
+              href="/user/analytics"
+              className={clsx("hover:text-primary-600", {
               "text-primary-600": currentPath == "/user/analytics",
-            })}
-          >
-            Analytics
-          </Link>
+              })}
+            >
+              Analytics
+            </Link>
+            )}
+            {(currentPath.startsWith("/client") ||
+            currentPath.startsWith("/search/talent")) && (
+            <Link
+              href="/client/analytics"
+              className={clsx("hover:text-primary-600", {
+              "text-primary-600": currentPath == "/client/analytics",
+              })}
+            >
+              Analytics
+            </Link>
+            )}
         </li>
       </ul>
     </>
