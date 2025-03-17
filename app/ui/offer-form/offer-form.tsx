@@ -74,7 +74,10 @@ const OfferForm = ({ jobId, freelancerId }: OfferFormProps) => {
             },
             {
               sId: userData?.id,
-              proposal: proposal,
+              attachment: {
+                type: "contractOffer",
+                data: proposal,
+              },
               createdAt: Date.now(),
             },
           ],

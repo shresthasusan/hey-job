@@ -205,9 +205,10 @@ const JobProposalModal: React.FC<JobProposalModalProps> = ({ proposal, onClose }
                 ]
 
                 // Update other fields
-                updatedChatsData[chatIndex].lastMessage = message
-                updatedChatsData[chatIndex].updatedAt = Date.now()
-                updatedChatsData[chatIndex].messageSeen = false
+                updatedChatsData[chatIndex].chatStatus = "open";
+                updatedChatsData[chatIndex].lastMessage = message;
+                updatedChatsData[chatIndex].updatedAt = Date.now();
+                updatedChatsData[chatIndex].messageSeen = false;
 
                 // Save back to Firestore
                 await updateDoc(selectedUserChatRef, {

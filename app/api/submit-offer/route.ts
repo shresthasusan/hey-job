@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
             }
             if (!user.kycVerified) notVerified.push("KYC");
 
-            return NextResponse.json({ message: `Unauthorized: ${notVerified.join(" and ")} not verified` }, { status: 400 });
+            return NextResponse.json({ message: `Unauthorized: ${notVerified.join(" and ")} not verified relogin if you've submitted` }, { status: 400 });
         }
 
         // Parse request body

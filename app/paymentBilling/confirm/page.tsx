@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense } from "react";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
@@ -28,8 +28,14 @@ const PaymentConfirmContent = () => {
           }
         );
 
+        console.log("Payment confirmation response:", response);
+
         if (response.status === 302) {
           console.log("Payment confirmed successfully");
+        } else {
+          const result = await response.json();
+          console.error("Payment confirmation failed:", result);
+          setError(result.error || "Payment confirmation failed");
         }
       } catch (err) {
         console.error("Payment confirmation error:", err);
@@ -69,7 +75,12 @@ const PaymentConfirmContent = () => {
   );
 };
 
-const PaymentConfirm = () => {
+const PaymentConfirm = ({
+  params,
+}: {
+  params: { contractId: string; freelancerId: string };
+}) => {
+  const { contractId, freelancerId } = params;
   return (
     <Suspense fallback={<div className="text-center p-10">Loading...</div>}>
       <PaymentConfirmContent />

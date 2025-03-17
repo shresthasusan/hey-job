@@ -1,7 +1,7 @@
 "use client";
 
 import { countries } from "@/app/lib/data";
-import { ChangeEvent, use, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { createFirebaseUser, db, storage } from "../../../lib/firebase"; // Import Firebase storage
@@ -14,6 +14,7 @@ import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 
 const ProfileUploadForm = () => {
   const { session, status } = useAuth();
+  const [uploading, setUploading] = useState(false);
   useFirebaseAuth();
   createFirebaseUser(
     session?.user.name + " " + session?.user.lastName || "",
@@ -31,8 +32,6 @@ const ProfileUploadForm = () => {
     phone: string;
     profilePicture: string;
   }
-
-  // const { session, status } = useAuth();
 
   const [formData, setFormData] = useState<formData>({
     dob: "",
@@ -55,9 +54,10 @@ const ProfileUploadForm = () => {
       [name]: value,
     }));
   };
+
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>("/image1.png");
-  // useFirebaseAuth();
+
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -83,7 +83,9 @@ const ProfileUploadForm = () => {
       }
     };
   }, [preview]);
+
   const handleSubmit = async (e: React.FormEvent) => {
+    setUploading(true);
     e.preventDefault();
     try {
       console.log("Submitting form data:", formData);
@@ -121,6 +123,7 @@ const ProfileUploadForm = () => {
       console.error("An error occurred while submitting the form", error);
       alert("Error submitting portfolio.");
     } finally {
+      setUploading(false);
     }
   };
 
@@ -309,13 +312,13 @@ const ProfileUploadForm = () => {
             </div>
 
             {/* Submit Button */}
-
             <div>
               <button
                 type="submit"
                 className="w-full bg-primary-700 text-white py-2 px-4 rounded-md hover:bg-primary-600 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 shadow-sm"
+                disabled={uploading}
               >
-                Publish Profile
+                {uploading ? "Publishing..." : "Publish Profile"}
               </button>
             </div>
           </div>
