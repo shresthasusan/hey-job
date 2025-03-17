@@ -5,7 +5,6 @@ const AllJobsListProps = ({ params }: { params: { jobId: string } }) => {
   return (
     <>
       <div className="mx-auto text-center">
-        <h1 className="font-bold text-5xl p-6">Job Proposals</h1>
         {jobId ? <AllProposalsList jobId={jobId} /> : <p>Loading...</p>}
       </div>
     </>

@@ -73,31 +73,25 @@ const LinksDropdown = ({ isDropdownVisible, isOpen, currentMode }: Props) => {
               <>
                 <li>
                   <Link href={"/user/your-contracts?tab=active-contracts"}>
-                    <p className=" p-3 hover:bg-slate-100">Your Contracts</p>
+                    <p className=" ml-2 p-2 hover:bg-slate-100">Your Contracts</p>
                   </Link>
                 </li>
-                <li>
-                  <Link href={"/user/business/paymenthistory"}>
-                    <li>
-                      <p className=" p-3 hover:bg-slate-100">Payments</p>
-                    </li>
-                  </Link>
-                </li>
+                
                 <li>
                   <Link href={"/user/business/transaction"}>
-                    <p className=" p-3 hover:bg-slate-100">Transactions</p>
+                    <p className=" ml-2 p-2 hover:bg-slate-100">Transactions</p>
                   </Link>
                 </li>
               </>
             )}
-
+  
             {(currentMode?.startsWith("/client") ||
               currentMode?.startsWith("/search/talent")) && (
               <>
-                <Link href={"/client/business/paymenthistory"}>
+                <Link href={"/search/talent"}>
                   <li className=" p-3 hover:bg-slate-100">Discover</li>
                 </Link>
-                <Link href={"/client/your-hires"}>
+                <Link href={"/client/your-contracts"}>
                   <li className=" p-3 hover:bg-slate-100">Your Hires </li>
                 </Link>
                 <Link href={"/client/saved-talents"}>
