@@ -1,9 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense } from "react";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
+import { Appcontext } from "@/app/context/appContext";
+import { db } from "@/app/lib/firebase";
+import {
+  updateDoc,
+  doc,
+  arrayUnion,
+  collection,
+  getDoc,
+} from "firebase/firestore";
+import proposal from "@/models/proposal";
 
 const PaymentConfirmContent = () => {
   const searchParams = useSearchParams();
@@ -28,6 +38,8 @@ const PaymentConfirmContent = () => {
           }
         );
 
+        console.log("Payment confirmation response:", response);
+
         if (response.status === 302) {
           const redirectUrl = response.headers.get("location");
           if (redirectUrl) {
@@ -37,6 +49,7 @@ const PaymentConfirmContent = () => {
           }
         } else {
           const result = await response.json();
+          console.error("Payment confirmation failed:", result);
           setError(result.error || "Payment confirmation failed");
         }
       } catch (err) {
@@ -77,7 +90,12 @@ const PaymentConfirmContent = () => {
   );
 };
 
-const PaymentConfirm = () => {
+const PaymentConfirm = ({
+  params,
+}: {
+  params: { contractId: string; freelancerId: string };
+}) => {
+  const { contractId, freelancerId } = params;
   return (
     <Suspense fallback={<div className="text-center p-10">Loading...</div>}>
       <PaymentConfirmContent />

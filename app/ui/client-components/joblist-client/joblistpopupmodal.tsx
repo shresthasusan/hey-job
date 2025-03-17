@@ -178,6 +178,7 @@ const JobProposalModal: React.FC<JobProposalModalProps> = ({
                 ];
 
                 // Update other fields
+                updatedChatsData[chatIndex].chatStatus = "open";
                 updatedChatsData[chatIndex].lastMessage = message;
                 updatedChatsData[chatIndex].updatedAt = Date.now();
                 updatedChatsData[chatIndex].messageSeen = false;

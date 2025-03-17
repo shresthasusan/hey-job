@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useContext, useEffect, useState } from "react";
+import { Suspense, use, useContext, useEffect, useState } from "react";
 import ChatList from "./chatList";
 import Image from "next/image";
 import { Appcontext } from "@/app/context/appContext";
@@ -43,6 +43,30 @@ const ChatWindow: React.FC = () => {
     useContext(Appcontext);
 
   const [input, setInput] = useState("");
+
+  const [isChatOpen, setIsChatOpen] = useState<boolean>(true);
+
+  useEffect(() => {
+    if (!userData?.id || !chatUser?.id) return;
+
+    // Reference to the user's chat document
+    const userChatsRef = doc(db, "chats", userData.id);
+
+    // Real-time listener
+    const unsubscribe = onSnapshot(userChatsRef, (docSnapshot) => {
+      if (docSnapshot.exists()) {
+        const userChatData = docSnapshot.data();
+        const chat = userChatData.chatsData.find(
+          (c: { rId: string }) => c.rId === chatUser.id
+        );
+
+        setIsChatOpen(chat?.chatStatus === "open");
+      }
+    });
+
+    // Cleanup function to unsubscribe when component unmounts
+    return () => unsubscribe();
+  }, [userData, chatUser]);
 
   const sendMessage = async () => {
     try {
@@ -512,29 +536,35 @@ const ChatWindow: React.FC = () => {
                   ))}
                 </div>
 
-                <div className="py-5  flex items-center bottom-0 sticky bg-white w-full px-5">
-                  <input
-                    className="w-full bg-gray-200 py-5 px-3 rounded-xl"
-                    onChange={(e) => setInput(e.target.value)}
-                    value={input}
-                    onKeyDown={handleKeyDown}
-                    type="text"
-                    placeholder="Type your message here..."
-                  />
-                  <input
-                    onChange={sendImage}
-                    type="file"
-                    id="image"
-                    accept="image/png, image/jpeg"
-                    hidden
-                  />
-                  <label htmlFor="image">
-                    <PhotoIcon className="w-8 h-8 top-0 " />
-                  </label>
-                  <span onClick={sendMessage}>
-                    <PaperAirplaneIcon className="w-8 h-8 top-0 " />
-                  </span>
-                </div>
+                {isChatOpen === true ? (
+                  <div className="py-5  flex items-center bottom-0 sticky bg-white w-full px-5">
+                    <input
+                      className="w-full bg-gray-200 py-5 px-3 rounded-xl"
+                      onChange={(e) => setInput(e.target.value)}
+                      value={input}
+                      onKeyDown={handleKeyDown}
+                      type="text"
+                      placeholder="Type your message here..."
+                    />
+                    <input
+                      onChange={sendImage}
+                      type="file"
+                      id="image"
+                      accept="image/png, image/jpeg"
+                      hidden
+                    />
+                    <label htmlFor="image">
+                      <PhotoIcon className="w-8 h-8 top-0 " />
+                    </label>
+                    <span onClick={sendMessage}>
+                      <PaperAirplaneIcon className="w-8 h-8 top-0 " />
+                    </span>
+                  </div>
+                ) : (
+                  <div className="py-5 flex items-center justify-center bottom-0 sticky text-center text-primary-500 bg-white w-full px-5">
+                    This chat is no longer available for you to send messages.
+                  </div>
+                )}
               </div>
 
               <div className="w-2/5 border-l-2 px-5">

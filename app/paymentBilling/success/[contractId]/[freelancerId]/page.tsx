@@ -1,8 +1,17 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useCallback, useContext, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { generateEsewaSignature } from "@/app/lib/generateEsewaSignature"; // Import your signature generator
+import { Appcontext } from "@/app/context/appContext";
+import { db } from "@/app/lib/firebase";
+import {
+  collection,
+  updateDoc,
+  doc,
+  arrayUnion,
+  getDoc,
+} from "firebase/firestore";
 
 interface PaymentDetails {
   transaction_code: string;
@@ -14,7 +23,107 @@ interface PaymentDetails {
   [key: string]: any;
 }
 
-const PaymentSuccessContent = () => {
+interface UserData {
+  id: string;
+}
+
+type ChatDataItem = {
+  messageId: string;
+  lastMessage: string;
+  rId: string;
+  updateDoc: number;
+  messageSeen: boolean;
+  userData: UserData;
+  user: UserData;
+  lastMessageSender?: string;
+  proposalArray?: [proposalId: string];
+};
+
+interface AppContextValue {
+  userData: UserData | null;
+  setUserData: React.Dispatch<React.SetStateAction<UserData | null>>;
+  chatData: ChatDataItem[] | null;
+  setChatData: React.Dispatch<React.SetStateAction<ChatDataItem[] | null>>;
+  loadUserData: (uid: string) => Promise<void>;
+  messages: any; // Replace `any` with a specific type if possible
+  setMessages: React.Dispatch<React.SetStateAction<any>>;
+  messagesId: string | null;
+  setMessagesId: React.Dispatch<React.SetStateAction<string | null>>;
+}
+
+interface Props {
+  contractId: string;
+  freelancerId: string;
+}
+
+const PaymentSuccessContent = ({ contractId, freelancerId }: Props) => {
+  const [error, setError] = useState<string | null>(null);
+  const context = useContext(Appcontext) as AppContextValue;
+  const { userData, chatData } = context;
+
+  const closeChat = useCallback(async () => {
+    try {
+      const userId = userData?.id;
+      const conversationExists = chatData?.find(
+        (chat: ChatDataItem) => chat.rId === freelancerId
+      );
+
+      if (!conversationExists) {
+        return;
+      }
+
+      const messagesRef = collection(db, "messages");
+      const chatsRef = collection(db, "chats");
+      const message = "paid the due amount";
+      const eMessageId = conversationExists.messageId;
+
+      await updateDoc(doc(db, "messages", eMessageId), {
+        messages: arrayUnion({
+          sId: userData?.id,
+          text: message,
+          createdAt: new Date(),
+        }),
+      });
+
+      const userIDs = [freelancerId, userId];
+
+      userIDs.forEach(async (id) => {
+        const selectedUserChatRef = doc(chatsRef, id);
+        const UserChatSnap = await getDoc(selectedUserChatRef);
+
+        if (UserChatSnap.exists()) {
+          const UserChatData = UserChatSnap.data();
+
+          const chatIndex = UserChatData.chatsData.findIndex(
+            (c: ChatDataItem) => c.messageId === eMessageId
+          );
+
+          if (chatIndex !== -1) {
+            let updatedChatsData = [...UserChatData.chatsData];
+
+            updatedChatsData[chatIndex].ContractArray =
+              updatedChatsData[chatIndex].ContractArray?.filter(
+                (id: string) => id !== contractId
+              ) || [];
+
+            if (updatedChatsData[chatIndex].ContractArray.length === 0) {
+              updatedChatsData[chatIndex].chatStatus = "closed";
+            }
+            updatedChatsData[chatIndex].lastMessage = message;
+            updatedChatsData[chatIndex].updatedAt = Date.now();
+            updatedChatsData[chatIndex].messageSeen = false;
+
+            await updateDoc(selectedUserChatRef, {
+              chatsData: updatedChatsData,
+            });
+          }
+        }
+      });
+    } catch (error) {
+      console.error("Error closing chat:", error);
+    }
+  }, [userData, chatData, freelancerId, contractId]);
+
   const searchParams = useSearchParams();
   const data = searchParams.get("data");
   const [paymentDetails, setPaymentDetails] = useState<PaymentDetails | null>(
@@ -46,8 +155,9 @@ const PaymentSuccessContent = () => {
       } catch (error) {
         console.error("Error parsing payment data:", error);
       }
+      closeChat();
     }
-  }, [data]);
+  }, [data, closeChat]);
 
   if (!paymentDetails) {
     return <div className="text-center p-10">Loading payment details...</div>;
@@ -116,14 +226,22 @@ const PaymentSuccessContent = () => {
   );
 };
 
-const PaymentSuccess = () => {
+const PaymentSuccess = ({
+  params,
+}: {
+  params: { contractId: string; freelancerId: string };
+}) => {
+  const { contractId, freelancerId } = params;
   return (
     <Suspense
       fallback={
         <div className="text-center p-10">Loading payment details...</div>
       }
     >
-      <PaymentSuccessContent />
+      <PaymentSuccessContent
+        contractId={contractId}
+        freelancerId={freelancerId}
+      />
     </Suspense>
   );
 };

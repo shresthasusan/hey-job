@@ -112,8 +112,8 @@ export async function GET(req: NextRequest) {
                 contractId: payment.contractId.toString(),
             };
             const encodedData = encodeURIComponent(btoa(JSON.stringify(updatedPaymentData)));
-            return NextResponse.redirect(`/paymentBilling/success?data=${encodedData}`, 302);
-        } else if (status === "FAILED") {
+            return NextResponse.redirect(`/paymentBilling/success/${payment.contractId}/${payment.freelancerId}?data=${encodedData}`, 302);
+        } else if (status !== "COMPLETE") {
             await Payment.updateOne(
                 { transactionId: transaction_uuid },
                 {
