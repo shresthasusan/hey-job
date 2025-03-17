@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Payment from "@/models/payment";
 import Contract from "@/models/contract";
-import { generateEsewaSignature } from "@/app/lib/generateEsewaSignature";
+// import { generateEsewaSignature } from "@/app/lib/generateEsewaSignature"; // if needed, can be implemented
 
 export async function GET(req: NextRequest) {
     try {
@@ -47,31 +47,6 @@ export async function GET(req: NextRequest) {
             );
         }
 
-        // Verify signature for COMPLETE status
-        // if (status === "COMPLETE" && signature) {
-        // Ensure signed_field_names includes mandatory fields in order
-        // const mandatoryFields = ["total_amount", "transaction_uuid", "product_code"];
-        // const fields = signed_field_names.split(",");
-
-
-
-        // // Construct signature string with all fields from signed_field_names
-        // const signatureString = fields
-        //     .map((field) => `${field}=${paymentData[field as keyof typeof paymentData]}`)
-        //     .join(",");
-
-        // const localSignature = generateEsewaSignature(
-        //     process.env.NEXT_PUBLIC_ESEWA_SECRET_KEY!,
-        //     signatureString
-        // );
-        // if (localSignature !== signature) {
-        //     return NextResponse.json(
-        //         { error: "Invalid signature" },
-        //         { status: 400 }
-        //     );
-        // }
-        // }
-
         // Find Payment record
         const payment = await Payment.findOne({ transactionId: transaction_uuid });
         if (!payment) {
@@ -83,6 +58,7 @@ export async function GET(req: NextRequest) {
 
         // Update Payment and Contract based on status
         if (status === "COMPLETE") {
+            // Update the payment status and transaction code in the database
             await Payment.updateOne(
                 { transactionId: transaction_uuid },
                 {
@@ -90,30 +66,25 @@ export async function GET(req: NextRequest) {
                     transactionCode: transaction_code,
                 }
             );
-            const newStatus = "completed";
-            const userId = "system"; // Replace with actual user ID if available
 
+            // Update the contract status to completed
             await Contract.updateOne(
                 { _id: payment.contractId },
                 {
-                    status: newStatus,
+                    status: "completed",
                     updatedAt: new Date(),
                     $push: {
                         statusHistory: {
-                            status: newStatus,
-                            updatedBy: userId,
-                            updatedAt: new Date(),
+                            status: "completed", updatedAt: new Date(),
                         },
                     },
                 }
             );
-            const updatedPaymentData = {
-                ...paymentData,
-                contractId: payment.contractId.toString(),
-            };
-            const encodedData = encodeURIComponent(btoa(JSON.stringify(updatedPaymentData)));
-            return NextResponse.redirect(`/paymentBilling/success?data=${encodedData}`, 302);
+
+            // Perform direct redirect
+            return NextResponse.redirect(`/paymentBilling/success?data=${data}`, 302);
         } else if (status === "FAILED") {
+            // Update the payment status to failed
             await Payment.updateOne(
                 { transactionId: transaction_uuid },
                 {
@@ -122,6 +93,8 @@ export async function GET(req: NextRequest) {
                     ...(error_message && { errorMessage: error_message }),
                 }
             );
+
+            // Perform direct redirect for failure
             return NextResponse.redirect(`/paymentBilling/failure?data=${data}`, 302);
         } else {
             return NextResponse.json(
