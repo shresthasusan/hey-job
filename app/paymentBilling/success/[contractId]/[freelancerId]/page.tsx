@@ -1,10 +1,22 @@
 "use client";
 
-import { Suspense, useCallback, useContext, useEffect, useState } from "react";
+import type React from "react";
+
+import { Suspense, useContext, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { generateEsewaSignature } from "@/app/lib/generateEsewaSignature"; // Import your signature generator
-import { Appcontext } from "@/app/context/appContext";
-import { db } from "@/app/lib/firebase";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import {
+  CreditCardIcon,
+  ArrowLeftIcon,
+  DocumentTextIcon,
+  UserIcon,
+  BriefcaseIcon,
+  CurrencyRupeeIcon,
+  CheckIcon,
+  ClipboardDocumentIcon,
+} from "@heroicons/react/24/outline";
+import { CheckCircleIcon as CheckCircleSolid } from "@heroicons/react/24/solid";
 import {
   collection,
   updateDoc,
@@ -12,8 +24,12 @@ import {
   arrayUnion,
   getDoc,
 } from "firebase/firestore";
-import { useAuth } from "@/app/providers";
+
+import { Appcontext } from "@/app/context/appContext";
+import { db } from "@/app/lib/firebase";
 import UserProfileLoader from "@/app/lib/userProfileLoader";
+import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
+import { useAuth } from "@/app/providers";
 
 interface PaymentDetails {
   transaction_code: string;
@@ -21,7 +37,18 @@ interface PaymentDetails {
   total_amount: string;
   transaction_uuid: string;
   product_code: string;
-  signature?: string; // Added signature field
+  signature?: string;
+  [key: string]: any;
+}
+
+interface ContractDetails {
+  price: string | number;
+  jobId: {
+    title: string;
+  };
+  freelancerDetails: {
+    fullName: string;
+  };
   [key: string]: any;
 }
 
@@ -33,12 +60,13 @@ type ChatDataItem = {
   messageId: string;
   lastMessage: string;
   rId: string;
-  updateDoc: number;
+  updatedAt: number;
   messageSeen: boolean;
   userData: UserData;
   user: UserData;
   lastMessageSender?: string;
-  proposalArray?: [proposalId: string];
+  chatStatus: string;
+  ContractArray?: string[];
 };
 
 interface AppContextValue {
@@ -47,7 +75,7 @@ interface AppContextValue {
   chatData: ChatDataItem[] | null;
   setChatData: React.Dispatch<React.SetStateAction<ChatDataItem[] | null>>;
   loadUserData: (uid: string) => Promise<void>;
-  messages: any; // Replace `any` with a specific type if possible
+  messages: any;
   setMessages: React.Dispatch<React.SetStateAction<any>>;
   messagesId: string | null;
   setMessagesId: React.Dispatch<React.SetStateAction<string | null>>;
@@ -56,189 +84,513 @@ interface AppContextValue {
 interface Props {
   contractId: string;
   freelancerId: string;
+  clientId: string;
 }
 
 const PaymentSuccessContent = ({ contractId, freelancerId }: Props) => {
-  const { session } = useAuth();
-
-  const { loadUserData } = useContext(Appcontext);
-
-  const [error, setError] = useState<string | null>(null);
-  const context = useContext(Appcontext) as AppContextValue;
-  const { userData, chatData } = context;
-
-  const closeChat = useCallback(async () => {
-    try {
-      console.log("Closing chat...");
-      const userId = userData?.id;
-      const conversationExists = chatData?.find(
-        (chat: ChatDataItem) => chat.rId === freelancerId
-      );
-
-      if (!conversationExists) {
-        console.log("freelancerId", freelancerId);
-        console.log("userId", userId);
-        console.log("no chat");
-        return;
-      }
-
-      const messagesRef = collection(db, "messages");
-      const chatsRef = collection(db, "chats");
-      const message = "paid the due amount";
-      const eMessageId = conversationExists.messageId;
-
-      await updateDoc(doc(db, "messages", eMessageId), {
-        messages: arrayUnion({
-          sId: userData?.id,
-          text: message,
-          createdAt: new Date(),
-        }),
-      });
-
-      const userIDs = [freelancerId, userId];
-
-      userIDs.forEach(async (id) => {
-        const selectedUserChatRef = doc(chatsRef, id);
-        const UserChatSnap = await getDoc(selectedUserChatRef);
-
-        if (UserChatSnap.exists()) {
-          const UserChatData = UserChatSnap.data();
-
-          const chatIndex = UserChatData.chatsData.findIndex(
-            (c: ChatDataItem) => c.messageId === eMessageId
-          );
-
-          if (chatIndex !== -1) {
-            let updatedChatsData = [...UserChatData.chatsData];
-
-            updatedChatsData[chatIndex].ContractArray =
-              updatedChatsData[chatIndex].ContractArray?.filter(
-                (id: string) => id !== contractId
-              ) || [];
-
-            if (updatedChatsData[chatIndex].ContractArray.length === 0) {
-              updatedChatsData[chatIndex].chatStatus = "closed";
-            }
-            updatedChatsData[chatIndex].lastMessage = message;
-            updatedChatsData[chatIndex].updatedAt = Date.now();
-            updatedChatsData[chatIndex].messageSeen = false;
-
-            await updateDoc(selectedUserChatRef, {
-              chatsData: updatedChatsData,
-            });
-          }
-        }
-      });
-      console.log("chatc closded");
-    } catch (error) {
-      console.error("Error closing chat:", error);
-    }
-  }, [userData, chatData, freelancerId, contractId]);
-
-  const searchParams = useSearchParams();
-  const data = searchParams.get("data");
   const [paymentDetails, setPaymentDetails] = useState<PaymentDetails | null>(
     null
   );
-  const [verifiedSignature, setVerifiedSignature] = useState<boolean | null>(
-    null
-  );
+  const [contractDetails, setContractDetails] =
+    useState<ContractDetails | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { session } = useAuth();
+  const clientId = session?.user?.id;
+  const [hasClosedChat, setHasClosedChat] = useState(false);
 
+  const context = useContext(Appcontext) as AppContextValue;
+  const { userData, chatData } = context;
+  const searchParams = useSearchParams();
+  const data = searchParams.get("data");
+  const [copied, setCopied] = useState<string | null>(null);
+
+  const copyToClipboard = (text: string, field: string) => {
+    navigator.clipboard.writeText(text).then(
+      () => {
+        setCopied(field);
+        setTimeout(() => setCopied(null), 2000);
+      },
+      (err) => {
+        console.error("Could not copy text: ", err);
+      }
+    );
+  };
+
+  // Fetch contract details
   useEffect(() => {
-    if (!session) {
-      console.log("no session");
-      return;
+    const fetchContractDetails = async () => {
+      try {
+        setIsLoading(true);
+        console.log(
+          `Fetching contract details for contractId: ${contractId}, clientId: ${clientId}`
+        );
+
+        // Check if we're running on the client side
+        if (typeof window === "undefined") {
+          console.log("Not fetching contract details on server side");
+          return;
+        }
+
+        const response = await fetchWithAuth(
+          `/api/fetch-contracts?contractId=${contractId}&clientId=${clientId}`
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            `Failed to fetch contract details: ${response.status}`
+          );
+        }
+
+        const { data } = await response.json();
+        console.log("Contract details fetched successfully:", data);
+        setContractDetails(data);
+      } catch (err) {
+        console.error("Error fetching contract details:", err);
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Failed to fetch contract details"
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    // Add a console log to verify the effect is running
+    console.log(
+      "Contract details useEffect running with IDs:",
+      contractId,
+      clientId
+    );
+
+    if (contractId && clientId) {
+      fetchContractDetails();
     }
-    loadUserData(session?.user.id);
-    closeChat();
+  }, [contractId, clientId]);
+
+  // Decode and parse the payment data
+  useEffect(() => {
     if (data) {
       try {
         const decodedData = decodeURIComponent(data);
         const parsedData = JSON.parse(atob(decodedData)) as PaymentDetails;
         setPaymentDetails(parsedData);
-
-        // Verify signature if present
-        // if (parsedData.signature) {
-        //   const secretKey = process.env.NEXT_PUBLIC_ESEWA_SECRET_KEY; // Note: Avoid exposing this client-side
-        //   if (secretKey) {
-        //     const signatureString = `total_amount=${parsedData.total_amount},transaction_uuid=${parsedData.transaction_uuid},product_code=${parsedData.product_code}`;
-        //     const localSignature = generateEsewaSignature(
-        //       secretKey,
-        //       signatureString
-        //     );
-        //     setVerifiedSignature(localSignature === parsedData.signature);
-        //   }
-        // }
       } catch (error) {
         console.error("Error parsing payment data:", error);
+        setError("Failed to parse payment data");
       }
     }
-  }, [data, closeChat]);
+  }, [data]);
 
-  if (!paymentDetails) {
-    return <div className="text-center p-10">Loading payment details...</div>;
+  // Handle closing the chat once userData is available
+  useEffect(() => {
+    const handleCloseChat = async () => {
+      try {
+        const userId = userData?.id;
+
+        // Early return if required data isn't ready
+        if (!userId || !chatData) {
+          console.log("Missing userId or chatData, aborting...");
+          return;
+        }
+
+        const conversationExists = chatData.find(
+          (chat: ChatDataItem) => chat.rId === freelancerId
+        );
+
+        if (!conversationExists) {
+          console.log("freelancerId", freelancerId);
+          console.log("userId", userId);
+          console.log("no chat");
+          return;
+        }
+
+        if (conversationExists.chatStatus === "closed") {
+          console.log("Chat already closed, skipping...");
+          return;
+        }
+
+        const chatsRef = collection(db, "chats");
+        const message = "paid the due amount";
+        const eMessageId = conversationExists.messageId;
+
+        await updateDoc(doc(db, "messages", eMessageId), {
+          messages: arrayUnion({
+            sId: userId,
+            text: message,
+            createdAt: new Date(),
+          }),
+        });
+
+        const userIDs = [freelancerId, userId];
+
+        for (const id of userIDs) {
+          const selectedUserChatRef = doc(chatsRef, id);
+          const UserChatSnap = await getDoc(selectedUserChatRef);
+
+          if (UserChatSnap.exists()) {
+            const UserChatData = UserChatSnap.data();
+            const chatIndex = UserChatData.chatsData.findIndex(
+              (c: ChatDataItem) => c.messageId === eMessageId
+            );
+
+            if (chatIndex !== -1) {
+              const updatedChatsData = [...UserChatData.chatsData];
+
+              // Safeguard: Ensure ContractArray is defined before filtering
+              updatedChatsData[chatIndex].ContractArray = (
+                updatedChatsData[chatIndex].ContractArray || []
+              ).filter((id: string) => id !== contractId);
+
+              if (updatedChatsData[chatIndex].ContractArray?.length === 0) {
+                updatedChatsData[chatIndex].chatStatus = "closed";
+              }
+              updatedChatsData[chatIndex].lastMessage = message;
+              updatedChatsData[chatIndex].updatedAt = Date.now();
+              updatedChatsData[chatIndex].messageSeen = false;
+
+              await updateDoc(selectedUserChatRef, {
+                chatsData: updatedChatsData,
+              });
+            }
+          }
+        }
+        console.log("Chat closed");
+        setHasClosedChat(true);
+      } catch (error) {
+        console.error("Error closing chat:", error);
+      }
+    };
+
+    if (userData) {
+      handleCloseChat();
+    }
+  }, [userData, chatData, freelancerId, contractId]);
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        when: "beforeChildren",
+        staggerChildren: 0.1,
+        duration: 0.3,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: { duration: 0.5 },
+    },
+  };
+
+  const iconVariants = {
+    hidden: { scale: 0 },
+    visible: {
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 200,
+        damping: 10,
+        delay: 0.1,
+      },
+    },
+  };
+
+  const formatCurrency = (amount: string | number) => {
+    return `NPR ${typeof amount === "number" ? amount.toLocaleString() : amount}`;
+  };
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-blue-50 to-white p-4">
+        <div className="bg-white p-10 rounded-2xl shadow-xl w-full max-w-2xl text-center">
+          <div className="text-red-500 mb-4">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-16 w-16 mx-auto"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
+            </svg>
+          </div>
+          <h1 className="text-2xl font-bold mb-4">Something went wrong</h1>
+          <p className="text-gray-600 mb-6">{error}</p>
+          <Link
+            href="/client/best-matches"
+            className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors"
+          >
+            <ArrowLeftIcon className="h-5 w-5 mr-2" />
+            Back to Dashboard
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <UserProfileLoader />
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md text-center">
-        <h2 className="text-2xl font-bold text-green-600">
-          Payment Successful ✅
-        </h2>
-        <p className="mt-2 text-gray-600">Thank you for your payment!</p>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-blue-50 to-white p-4">
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+        className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-4xl"
+      >
+        {/* Header Section */}
+        <div className="text-center mb-8 border-b pb-8">
+          <motion.div
+            variants={iconVariants}
+            className="mb-6 flex justify-center"
+          >
+            <div className="relative">
+              <div className="absolute inset-0 rounded-full bg-green-100 animate-ping opacity-25"></div>
+              <CheckCircleSolid className="h-20 w-20 text-green-500 relative z-10" />
+            </div>
+          </motion.div>
 
-        <div className="mt-4 text-left">
-          <p>
-            <strong>Transaction Code:</strong> {paymentDetails.transaction_code}
-          </p>
-          <p>
-            <strong>Status:</strong> {paymentDetails.status}
-          </p>
-          <p>
-            <strong>Amount:</strong> NPR {paymentDetails.total_amount}
-          </p>
-          <p>
-            <strong>Transaction ID:</strong> {paymentDetails.transaction_uuid}
-          </p>
-          <p>
-            <strong>Product Code:</strong> {paymentDetails.product_code}
-          </p>
-          {paymentDetails.signature && (
-            <>
-              <p>
-                <strong>Signature:</strong> {paymentDetails.signature}
-              </p>
-              {verifiedSignature !== null && (
-                <p>
-                  <strong>Signature Verification:</strong>{" "}
-                  <span
-                    className={
-                      verifiedSignature ? "text-green-600" : "text-red-600"
-                    }
-                  >
-                    {verifiedSignature ? "Verified" : "Not Verified"}
-                  </span>
+          <motion.h1
+            variants={itemVariants}
+            className="text-3xl font-bold text-gray-800 mb-2"
+          >
+            Payment Successful
+          </motion.h1>
+
+          <motion.p variants={itemVariants} className="text-lg text-gray-600">
+            Your transaction has been completed successfully
+          </motion.p>
+        </div>
+
+        {/* Main Content - Two Column Layout */}
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* Contract Details Column */}
+          <motion.div
+            variants={itemVariants}
+            className="bg-blue-50 rounded-xl p-6 h-full"
+          >
+            <div className="flex items-center mb-4">
+              <DocumentTextIcon className="h-6 w-6 text-blue-600 mr-2" />
+              <h2 className="text-xl font-semibold text-gray-800">
+                Contract Details
+              </h2>
+            </div>
+
+            {isLoading ? (
+              <div className="animate-pulse space-y-4">
+                <div className="h-6 bg-blue-100 rounded w-3/4"></div>
+                <div className="h-6 bg-blue-100 rounded w-1/2"></div>
+                <div className="h-6 bg-blue-100 rounded w-2/3"></div>
+              </div>
+            ) : contractDetails ? (
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <div className="flex items-start">
+                    <BriefcaseIcon className="h-5 w-5 text-blue-500 mr-2 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm text-blue-600 font-medium">
+                        Project
+                      </p>
+                      <p className="text-lg font-medium text-gray-800">
+                        {contractDetails.jobId?.title ||
+                          "Project information unavailable"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-start">
+                    <UserIcon className="h-5 w-5 text-blue-500 mr-2 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm text-blue-600 font-medium">
+                        Freelancer
+                      </p>
+                      <p className="text-lg font-medium text-gray-800">
+                        {contractDetails.freelancerDetails?.fullName ||
+                          "Freelancer information unavailable"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-start">
+                    <CurrencyRupeeIcon className="h-5 w-5 text-blue-500 mr-2 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm text-blue-600 font-medium">
+                        Contract Amount
+                      </p>
+                      <p className="text-xl font-bold text-gray-800">
+                        {contractDetails.price
+                          ? formatCurrency(contractDetails.price)
+                          : "Price information unavailable"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
+                <p className="text-blue-700 text-center">
+                  Contract details could not be loaded. The payment was still
+                  successful.
                 </p>
-              )}
-            </>
-          )}
+              </div>
+            )}
+          </motion.div>
+
+          {/* Payment Details Column */}
+          <motion.div
+            variants={itemVariants}
+            className="bg-gray-50 rounded-xl p-6"
+          >
+            <div className="flex items-center mb-4">
+              <CreditCardIcon className="h-6 w-6 text-gray-700 mr-2" />
+              <h2 className="text-xl font-semibold text-gray-800">
+                Payment Receipt
+              </h2>
+            </div>
+
+            {paymentDetails ? (
+              <div className="space-y-4">
+                <div className="flex justify-between items-center py-2 border-b border-gray-200">
+                  <span className="text-gray-600">Transaction Code</span>
+                  <div className="flex items-center">
+                    <span className="font-medium mr-2">
+                      {paymentDetails.transaction_code}
+                    </span>
+                    <button
+                      onClick={() =>
+                        copyToClipboard(
+                          paymentDetails.transaction_code,
+                          "transaction_code"
+                        )
+                      }
+                      className="text-blue-500 hover:text-blue-700 focus:outline-none"
+                      aria-label="Copy transaction code"
+                    >
+                      {copied === "transaction_code" ? (
+                        <CheckIcon className="h-5 w-5 text-green-500" />
+                      ) : (
+                        <ClipboardDocumentIcon className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-gray-200">
+                  <span className="text-gray-600">Status</span>
+                  <span className="font-medium bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
+                    {paymentDetails.status}
+                  </span>
+                </div>
+                <div className="py-2 border-b border-gray-200">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-gray-600">Contract Price</span>
+                    <span className="font-medium text-gray-800">
+                      NPR{" "}
+                      {(
+                        Number.parseFloat(paymentDetails.total_amount) / 1.03
+                      ).toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-gray-600">Service Fee (3%)</span>
+                    <span className="font-medium text-gray-800">
+                      NPR{" "}
+                      {(
+                        Number.parseFloat(paymentDetails.total_amount) -
+                        Number.parseFloat(paymentDetails.total_amount) / 1.03
+                      ).toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center pt-1 mt-1 border-t border-dashed border-gray-200">
+                    <span className="text-gray-700 font-medium">
+                      Total Amount
+                    </span>
+                    <span className="font-bold text-lg text-gray-800">
+                      NPR {paymentDetails.total_amount}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-gray-200">
+                  <span className="text-gray-600">Transaction ID</span>
+                  <span className="font-medium text-sm text-gray-700">
+                    {paymentDetails.transaction_uuid}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center py-2">
+                  <span className="text-gray-600">Product Code</span>
+                  <span className="font-medium">
+                    {paymentDetails.product_code}
+                  </span>
+                </div>
+                <div className="pt-4 text-center text-sm text-gray-500">
+                  <p>Payment processed on {new Date().toLocaleDateString()}</p>
+                </div>
+              </div>
+            ) : (
+              <div className="flex justify-center py-8">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{
+                    duration: 1,
+                    repeat: Number.POSITIVE_INFINITY,
+                    ease: "linear",
+                  }}
+                  className="h-8 w-8 border-3 border-gray-200 border-t-gray-600 rounded-full"
+                ></motion.div>
+              </div>
+            )}
+          </motion.div>
         </div>
 
-        <div className="mt-6 text-left w-full">
-          <h3 className="text-lg font-semibold">Full Payment Data:</h3>
-          <pre className="bg-gray-200 p-4 rounded-md text-sm overflow-x-auto">
-            {JSON.stringify(paymentDetails, null, 2)}
-          </pre>
-        </div>
+        {!isLoading && !contractDetails && paymentDetails && (
+          <motion.div
+            variants={itemVariants}
+            className="mt-6 p-4 bg-yellow-50 rounded-lg border border-yellow-100 text-center"
+          >
+            <p className="text-yellow-700">
+              We couldn&apos;t load your contract details, but your payment of{" "}
+              <strong>NPR {paymentDetails.total_amount}</strong> was successful.
+            </p>
+          </motion.div>
+        )}
 
-        <button
-          className="mt-6 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700"
-          onClick={() => (window.location.href = "/dashboard")} // Adjust redirect as needed
+        {/* Footer Section */}
+        <motion.div
+          variants={itemVariants}
+          className="mt-8 pt-6 border-t border-gray-100"
         >
-          Back to Dashboard
-        </button>
-      </div>
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <p className="text-sm text-gray-500">
+              A confirmation email has been sent to your registered email
+              address.
+            </p>
+
+            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+              <Link
+                href="/client/best-matches"
+                className="flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors shadow-md shadow-blue-100 group"
+              >
+                <ArrowLeftIcon className="h-5 w-5 mr-2 group-hover:-translate-x-1 transition-transform" />
+                Back to Dashboard
+              </Link>
+            </motion.div>
+          </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 };
@@ -246,18 +598,67 @@ const PaymentSuccessContent = ({ contractId, freelancerId }: Props) => {
 const PaymentSuccess = ({
   params,
 }: {
-  params: { contractId: string; freelancerId: string };
+  params: { contractId: string; freelancerId: string; clientId: string };
 }) => {
-  const { contractId, freelancerId } = params;
+  const { contractId, freelancerId, clientId } = params;
+
   return (
     <Suspense
       fallback={
-        <div className="text-center p-10">Loading payment details...</div>
+        <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-blue-50 to-white">
+          <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-4xl">
+            <div className="animate-pulse">
+              <div className="flex justify-center mb-8 pb-8 border-b">
+                <div className="rounded-full bg-gray-200 h-20 w-20 mb-4"></div>
+                <div className="space-y-3">
+                  <div className="h-6 bg-gray-200 rounded w-3/4 mx-auto"></div>
+                  <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="bg-blue-50 rounded-xl p-6">
+                  <div className="flex items-center mb-4">
+                    <div className="h-6 w-6 bg-gray-200 rounded-full mr-2"></div>
+                    <div className="h-6 bg-gray-200 rounded w-1/2"></div>
+                  </div>
+                  <div className="space-y-6">
+                    <div className="h-20 bg-blue-100 rounded"></div>
+                    <div className="h-20 bg-blue-100 rounded"></div>
+                    <div className="h-20 bg-blue-100 rounded"></div>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 rounded-xl p-6">
+                  <div className="flex items-center mb-4">
+                    <div className="h-6 w-6 bg-gray-200 rounded-full mr-2"></div>
+                    <div className="h-6 bg-gray-200 rounded w-1/2"></div>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="h-8 bg-gray-200 rounded"></div>
+                    <div className="h-8 bg-gray-200 rounded"></div>
+                    <div className="h-8 bg-gray-200 rounded"></div>
+                    <div className="h-8 bg-gray-200 rounded"></div>
+                    <div className="h-8 bg-gray-200 rounded"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-8 pt-6 border-t">
+                <div className="flex justify-between">
+                  <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+                  <div className="h-10 bg-gray-200 rounded w-1/4"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       }
     >
       <PaymentSuccessContent
         contractId={contractId}
         freelancerId={freelancerId}
+        clientId={clientId}
       />
     </Suspense>
   );
