@@ -14,6 +14,7 @@ import Button from "./contractButton";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 import { useAuth } from "@/app/providers";
 import ContractDetails from "./contractDetails";
+import ReviewForm from "@/app/ui/reviewForm";
 
 type ContractState = {
   _id: string; // Project ID
@@ -27,7 +28,7 @@ type ContractState = {
     paymentType: string;
     price: number;
     deadline: string;
-    status: string;
+    status: 'pending' | 'active' | 'completed' | 'canceled' | 'declined'
   };
   freelancerId: string;
   clientId: string;
@@ -205,7 +206,12 @@ export default function ContractDetailsPage({ contractId, jobId }: Props) {
               onSuccess={handleSuccess}
               onError={handleError}
               clientId={contract?.clientId}
+              contractStatus={contract?.contractId.status}
+              freelancerId={contract?.freelancerId}
+              jobId={jobId}
             />
+
+        
           </div>
         </div>
       </div>
@@ -219,15 +225,21 @@ interface ProjectActionsProps {
   userRole: "freelancer" | "client";
   projectStatus?: "ongoing" | "completed" | "revisions" | "canceled";
   clientId?: string;
+  contractStatus?: 'pending' | 'active' | 'completed' | 'canceled' | 'declined'
+  freelancerId?: string;
+  jobId?: string;
   onSuccess?: () => void;
   onError?: (error: Error) => void;
 }
 
 const ProjectActions: React.FC<ProjectActionsProps> = ({
+  contractStatus,
   clientId,
   contractId,
   userRole,
   projectStatus,
+  freelancerId,
+  jobId,
   onSuccess,
   onError,
 }) => {
@@ -236,7 +248,8 @@ const ProjectActions: React.FC<ProjectActionsProps> = ({
     const buttonClass = "mr-2";
 
     if (projectStatus === "completed") {
-      if (userRole === "client") {
+     {  if (contractStatus === "active") {
+       if (userRole === "client") {
         buttons.push(
           <Link
             key="proceed-to-payment"
@@ -252,12 +265,31 @@ const ProjectActions: React.FC<ProjectActionsProps> = ({
             Payment is pending at client side.
           </p>
         );
-      }
-      return buttons.length > 0 ? (
+      } 
+     return buttons.length > 0 ? (
         <div className="flex flex-wrap gap-2">{buttons}</div>
-      ) : null;
+      ) : null;} 
+      
+      else if(contractStatus === "completed"){
+         if(userRole === "client"){
+          return (
+            <ReviewForm revieweeId={freelancerId} reviewerId={clientId} projectId={jobId} />
+          );
+        } else if(userRole === "freelancer"){
+          return (
+            <ReviewForm revieweeId={clientId} reviewerId={freelancerId} projectId={jobId} />
+
+          );
+      }
+    
+    }
+  }
+
+      
+      
     }
 
+    
     if (projectStatus === "canceled") {
       return (
         <p className="text-gray-500 italic">
