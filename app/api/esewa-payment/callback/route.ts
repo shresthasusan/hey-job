@@ -83,7 +83,7 @@ export async function GET(req: NextRequest) {
 
             // Perform direct redirect
 
-            return NextResponse.redirect(`/paymentBilling/success/${payment.contractId}/${payment.freelancerId}?data=${data}`, 302);
+            return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL} /paymentBilling/success/${payment.contractId}/${payment.freelancerId}?data=${data}`, 302);
         } else if (status === "FAILED") {
             // Update the payment status to failed
             await Payment.updateOne(

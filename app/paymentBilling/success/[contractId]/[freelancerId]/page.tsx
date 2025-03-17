@@ -12,6 +12,7 @@ import {
   arrayUnion,
   getDoc,
 } from "firebase/firestore";
+import { useAuth } from "@/app/providers";
 
 interface PaymentDetails {
   transaction_code: string;
@@ -57,18 +58,26 @@ interface Props {
 }
 
 const PaymentSuccessContent = ({ contractId, freelancerId }: Props) => {
+  const { session } = useAuth();
+
+  const { loadUserData } = useContext(Appcontext);
+
   const [error, setError] = useState<string | null>(null);
   const context = useContext(Appcontext) as AppContextValue;
   const { userData, chatData } = context;
 
   const closeChat = useCallback(async () => {
     try {
+      console.log("Closing chat...");
       const userId = userData?.id;
       const conversationExists = chatData?.find(
         (chat: ChatDataItem) => chat.rId === freelancerId
       );
 
       if (!conversationExists) {
+        console.log("freelancerId", freelancerId);
+        console.log("userId", userId);
+        console.log("no chat");
         return;
       }
 
@@ -119,6 +128,7 @@ const PaymentSuccessContent = ({ contractId, freelancerId }: Props) => {
           }
         }
       });
+      console.log("chatc closded");
     } catch (error) {
       console.error("Error closing chat:", error);
     }
@@ -134,6 +144,12 @@ const PaymentSuccessContent = ({ contractId, freelancerId }: Props) => {
   );
 
   useEffect(() => {
+    if (!session) {
+      console.log("no session");
+      return;
+    }
+    loadUserData(session?.user.id);
+    closeChat();
     if (data) {
       try {
         const decodedData = decodeURIComponent(data);
@@ -141,21 +157,20 @@ const PaymentSuccessContent = ({ contractId, freelancerId }: Props) => {
         setPaymentDetails(parsedData);
 
         // Verify signature if present
-        if (parsedData.signature) {
-          const secretKey = process.env.NEXT_PUBLIC_ESEWA_SECRET_KEY; // Note: Avoid exposing this client-side
-          if (secretKey) {
-            const signatureString = `total_amount=${parsedData.total_amount},transaction_uuid=${parsedData.transaction_uuid},product_code=${parsedData.product_code}`;
-            const localSignature = generateEsewaSignature(
-              secretKey,
-              signatureString
-            );
-            setVerifiedSignature(localSignature === parsedData.signature);
-          }
-        }
+        // if (parsedData.signature) {
+        //   const secretKey = process.env.NEXT_PUBLIC_ESEWA_SECRET_KEY; // Note: Avoid exposing this client-side
+        //   if (secretKey) {
+        //     const signatureString = `total_amount=${parsedData.total_amount},transaction_uuid=${parsedData.transaction_uuid},product_code=${parsedData.product_code}`;
+        //     const localSignature = generateEsewaSignature(
+        //       secretKey,
+        //       signatureString
+        //     );
+        //     setVerifiedSignature(localSignature === parsedData.signature);
+        //   }
+        // }
       } catch (error) {
         console.error("Error parsing payment data:", error);
       }
-      closeChat();
     }
   }, [data, closeChat]);
 

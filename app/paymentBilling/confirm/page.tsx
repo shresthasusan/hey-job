@@ -4,16 +4,6 @@ import { useContext, useEffect, useState, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense } from "react";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
-import { Appcontext } from "@/app/context/appContext";
-import { db } from "@/app/lib/firebase";
-import {
-  updateDoc,
-  doc,
-  arrayUnion,
-  collection,
-  getDoc,
-} from "firebase/firestore";
-import proposal from "@/models/proposal";
 
 const PaymentConfirmContent = () => {
   const searchParams = useSearchParams();

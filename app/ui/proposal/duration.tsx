@@ -24,9 +24,9 @@ const Duration = ({ duration, setDuration, isSubmitted }: DurationProps) => {
         >
           <option value="">Select duration</option>
           <option value="less than 1 month">Less than 1 month</option>
-          <option value="less than 3 months">Less than 3 months</option>
-          <option value="less than 6 months">Less than 6 months</option>
-          <option value="1 year">1 year</option>
+          <option value="1 to 3 months">Less than 3 months</option>
+          <option value="3 to 6 month">Less than 6 months</option>
+          <option value="more than 6 months">more than 6 months</option>
         </select>
         {isSubmitted && !duration && (
           <p className="text-red-500 text-sm mt-1">Duration is required.</p>
