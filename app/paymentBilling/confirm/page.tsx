@@ -41,12 +41,7 @@ const PaymentConfirmContent = () => {
         console.log("Payment confirmation response:", response);
 
         if (response.status === 302) {
-          const redirectUrl = response.headers.get("location");
-          if (redirectUrl) {
-            router.push(redirectUrl); // Follow redirect to /success or /failure
-          } else {
-            setError("Redirect URL missing");
-          }
+          console.log("Payment confirmed successfully");
         } else {
           const result = await response.json();
           console.error("Payment confirmation failed:", result);
