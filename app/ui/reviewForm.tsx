@@ -7,9 +7,9 @@ import SliderRating from "./dashboard-components/rating-card/slider";
 import Emoji from "./dashboard-components/rating-card/Emoji";
 
 interface ReviewFormProps {
-  projectId: string;
-  reviewerId: string;
-  revieweeId: string;
+  projectId?: string | "";
+  reviewerId?: string | "";
+  revieweeId?: string | "";
 }
 
 const ReviewForm = ({ projectId, reviewerId, revieweeId }: ReviewFormProps) => {
@@ -17,16 +17,32 @@ const ReviewForm = ({ projectId, reviewerId, revieweeId }: ReviewFormProps) => {
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState<"success" | "error" | null>(
-    null
-  );
+  const [messageType, setMessageType] = useState<"success" | "error" | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [animateRating, setAnimateRating] = useState(false);
+  const [alreadyReviewed, setAlreadyReviewed] = useState(false);
 
   // Trigger animation when component mounts
   useEffect(() => {
     setAnimateRating(true);
   }, []);
+
+  // Check if the review has already been submitted
+  useEffect(() => {
+    const checkReviewStatus = async () => {
+      try {
+        const res = await fetchWithAuth(`/api/reviews?projectId=${projectId}&reviewerId=${reviewerId}&revieweeId=${revieweeId}`);
+        const data = await res.json();
+        if (data.reviewed) {
+          setAlreadyReviewed(true);
+        }
+      } catch (error) {
+        console.error("Error checking review status:", error);
+      }
+    };
+
+    checkReviewStatus();
+  }, [projectId, reviewerId, revieweeId]);
 
   const submitReview = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,7 +118,31 @@ const ReviewForm = ({ projectId, reviewerId, revieweeId }: ReviewFormProps) => {
       </div>
 
       <div className="p-6">
-        {submitted ? (
+        {alreadyReviewed ? (
+          <div className="flex flex-col items-center justify-center py-8">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-8 w-8 text-green-600"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-gray-900">
+              You have already submitted a review for this project.
+            </h3>
+            <p className="text-gray-600 text-center mt-2">
+              Thank you for your feedback!
+            </p>
+          </div>
+        ) : submitted ? (
           <div className="flex flex-col items-center justify-center py-8">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
               <svg
