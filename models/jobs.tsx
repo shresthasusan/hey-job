@@ -79,7 +79,7 @@ const jobsSchema = new Schema<IJobs>(
           changedAt: { type: Date, default: Date.now },
         },
       ],
-      default: [{ status: "pending", changedAt: new Date() }], // ✅ Default value for the array itself
+      default: [{ status: "active", changedAt: new Date() }], // ✅ Default value for the array itself
     },
   },
   { timestamps: true }
