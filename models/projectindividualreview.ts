@@ -12,11 +12,6 @@ interface IReview extends Document {
 
 const reviewSchema = new Schema<IReview>(
     {
-        projectId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Jobs",
-            required: true,
-        },
         contractId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Contract",

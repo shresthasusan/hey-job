@@ -62,13 +62,9 @@ function Payment({
   const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const { push } = useRouter();
-  const pathname = usePathname();
   const [billDetails, setBillDetails] = useState({
     basePrice: 0,
     serviceCharge: 0,
-    tax: 0,
     total: 0,
   });
 
@@ -86,12 +82,11 @@ function Payment({
         // Calculate tax (13% VAT for example)
         const tax = price * 0.13;
         // Calculate total
-        const total = price + serviceCharge + tax;
+        const total = price + serviceCharge;
 
         setBillDetails({
           basePrice: price,
           serviceCharge,
-          tax,
           total,
         });
       } catch (error) {
@@ -162,13 +157,6 @@ function Payment({
               <span className="text-gray-600">Service Charge (3%)</span>
               <span className="font-medium">
                 {formatCurrency(billDetails.serviceCharge)}
-              </span>
-            </div>
-
-            <div className="flex justify-between py-1">
-              <span className="text-gray-600">Tax (13%)</span>
-              <span className="font-medium">
-                {formatCurrency(billDetails.tax)}
               </span>
             </div>
 
