@@ -29,6 +29,7 @@ interface IFreelancerInfo extends Document {
   bio: string;
   languages: string[];
   rate: string;
+  rating: number;
 }
 
 // Define the FreelancerInfo schema
@@ -96,6 +97,12 @@ const freelancerInfoSchema = new Schema<IFreelancerInfo>(
       type: [String],
       required: true,
       default: [],
+    },
+    rating: {
+      type: Number,
+      default: 0, // Client rating based on freelancer feedback
+      min: 0,
+      max: 5,
     },
   },
   { timestamps: true }
