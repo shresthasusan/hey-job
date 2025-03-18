@@ -55,8 +55,8 @@ const ContractList = () => {
         paymentType: offer.paymentType,
         deadline: offer.deadline,
         toDueDate: Math.ceil(
-          Date.now() -
-            new Date(offer.deadline).getMilliseconds() / (1000 * 60 * 60 * 24)
+          (new Date(offer.deadline).getTime() - Date.now()) /
+            (1000 * 60 * 60 * 24)
         ).toString(), // Convert to string as per interface
         jobId: offer.jobId._id,
         status: offer.status,
@@ -168,7 +168,7 @@ const ContractList = () => {
                   <div className="footer flex justify-between pt-3">
                     <div className="text-red-500 items-center flex py-2">
                       <ExclamationCircleIcon className="h-5 w-5 mr-1" />
-                      {offer.toDueDate} to due date
+                      {offer.toDueDate} days until due date
                     </div>
                     <Link
                       className="border flex h-10 items-center rounded-lg px-4 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 aria-disabled:cursor-not-allowed aria-disabled:opacity-50 border-primary-500 hover:bg-zinc-100 text-primary-600 bg-transparent"
@@ -240,10 +240,10 @@ const ContractList = () => {
                     </div>
                   </div>
                   <div className="footer flex justify-between pt-3">
-                    <div className="text-red-500 items-center flex py-2">
+                    {/* <div className="text-red-500 items-center flex py-2">
                       <ExclamationCircleIcon className="h-5 w-5 mr-1" />
-                      {offer.toDueDate} to due date
-                    </div>
+                      {offer.toDueDate} from to due date
+                    </div> */}
                     <Link
                       className="border flex h-10 items-center rounded-lg px-4 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 aria-disabled:cursor-not-allowed aria-disabled:opacity-50 border-primary-500 hover:bg-zinc-100 text-primary-600 bg-transparent"
                       href={`/user/your-contracts/${offer.id}/${offer.jobId}`}

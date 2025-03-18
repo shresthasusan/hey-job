@@ -14,12 +14,11 @@ import { useContext, useEffect, useState } from "react";
 import SaveButton from "../saveButton";
 import Link from "next/link";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
-import useFetch from "@/app/hooks/useFetch";
 import { useAuth } from "@/app/providers";
 import ApplyProposalButton from "./apply-proposal-button";
 
 const JobDetailsSlider: React.FC = () => {
-  const { session, status } = useAuth();
+  const { session } = useAuth();
   const {
     jobData: job,
     jobDetailsVisible,
@@ -30,12 +29,12 @@ const JobDetailsSlider: React.FC = () => {
     proposals: "Loading...",
     interviewing: "Loading...",
   });
-
-  //fetch proposal when the panel opens
+  const [loading, setLoading] = useState(true); // Loading state
 
   // Fetch job stats when the panel opens
   useEffect(() => {
     if (jobDetailsVisible && job?.jobId) {
+      setLoading(true); // Start loading
       fetchWithAuth(`/api/job-stats/${job.jobId}`)
         .then((res) => res.json())
         .then((data) => {
@@ -44,9 +43,8 @@ const JobDetailsSlider: React.FC = () => {
             interviewing: data.interviewing || "N/A",
           });
         })
-        .catch(() =>
-          setJobStats({ proposals: "Error", interviewing: "Error" })
-        );
+        .catch(() => setJobStats({ proposals: "Error", interviewing: "Error" }))
+        .finally(() => setLoading(false)); // Stop loading
     }
   }, [jobDetailsVisible, job?.jobId]);
 
@@ -161,7 +159,9 @@ const JobDetailsSlider: React.FC = () => {
             <p>
               <strong>Proposals: </strong> {jobStats.proposals}
             </p>
-            <p></p>
+            <p>
+              <strong>Interviewing: </strong> {jobStats.interviewing}
+            </p>
           </div>
         </div>
 
@@ -188,7 +188,9 @@ const JobDetailsSlider: React.FC = () => {
           )}
         </div>
 
-        <ApplyProposalButton jobId={job?.jobId} userId={session?.user.id} />
+        {jobDetailsVisible && (
+          <ApplyProposalButton jobId={job?.jobId} userId={session?.user.id} />
+        )}
       </div>
     </div>
   );

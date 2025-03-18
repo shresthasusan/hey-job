@@ -309,7 +309,7 @@ const PaymentSuccessContent = ({ contractId, freelancerId }: Props) => {
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-blue-50 to-white p-4">
+      <div className="flex flex-col items-center justify-center bg-gradient-to-b from-primary-50 to-white p-4">
         <div className="bg-white p-10 rounded-2xl shadow-xl w-full max-w-2xl text-center">
           <div className="text-red-500 mb-4">
             <svg
@@ -331,7 +331,7 @@ const PaymentSuccessContent = ({ contractId, freelancerId }: Props) => {
           <p className="text-gray-600 mb-6">{error}</p>
           <Link
             href="/client/best-matches"
-            className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center px-6 py-3 bg-primary-600 text-white rounded-xl font-medium hover:bg-primary-700 transition-colors"
           >
             <ArrowLeftIcon className="h-5 w-5 mr-2" />
             Back to Dashboard
@@ -342,7 +342,7 @@ const PaymentSuccessContent = ({ contractId, freelancerId }: Props) => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-blue-50 to-white p-4">
+    <div className="flex flex-col items-center justify-center bg-gradient-to-b from-primary-50 to-white p-4">
       <motion.div
         initial="hidden"
         animate="visible"
@@ -378,10 +378,10 @@ const PaymentSuccessContent = ({ contractId, freelancerId }: Props) => {
           {/* Contract Details Column */}
           <motion.div
             variants={itemVariants}
-            className="bg-blue-50 rounded-xl p-6 h-full"
+            className="bg-primary-50 rounded-xl p-6 h-full"
           >
             <div className="flex items-center mb-4">
-              <DocumentTextIcon className="h-6 w-6 text-blue-600 mr-2" />
+              <DocumentTextIcon className="h-6 w-6 text-primary-600 mr-2" />
               <h2 className="text-xl font-semibold text-gray-800">
                 Contract Details
               </h2>
@@ -389,17 +389,17 @@ const PaymentSuccessContent = ({ contractId, freelancerId }: Props) => {
 
             {isLoading ? (
               <div className="animate-pulse space-y-4">
-                <div className="h-6 bg-blue-100 rounded w-3/4"></div>
-                <div className="h-6 bg-blue-100 rounded w-1/2"></div>
-                <div className="h-6 bg-blue-100 rounded w-2/3"></div>
+                <div className="h-6 bg-primary-100 rounded w-3/4"></div>
+                <div className="h-6 bg-primary-100 rounded w-1/2"></div>
+                <div className="h-6 bg-primary-100 rounded w-2/3"></div>
               </div>
             ) : contractDetails ? (
               <div className="space-y-6">
                 <div className="space-y-2">
                   <div className="flex items-start">
-                    <BriefcaseIcon className="h-5 w-5 text-blue-500 mr-2 mt-0.5 flex-shrink-0" />
+                    <BriefcaseIcon className="h-5 w-5 text-primary-500 mr-2 mt-0.5 flex-shrink-0" />
                     <div>
-                      <p className="text-sm text-blue-600 font-medium">
+                      <p className="text-sm text-primary-600 font-medium">
                         Project
                       </p>
                       <p className="text-lg font-medium text-gray-800">
@@ -412,9 +412,9 @@ const PaymentSuccessContent = ({ contractId, freelancerId }: Props) => {
 
                 <div className="space-y-2">
                   <div className="flex items-start">
-                    <UserIcon className="h-5 w-5 text-blue-500 mr-2 mt-0.5 flex-shrink-0" />
+                    <UserIcon className="h-5 w-5 text-primary-500 mr-2 mt-0.5 flex-shrink-0" />
                     <div>
-                      <p className="text-sm text-blue-600 font-medium">
+                      <p className="text-sm text-primary-600 font-medium">
                         Freelancer
                       </p>
                       <p className="text-lg font-medium text-gray-800">
@@ -427,9 +427,9 @@ const PaymentSuccessContent = ({ contractId, freelancerId }: Props) => {
 
                 <div className="space-y-2">
                   <div className="flex items-start">
-                    <CurrencyRupeeIcon className="h-5 w-5 text-blue-500 mr-2 mt-0.5 flex-shrink-0" />
+                    <CurrencyRupeeIcon className="h-5 w-5 text-primary-500 mr-2 mt-0.5 flex-shrink-0" />
                     <div>
-                      <p className="text-sm text-blue-600 font-medium">
+                      <p className="text-sm text-primary-600 font-medium">
                         Contract Amount
                       </p>
                       <p className="text-xl font-bold text-gray-800">
@@ -442,8 +442,8 @@ const PaymentSuccessContent = ({ contractId, freelancerId }: Props) => {
                 </div>
               </div>
             ) : (
-              <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
-                <p className="text-blue-700 text-center">
+              <div className="p-4 bg-primary-50 rounded-lg border border-primary-100">
+                <p className="text-primary-700 text-center">
                   Contract details could not be loaded. The payment was still
                   successful.
                 </p>
@@ -478,7 +478,7 @@ const PaymentSuccessContent = ({ contractId, freelancerId }: Props) => {
                           "transaction_code"
                         )
                       }
-                      className="text-blue-500 hover:text-blue-700 focus:outline-none"
+                      className="text-primary-500 hover:text-primary-700 focus:outline-none"
                       aria-label="Copy transaction code"
                     >
                       {copied === "transaction_code" ? (
@@ -582,7 +582,7 @@ const PaymentSuccessContent = ({ contractId, freelancerId }: Props) => {
             <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
               <Link
                 href="/client/best-matches"
-                className="flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors shadow-md shadow-blue-100 group"
+                className="flex items-center justify-center px-6 py-3 bg-primary-600 text-white rounded-xl font-medium hover:bg-primary-700 transition-colors shadow-md shadow-primary-100 group"
               >
                 <ArrowLeftIcon className="h-5 w-5 mr-2 group-hover:-translate-x-1 transition-transform" />
                 Back to Dashboard
@@ -605,7 +605,7 @@ const PaymentSuccess = ({
   return (
     <Suspense
       fallback={
-        <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-blue-50 to-white">
+        <div className="flex items-center justify-center bg-gradient-to-b from-primary-50 to-white">
           <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-4xl">
             <div className="animate-pulse">
               <div className="flex justify-center mb-8 pb-8 border-b">
@@ -617,15 +617,15 @@ const PaymentSuccess = ({
               </div>
 
               <div className="grid md:grid-cols-2 gap-6">
-                <div className="bg-blue-50 rounded-xl p-6">
+                <div className="bg-primary-50 rounded-xl p-6">
                   <div className="flex items-center mb-4">
                     <div className="h-6 w-6 bg-gray-200 rounded-full mr-2"></div>
                     <div className="h-6 bg-gray-200 rounded w-1/2"></div>
                   </div>
                   <div className="space-y-6">
-                    <div className="h-20 bg-blue-100 rounded"></div>
-                    <div className="h-20 bg-blue-100 rounded"></div>
-                    <div className="h-20 bg-blue-100 rounded"></div>
+                    <div className="h-20 bg-primary-100 rounded"></div>
+                    <div className="h-20 bg-primary-100 rounded"></div>
+                    <div className="h-20 bg-primary-100 rounded"></div>
                   </div>
                 </div>
 

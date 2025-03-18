@@ -10,7 +10,7 @@ import { ReactNode, Suspense } from "react";
 import UserProfileLoader from "@/app/lib/userProfileLoader";
 import PostingSkeleton from "@/app/ui/dashboard-components/skeletons/postingSkeleton";
 import JobDetailsSlider from "@/app/ui/dashboard-components/job-details-slider";
-
+import RatingSkeletonCard from "@/app/ui/dashboard-components/skeletons/ratingSkeletonCard";
 interface Props {
   children: ReactNode;
 }
@@ -23,7 +23,9 @@ export default function Layout({ children }: Props) {
         <div className="   hidden xl:flex xl:justify-between   sm:gap-x-5 gap-y-10  w-full ">
           <ProfileCard mode={"Freelancer"} />
           <OrderCard mode="Freelancer" />
-          <RatingCard />
+          <Suspense>
+            <RatingCard />
+          </Suspense>
           <FinanceCard />
           <ReviewsCard />
         </div>

@@ -1,6 +1,7 @@
 "use client";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 import { useAuth } from "@/app/providers";
+import { BuildingOffice2Icon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
@@ -55,7 +56,7 @@ export default function DisplayClientProfile() {
     <div className="container mx-auto px-4 py-8 max-w-6xl">
       {/* Profile Header Card */}
       <div className="bg-white rounded-xl shadow-md mb-8 overflow-hidden">
-        <div className="h-32 bg-gradient-to-r from-blue-500 to-blue-300"></div>
+        <div className="h-32 bg-gradient-to-r from-primary-500 to-primary-300"></div>
         <div className="relative pt-0 px-6 pb-6">
           <div className="flex flex-col md:flex-row items-start md:items-end -mt-16 gap-4">
             <div className="h-32 w-32 rounded-full border-4 border-white bg-gray-100 overflow-hidden">
@@ -68,7 +69,7 @@ export default function DisplayClientProfile() {
                   className="h-full w-full object-cover"
                 />
               ) : (
-                <div className="h-full w-full flex items-center justify-center bg-blue-100 text-blue-600 text-3xl font-bold">
+                <div className="h-full w-full flex items-center justify-center bg-primary-100 text-primary-600 text-3xl font-bold">
                   {getInitials()}
                 </div>
               )}
@@ -100,7 +101,7 @@ export default function DisplayClientProfile() {
                     .map((industry: string, i: number) => (
                       <span
                         key={i}
-                        className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full"
+                        className="px-2 py-1 bg-primary-100 text-primary-700 text-xs rounded-full"
                       >
                         {industry}
                       </span>
@@ -182,14 +183,14 @@ export default function DisplayClientProfile() {
         <div className="grid grid-cols-2 border-b">
           <button
             onClick={() => setActiveTab("personal")}
-            className={`py-3 font-medium text-sm ${activeTab === "personal" ? "border-b-2 border-blue-500 text-blue-600" : "text-gray-500"}`}
+            className={`py-3 font-medium text-sm ${activeTab === "personal" ? "border-b-2 border-primary-500 text-primary-600" : "text-gray-500"}`}
           >
             Personal Information
           </button>
           <button
             onClick={() => setActiveTab("client")}
             disabled={!clientData}
-            className={`py-3 font-medium text-sm ${activeTab === "client" ? "border-b-2 border-blue-500 text-blue-600" : "text-gray-500"} ${!clientData ? "opacity-50 cursor-not-allowed" : ""}`}
+            className={`py-3 font-medium text-sm ${activeTab === "client" ? "border-b-2 border-primary-500 text-primary-600" : "text-gray-500"} ${!clientData ? "opacity-50 cursor-not-allowed" : ""}`}
           >
             Client Profile
           </button>
@@ -204,7 +205,7 @@ export default function DisplayClientProfile() {
               <div className="flex items-center gap-2">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-blue-500"
+                  className="h-5 w-5 text-primary-500"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -265,27 +266,7 @@ export default function DisplayClientProfile() {
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 text-gray-400 mt-0.5"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <rect
-                      x="2"
-                      y="2"
-                      width="20"
-                      height="20"
-                      rx="5"
-                      ry="5"
-                    ></rect>
-                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                  </svg>
+                  <BuildingOffice2Icon className="h-5 w-5 text-gray-400 mt-0.5" />
                   <div>
                     <p className="font-medium text-gray-800">City</p>
                     <p className="text-gray-600">
@@ -324,7 +305,7 @@ export default function DisplayClientProfile() {
               <div className="flex items-center gap-2">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-blue-500"
+                  className="h-5 w-5 text-primary-500"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -421,7 +402,7 @@ export default function DisplayClientProfile() {
               <div className="flex items-center gap-2">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-blue-500"
+                  className="h-5 w-5 text-primary-500"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -588,7 +569,7 @@ export default function DisplayClientProfile() {
               <div className="flex items-center gap-2">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-blue-500"
+                  className="h-5 w-5 text-primary-500"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -613,7 +594,7 @@ export default function DisplayClientProfile() {
                       clientData.industry.map((industry: string, i: number) => (
                         <span
                           key={i}
-                          className="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full"
+                          className="px-3 py-1 bg-primary-100 text-primary-700 text-sm rounded-full"
                         >
                           {industry}
                         </span>

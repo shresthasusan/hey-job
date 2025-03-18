@@ -33,19 +33,27 @@ const ApplyProposalButton = ({ jobId, userId }: Props) => {
     fetchActions();
   }, [jobId, userId]);
 
-  if (loading) return <p>Loading...</p>; // Show loading while fetching data
+  if (loading)
+    return (
+      <div className="w-full mt-10 h-12 bg-primary-500 animate-pulse text-white py-3 rounded-lg px-8 "></div>
+    ); // Show loading while fetching data
 
   return (
     <>
       {Array.isArray(actions) && actions.includes("proposal_submitted") ? (
-        <div className="mt-10 text-primary-500">
-          {" "}
-          You&apos;ve already applied for this job
-          <br />
-          <Link className="underline" href={"/user/your-proposal"}>
-            View Proposal
-          </Link>
-        </div>
+        <>
+          <div className="w-full mt-10 bg-primary-900 text-white py-3 rounded-lg px-8 cursor-not-allowed ">
+            Apply for this Job
+          </div>
+          <div className="mt-10 text-primary-500 ">
+            {" "}
+            You&apos;ve already applied for this job
+            <br />
+            <Link className="underline" href={"/user/your-proposal"}>
+              View Proposal
+            </Link>
+          </div>
+        </>
       ) : (
         <div className="mt-10">
           {/* Apply Button */}

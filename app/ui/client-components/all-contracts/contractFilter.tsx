@@ -1,8 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState, FormEvent } from "react";
-import { Button } from "../../button";
+import { useEffect, useState } from "react";
 
 const ContractsFilter = () => {
   const searchParams = useSearchParams();
@@ -26,7 +25,7 @@ const ContractsFilter = () => {
       params.delete(key);
     }
 
-    replace(`?${params.toString()}`);
+    replace(`${pathname}?${params.toString()}`);
   };
 
   useEffect(() => {
@@ -42,7 +41,7 @@ const ContractsFilter = () => {
       const params = new URLSearchParams(searchParams);
 
       if (key === "status") {
-        let currentStatuses = new Set(prev.status.split(",").filter(Boolean));
+        const currentStatuses = new Set(prev.status.split(",").filter(Boolean));
         currentStatuses.has(value)
           ? currentStatuses.delete(value)
           : currentStatuses.add(value);
@@ -53,16 +52,18 @@ const ContractsFilter = () => {
           : params.delete("status");
         return { ...prev, status: statusValue };
       } else if (key === "contractType") {
-        let currentTypes = new Set(
+        const currentTypes = new Set(
           prev.contractType.split(",").filter(Boolean)
         );
         currentTypes.has(value)
           ? currentTypes.delete(value)
           : currentTypes.add(value);
 
-        params.delete("contractType");
-        currentTypes.forEach((type) => params.append("contractType", type));
-        return { ...prev, contractType: Array.from(currentTypes).join(",") };
+        const typeValue = Array.from(currentTypes).join(",");
+        typeValue
+          ? params.set("contractType", typeValue)
+          : params.delete("contractType");
+        return { ...prev, contractType: typeValue };
       }
       return prev;
     });
@@ -71,7 +72,7 @@ const ContractsFilter = () => {
   const handleApplyFilters = () => {
     const queryString = Object.entries(filters)
       .filter(([_, value]) => value)
-      .map(([key, value]) => `${key}=${value}`)
+      .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
       .join("&");
 
     replace(`${pathname}${queryString ? `?${queryString}` : ""}`);
@@ -83,47 +84,81 @@ const ContractsFilter = () => {
       const updatedFilters = { ...prev, [key]: "" };
       const params = new URLSearchParams(searchParams.toString());
       params.delete(key);
-      replace(`?${params.toString()}`);
+      replace(`${pathname}?${params.toString()}`);
       return updatedFilters;
     });
   };
 
+  const handleClearAllFilters = () => {
+    setFilters({
+      search: "",
+      contractType: "",
+      status: "",
+    });
+    replace(pathname);
+  };
+
+  const hasActiveFilters = filters.status || filters.contractType;
+
   return (
-    <div className="w-full">
+    <div className="w-full space-y-4">
       {/* Header with Search and Filter Button */}
-      <div className="flex items-center gap-4 mb-4">
-        <div className="relative flex items-center">
-          <input
-            id="search"
-            type="text"
-            value={filters.search}
-            onChange={(e) => updateURLParams("search", e.target.value)}
-            className="border rounded-lg px-10 py-2 w-64 focus:outline-none focus:ring-2 focus:ring-primary-500"
-            placeholder="Search contracts..."
-          />
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 absolute left-3 text-gray-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+        <div className="relative w-full sm:w-auto flex-1 max-w-md">
+          <div className="relative">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+            <input
+              id="search"
+              type="text"
+              value={filters.search}
+              onChange={(e) => updateURLParams("search", e.target.value)}
+              className="pl-10 w-full border rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              placeholder="Search contracts..."
             />
-          </svg>
+            {filters.search && (
+              <button
+                onClick={() => updateURLParams("search", "")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            )}
+          </div>
         </div>
+
         <button
           onClick={() => setIsFilterOpen(!isFilterOpen)}
-          className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors duration-200"
-          aria-label="Toggle filters"
+          className={`flex items-center gap-2 px-4 py-2 rounded-md border ${isFilterOpen ? "bg-gray-100 border-gray-300" : "bg-white border-gray-300"} hover:bg-gray-50 transition-colors`}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 text-primary-500"
+            className="h-4 w-4 text-gray-600"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -135,85 +170,112 @@ const ContractsFilter = () => {
               d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
             />
           </svg>
-          <span className="text-primary-500">Filters</span>
+          <span>{isFilterOpen ? "Hide Filters" : "Show Filters"}</span>
         </button>
       </div>
 
       {/* Filter Panel */}
       <div
-        className={`w-full overflow-hidden transition-all duration-300 px-8 ease-in-out ${
-          isFilterOpen ? "max-h-[400px]" : "max-h-0"
+        className={`w-full overflow-hidden transition-all duration-300 ease-in-out ${
+          isFilterOpen ? "max-h-[400px] opacity-100" : "max-h-0 opacity-0"
         }`}
       >
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleApplyFilters();
-          }}
-          className="flex flex-col md:flex-row gap-6 py-4"
-        >
-          {/* Contract Type */}
-          <fieldset className="flex-1">
-            <legend className="font-medium text-gray-700 mb-3">
-              Contract Type
-            </legend>
-            <div className="space-y-3">
-              {["fixed", "hourly"].map((type) => (
-                <label key={type} className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={filters.contractType.split(",").includes(type)}
-                    onChange={() => handleFilterChange("contractType", type)}
-                    className="h-5 w-5 text-primary-500 border-primary-500 rounded"
-                  />
-                  <span className="ml-2 text-gray-600 capitalize">{type}</span>
-                </label>
-              ))}
-            </div>
-          </fieldset>
-
-          {/* Contract Status */}
-          <fieldset className="flex-1">
-            <legend className="font-medium text-gray-700 mb-3">
-              Contract Status
-            </legend>
-            <div className="space-y-3">
-              {["pending", "active", "ended", "canceled", "rejected"].map(
-                (status) => (
-                  <label key={status} className="flex items-center">
+        <div className="bg-gray-50 rounded-lg p-6">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleApplyFilters();
+            }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-6"
+          >
+            {/* Contract Type */}
+            <fieldset>
+              <legend className="font-medium text-sm mb-3">
+                Contract Type
+              </legend>
+              <div className="space-y-3">
+                {["fixed", "hourly", "milestone"].map((type) => (
+                  <div key={type} className="flex items-center space-x-2">
                     <input
                       type="checkbox"
-                      checked={filters.status.split(",").includes(status)}
-                      onChange={() => handleFilterChange("status", status)}
-                      className="h-5 w-5 text-primary-500 border-primary-500 rounded"
+                      id={`type-${type}`}
+                      checked={filters.contractType.split(",").includes(type)}
+                      onChange={() => handleFilterChange("contractType", type)}
+                      className="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
                     />
-                    <span className="ml-2 text-gray-600 capitalize">
-                      {status}
-                    </span>
-                  </label>
-                )
-              )}
-            </div>
-          </fieldset>
+                    <label
+                      htmlFor={`type-${type}`}
+                      className="text-sm font-medium text-gray-700 capitalize"
+                    >
+                      {type}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </fieldset>
 
-          {/* Apply Filters Button */}
-          <div className="flex items-end">
-            <Button
-              type="submit"
-              className="w-full md:w-auto text-white px-4 py-2 rounded-lg"
-            >
-              Apply Filters
-            </Button>
-          </div>
-        </form>
+            {/* Contract Status */}
+            <fieldset>
+              <legend className="font-medium text-sm mb-3">
+                Contract Status
+              </legend>
+              <div className="space-y-3">
+                {["pending", "active", "completed", "canceled", "declined"].map(
+                  (status) => (
+                    <div key={status} className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id={`status-${status}`}
+                        checked={filters.status.split(",").includes(status)}
+                        onChange={() => handleFilterChange("status", status)}
+                        className="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                      />
+                      <label
+                        htmlFor={`status-${status}`}
+                        className="text-sm font-medium text-gray-700 capitalize"
+                      >
+                        {status}
+                      </label>
+                    </div>
+                  )
+                )}
+              </div>
+            </fieldset>
+
+            {/* Apply Filters Button */}
+            <div className="flex items-end gap-2">
+              <button
+                type="submit"
+                className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors"
+              >
+                Apply Filters
+              </button>
+              <button
+                type="button"
+                onClick={handleClearAllFilters}
+                className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors"
+              >
+                Clear All
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
 
       {/* Applied Filters Section */}
-      {filters.status || filters.contractType ? (
-        <div className="mt-4 pt-3 border-t">
-          <h4 className="text-sm font-medium text-gray-700 mb-2">
-            Applied Filters:
-          </h4>
+      {hasActiveFilters && (
+        <div className="pt-3 border-t">
+          <div className="flex items-center justify-between mb-2">
+            <h4 className="text-sm font-medium text-gray-700">
+              Applied Filters:
+            </h4>
+            <button
+              onClick={handleClearAllFilters}
+              className="text-xs text-gray-600 hover:text-gray-900 px-2 py-1 hover:bg-gray-100 rounded"
+            >
+              Clear All
+            </button>
+          </div>
           <div className="flex flex-wrap gap-2">
             {filters.status
               .split(",")
@@ -221,14 +283,27 @@ const ContractsFilter = () => {
               .map((status) => (
                 <span
                   key={status}
-                  className="flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full"
+                  className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800"
                 >
                   Status: {status.charAt(0).toUpperCase() + status.slice(1)}
                   <button
                     onClick={() => handleRemoveFilter("status")}
-                    className="text-blue-600 hover:text-blue-800"
+                    className="ml-1 text-gray-500 hover:text-gray-700"
                   >
-                    ✕
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-3 w-3"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
                   </button>
                 </span>
               ))}
@@ -238,20 +313,33 @@ const ContractsFilter = () => {
               .map((type) => (
                 <span
                   key={type}
-                  className="flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full"
+                  className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800"
                 >
-                  Contract: {type.charAt(0).toUpperCase() + type.slice(1)}
+                  Type: {type.charAt(0).toUpperCase() + type.slice(1)}
                   <button
                     onClick={() => handleRemoveFilter("contractType")}
-                    className="text-blue-600 hover:text-blue-800"
+                    className="ml-1 text-gray-500 hover:text-gray-700"
                   >
-                    ✕
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-3 w-3"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
                   </button>
                 </span>
               ))}
           </div>
         </div>
-      ) : null}
+      )}
     </div>
   );
 };

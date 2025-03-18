@@ -4,6 +4,7 @@ interface IReview extends Document {
     projectId: mongoose.Schema.Types.ObjectId;
     reviewerId: mongoose.Schema.Types.ObjectId; // Who gives the review
     revieweeId: mongoose.Schema.Types.ObjectId; // Who receives the review
+    contractId: mongoose.Schema.Types.ObjectId;
     rating: number;
     comment?: string;
     createdAt: Date;
@@ -14,6 +15,11 @@ const reviewSchema = new Schema<IReview>(
         projectId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Jobs",
+            required: true,
+        },
+        contractId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Contract",
             required: true,
         },
         reviewerId: {

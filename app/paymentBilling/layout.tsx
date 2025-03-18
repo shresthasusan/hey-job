@@ -14,24 +14,21 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en">
-      <body className="min-h-screen bg-gray-50">
-        {/* Logo at Top Left */}
-        <div className="px-4 py-4">
-          <Link href="/">
-            <Image
-              src="/logo/login-logo.png" // Replace with your logo's path in the public folder
-              alt="Logo"
-              width={150} // Adjust width as needed
-              height={50} // Adjust height as needed
-              className="object-contain bg-primary-400"
-            />
-          </Link>
-        </div>
+    <>
+      <div className="px-4 py-4">
+        <Link href="/">
+          <Image
+            src="/logo/login-logo.png" // Replace with your logo's path in the public folder
+            alt="Logo"
+            width={100} // Adjust width as needed
+            height={100} // Adjust height as needed
+            className="object-contain "
+          />
+        </Link>
+      </div>
 
-        {/* Page Content */}
-        {children}
-      </body>
-    </html>
+      {/* Page Content */}
+      {children}
+    </>
   );
 }

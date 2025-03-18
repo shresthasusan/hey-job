@@ -27,7 +27,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className="   hidden xl:flex xl:justify-between   sm:gap-x-5 gap-y-10  w-full ">
           <ProfileCard mode={"Client"} />
           <OrderCard mode={"Client"} />
-          <RatingCard />
+          <Suspense fallback={<CardSkeleton />}>
+            <RatingCard />
+          </Suspense>
           <FinanceCard />
           <ReviewsCard />
         </div>
@@ -65,9 +67,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </div>
               </Link>
             </div>
-          <Suspense fallback={<CardSkeleton/>}>
-            <ProjectCarousel />
-          </Suspense>
+            <Suspense fallback={<CardSkeleton />}>
+              <ProjectCarousel />
+            </Suspense>
             <div>
               <div className="sticky top-[75px] z-[2]  pt-5  bg-white">
                 <Suspense>

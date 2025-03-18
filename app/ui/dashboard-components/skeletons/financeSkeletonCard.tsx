@@ -9,10 +9,10 @@ const FinanceSkeletonCard = () => {
       <div className="w-full flex gap-3 flex-col ">
         <div className="bg-slate-200 m-auto mb-5 h-6 w-[80%] relative rounded-3xl p-1 pl-10" />
         <div className="bg-slate-200 h-3 w-16 relative rounded-3xl p-1 pl-10" />
-        <div className="bg-slate-200 m-auto h-6 w-1/2 relative rounded-3xl p-1 pl-10" />
+        <div className="bg-slate-200 m-auto h-6 w-5/6 relative rounded-3xl p-1 pl-10" />
 
         <div className="bg-slate-200 h-3 w-16 relative rounded-3xl p-1 pl-10" />
-        <div className="bg-slate-200 m-auto h-6 w-1/2 relative rounded-3xl p-1 pl-10" />
+        <div className="bg-slate-200 m-auto h-6 w-5/6 relative rounded-3xl p-1 pl-10" />
       </div>
     </div>
   );

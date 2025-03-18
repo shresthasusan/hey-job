@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { CheckBadgeIcon, ClockIcon } from "@heroicons/react/24/solid";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
-import { useSession } from "next-auth/react";
 import { useAuth } from "@/app/providers";
+import OrderSkeletonCard from "./skeletons/orderSkeletonCard"; // Assuming OrderSkeletonCard is the skeleton component
 
 interface Props {
   mode: string;
@@ -13,6 +13,7 @@ interface Props {
 const OrderCard = ({ mode }: Props) => {
   const [activeCount, setActiveCount] = useState(0);
   const [completeCount, setCompleteCount] = useState(0);
+  const [loading, setLoading] = useState(true); // Loading state
 
   const { session } = useAuth();
   const userId = session?.user?.id;
@@ -20,6 +21,7 @@ const OrderCard = ({ mode }: Props) => {
   useEffect(() => {
     const fetchContractData = async () => {
       try {
+        setLoading(true); // Start loading
         const response = await fetchWithAuth(
           `/api/contractsFetchwithcount?userId=${userId}`
         );
@@ -28,6 +30,8 @@ const OrderCard = ({ mode }: Props) => {
         setCompleteCount(data.completeCount || 0);
       } catch (error) {
         console.error("Error fetching contract data:", error);
+      } finally {
+        setLoading(false); // Stop loading
       }
     };
 
@@ -35,6 +39,10 @@ const OrderCard = ({ mode }: Props) => {
       fetchContractData();
     }
   }, [userId]);
+
+  if (loading) {
+    return <OrderSkeletonCard />;
+  }
 
   return (
     <div

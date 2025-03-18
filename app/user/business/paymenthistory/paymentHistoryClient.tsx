@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
 import {
   CheckCircleIcon,
   XCircleIcon,
@@ -10,103 +10,111 @@ import {
   BanknotesIcon,
   MagnifyingGlassIcon,
   ArrowPathIcon,
-} from "@heroicons/react/24/outline"
-import { useAuth } from "@/app/providers"
-import { fetchWithAuth } from "@/app/lib/fetchWIthAuth"
+} from "@heroicons/react/24/outline";
+import { useAuth } from "@/app/providers";
+import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 
 interface Job {
-  _id: string
-  title: string
+  _id: string;
+  title: string;
 }
 
 interface User {
-  _id: string
-  name: string
-  lastName: string
+  _id: string;
+  name: string;
+  lastName: string;
 }
 
 interface Payment {
-  _id: string
-  jobId: Job
-  contractId: string
-  clientId: User
-  freelancerId: User
-  totalAmount: number
-  freelancerAmount: number
-  transactionId: string
-  method: string
-  status: string
-  createdAt: string
-  type: "income" | "expense"
+  _id: string;
+  jobId: Job;
+  contractId: string;
+  clientId: User;
+  freelancerId: User;
+  totalAmount: number;
+  freelancerAmount: number;
+  transactionId: string;
+  method: string;
+  status: string;
+  createdAt: string;
+  type: "income" | "expense";
 }
 
 const PaymentHistoryClient = () => {
-  const [paymentHistory, setPaymentHistory] = useState<Payment[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [filter, setFilter] = useState("all")
-  const { session } = useAuth()
-  const userId = session?.user.id
+  const [paymentHistory, setPaymentHistory] = useState<Payment[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [filter, setFilter] = useState("all");
+  const { session } = useAuth();
+  const userId = session?.user.id;
 
   useEffect(() => {
     const fetchPaymentHistory = async () => {
-      if (!userId) return
+      if (!userId) return;
 
       try {
-        setIsLoading(true)
-        const response = await fetchWithAuth(`/api/fetchpayment/${userId}?alltransaction=true`)
-        const data = await response.json()
-        setPaymentHistory(data.transactionsWithType)
+        setIsLoading(true);
+        const response = await fetchWithAuth(
+          `/api/fetchpayment/${userId}?alltransaction=true`
+        );
+        const data = await response.json();
+        setPaymentHistory(data.transactionsWithType);
       } catch (error) {
-        console.error("Error fetching payment history:", error)
+        console.error("Error fetching payment history:", error);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
+    };
 
-    fetchPaymentHistory()
-  }, [userId])
+    fetchPaymentHistory();
+  }, [userId]);
 
   const filteredPayments = paymentHistory.filter((payment) => {
-    if (filter === "all") return true
-    if (filter === "income") return payment.type === "income"
-    if (filter === "expense") return payment.type === "expense"
-    if (filter === "completed") return payment.status === "completed"
-    if (filter === "pending") return payment.status === "pending"
-    if (filter === "failed") return payment.status === "failed"
-    return true
-  })
+    if (filter === "all") return true;
+    if (filter === "income") return payment.type === "income";
+    if (filter === "expense") return payment.type === "expense";
+    if (filter === "completed") return payment.status === "completed";
+    if (filter === "pending") return payment.status === "pending";
+    if (filter === "failed") return payment.status === "failed";
+    return true;
+  });
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
+    const date = new Date(dateString);
     return new Intl.DateTimeFormat("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
-    }).format(date)
-  }
+    }).format(date);
+  };
 
   const refreshData = async () => {
-    if (!userId) return
+    if (!userId) return;
 
     try {
-      setIsLoading(true)
-      const response = await fetchWithAuth(`/api/fetchpayment/${userId}?alltransaction=true`)
-      const data = await response.json()
-      setPaymentHistory(data.transactionsWithType)
+      setIsLoading(true);
+      const response = await fetchWithAuth(
+        `/api/fetchpayment/${userId}?alltransaction=true`
+      );
+      const data = await response.json();
+      setPaymentHistory(data.transactionsWithType);
     } catch (error) {
-      console.error("Error refreshing payment history:", error)
+      console.error("Error refreshing payment history:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Payment History</h1>
-            <p className="mt-1 text-sm text-gray-500">View all your transaction history and payment details</p>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Payment History
+            </h1>
+            <p className="mt-1 text-sm text-gray-500">
+              View all your transaction history and payment details
+            </p>
           </div>
           <div className="mt-4 md:mt-0 flex space-x-3">
             <button
@@ -123,7 +131,9 @@ const PaymentHistoryClient = () => {
           <div className="border-b border-gray-200 px-4 py-4 sm:px-6 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
             <div className="flex items-center space-x-2">
               <BanknotesIcon className="h-5 w-5 text-gray-400" />
-              <span className="text-sm font-medium text-gray-500">{filteredPayments.length} Transactions</span>
+              <span className="text-sm font-medium text-gray-500">
+                {filteredPayments.length} Transactions
+              </span>
             </div>
 
             <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
@@ -207,7 +217,9 @@ const PaymentHistoryClient = () => {
                         <div className="flex items-center">
                           <div
                             className={`flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center ${
-                              payment.type === "income" ? "bg-green-100" : "bg-blue-100"
+                              payment.type === "income"
+                                ? "bg-green-100"
+                                : "bg-red-100"
                             }`}
                           >
                             {payment.type === "income" ? (
@@ -218,9 +230,13 @@ const PaymentHistoryClient = () => {
                           </div>
                           <div className="ml-4">
                             <div className="text-sm font-medium text-gray-900">
-                              {payment.type === "income" ? "Payment Received" : "Payment Sent"}
+                              {payment.type === "income"
+                                ? "Payment Received"
+                                : "Payment Sent"}
                             </div>
-                            <div className="text-xs text-gray-500 truncate max-w-xs">ID: {payment._id}</div>
+                            <div className="text-xs text-gray-500 truncate max-w-xs">
+                              ID: {payment._id}
+                            </div>
                           </div>
                         </div>
                       </td>
@@ -231,16 +247,22 @@ const PaymentHistoryClient = () => {
                             : `To: ${payment.freelancerId?.name || "Unknown"} ${payment.freelancerId?.lastName || ""}`}
                         </div>
                         <div className="text-xs text-gray-500">
-                          {payment.jobId?.title && <span>Job: {payment.jobId.title}</span>}
+                          {payment.jobId?.title && (
+                            <span>Job: {payment.jobId.title}</span>
+                          )}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{formatDate(payment.createdAt)}</div>
+                        <div className="text-sm text-gray-900">
+                          {formatDate(payment.createdAt)}
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div
                           className={`text-sm font-semibold ${
-                            payment.type === "income" ? "text-green-600" : "text-blue-600"
+                            payment.type === "income"
+                              ? "text-green-600"
+                              : "text-red-600"
                           }`}
                         >
                           {payment.type === "income" ? "+" : "-"} Rs{" "}
@@ -250,12 +272,15 @@ const PaymentHistoryClient = () => {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900 capitalize">{payment.method}</div>
+                        <div className="text-sm text-gray-900 capitalize">
+                          {payment.method}
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         {payment.status === "completed" && (
                           <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                            <CheckCircleIcon className="h-4 w-4 mr-1" /> Successful
+                            <CheckCircleIcon className="h-4 w-4 mr-1" />{" "}
+                            Successful
                           </span>
                         )}
                         {payment.status === "pending" && (
@@ -277,7 +302,9 @@ const PaymentHistoryClient = () => {
           ) : (
             <div className="flex flex-col items-center justify-center py-16">
               <BanknotesIcon className="h-12 w-12 text-gray-300" />
-              <h3 className="mt-2 text-sm font-medium text-gray-900">No transactions found</h3>
+              <h3 className="mt-2 text-sm font-medium text-gray-900">
+                No transactions found
+              </h3>
               <p className="mt-1 text-sm text-gray-500">
                 {filter !== "all"
                   ? "Try changing your filter settings to see more transactions."
@@ -288,8 +315,7 @@ const PaymentHistoryClient = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default PaymentHistoryClient
-
+export default PaymentHistoryClient;
