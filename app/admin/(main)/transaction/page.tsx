@@ -1,124 +1,345 @@
-"use client";
+"use client"
 
-import React, { useState } from "react";
+import { fetchWithAuth } from "@/app/lib/fetchWIthAuth"
+import { useEffect, useState } from "react"
+import {
+  ArrowsUpDownIcon,
+  MagnifyingGlassIcon,
+  FunnelIcon,
+  BanknotesIcon,
+  ClockIcon,
+  CheckCircleIcon,
+  XCircleIcon,
+} from "@heroicons/react/24/outline"
+
+interface Transaction {
+  _id: string
+  jobId: {
+    _id: string
+    title: string
+  }
+  clientId: {
+    _id: string
+    name: string
+    lastName: string
+  }
+  freelancerId: {
+    _id: string
+    name: string
+    lastName: string
+  }
+  totalAmount: number
+  freelancerAmount: number
+  transactionId: string
+  method: string
+  status: string
+  createdAt: string
+}
 
 const TransactionsPage = () => {
-  interface Transaction {
-    _id: string;
-    userId: { name: string; role: string };
-    amount: number;
-    type: string;
-    status: string;
-    timestamp: string;
+  const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [sortField, setSortField] = useState<keyof Transaction>("createdAt")
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc")
+  const [searchTerm, setSearchTerm] = useState("")
+  const [statusFilter, setStatusFilter] = useState("all")
+  const [methodFilter, setMethodFilter] = useState("all")
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
+
+  useEffect(() => {
+    fetchWithAuth("/api/admin/fetchalltransactions?alltransaction=true")
+      .then((response) => response.json())
+      .then((data) => {
+        setTransactions(data.transactions)
+        setFilteredTransactions(data.transactions)
+        setIsLoading(false)
+      })
+      .catch((error) => {
+        console.error("Error fetching transactions:", error)
+        setIsLoading(false)
+      })
+  }, [])
+
+  useEffect(() => {
+    let result = [...transactions]
+
+    // Apply search filter
+    if (searchTerm) {
+      result = result.filter(
+        (transaction) =>
+          transaction.jobId.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          `${transaction.clientId.name} ${transaction.clientId.lastName}`
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          `${transaction.freelancerId.name} ${transaction.freelancerId.lastName}`
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()),
+      )
+    }
+
+    // Apply status filter
+    if (statusFilter !== "all") {
+      result = result.filter((transaction) => transaction.status === statusFilter)
+    }
+
+    // Apply method filter
+    if (methodFilter !== "all") {
+      result = result.filter((transaction) => transaction.method === methodFilter)
+    }
+
+    setFilteredTransactions(result)
+    setCurrentPage(1)
+  }, [searchTerm, statusFilter, methodFilter, transactions])
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    })
   }
 
-  // Dummy Transactions Data
-  const [transactions, setTransactions] = useState<Transaction[]>([
-    { _id: "1", userId: { name: "John Doe", role: "Freelancer" }, amount: 120, type: "deposit", status: "completed", timestamp: "2024-02-10T10:30:00" },
-    { _id: "2", userId: { name: "Jane Smith", role: "Client" }, amount: 250, type: "withdrawal", status: "pending", timestamp: "2024-02-09T14:00:00" },
-    { _id: "3", userId: { name: "Emily Brown", role: "Freelancer" }, amount: 80, type: "payment", status: "failed", timestamp: "2024-02-08T16:45:00" },
-    { _id: "4", userId: { name: "Michael Johnson", role: "Client" }, amount: 300, type: "deposit", status: "completed", timestamp: "2024-02-07T09:15:00" },
-    { _id: "5", userId: { name: "Sarah Lee", role: "Freelancer" }, amount: 150, type: "withdrawal", status: "completed", timestamp: "2024-02-06T11:20:00" },
-  ]);
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(amount)
+  }
 
-  const [filter, setFilter] = useState({ status: "", type: "" });
+  const sortTransactions = (field: keyof Transaction) => {
+    setSortField(field)
+    setSortDirection((current) => (current === "asc" ? "desc" : "asc"))
 
-  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setFilter({ ...filter, [e.target.name]: e.target.value });
-  };
+    const sortedTransactions = [...filteredTransactions].sort((a, b) => {
+      let compareA = field === "createdAt" ? new Date(a[field]).getTime() : a[field]
+      let compareB = field === "createdAt" ? new Date(b[field]).getTime() : b[field]
 
-  const filteredTransactions = transactions.filter(
-    (t) =>
-      (filter.status ? t.status === filter.status : true) &&
-      (filter.type ? t.type === filter.type : true)
-  );
+
+   
+      if (sortDirection === "asc") {
+        return compareA > compareB ? 1 : -1
+      } else {
+        return compareA < compareB ? 1 : -1
+      }
+    })
+
+    setFilteredTransactions(sortedTransactions)
+  }
+
+  const totalAmount = filteredTransactions.reduce((sum, transaction) => sum + transaction.totalAmount, 0)
+  const completedTransactions = filteredTransactions.filter((t) => t.status === "completed").length
+  const failedTransactions = filteredTransactions.filter((t) => t.status === "failed").length
+
+  // Pagination
+  const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage)
+  const paginatedTransactions = filteredTransactions.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
 
   return (
-    <div className="flex flex-col flex-1 p-6 md:p-10 bg-white min-h-screen">
-      {/* Heading */}
-      <h1 className="text-4xl  text-black-400 text-center md:text-left">
-        Transactions
-      </h1>
-
-      {/* Transactions Container */}
-      <div className="max-w-5xl  p-6 bg-gray-50 shadow-lg rounded-lg mt-8">
-        {/* Filters */}
-        <div className="flex flex-col md:flex-row gap-4 mb-6">
-          <select
-            name="status"
-            onChange={handleFilterChange}
-            className="border p-2 rounded-lg bg-white shadow-sm"
-          >
-            <option value="">All Status</option>
-            <option value="pending">Pending</option>
-            <option value="completed">Completed</option>
-            <option value="failed">Failed</option>
-          </select>
-
-          <select
-            name="type"
-            onChange={handleFilterChange}
-            className="border p-2 rounded-lg bg-white shadow-sm"
-          >
-            <option value="">All Types</option>
-            <option value="deposit">Deposit</option>
-            <option value="withdrawal">Withdrawal</option>
-            <option value="payment">Payment</option>
-          </select>
+    <div className="container mx-auto py-8 px-4">
+      {/* Statistics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex items-center">
+            <BanknotesIcon className="h-8 w-8 text-green-500" />
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-500">Total Amount</p>
+              <p className="text-xl font-semibold text-gray-900">Rs {totalAmount}</p>
+            </div>
+          </div>
         </div>
-
-        {/* Transactions Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse bg-white shadow-md rounded-lg overflow-hidden">
-            <thead>
-              <tr className="bg-gray-100 text-gray-700">
-                <th className="p-3 text-left">User</th>
-                <th className="p-3 text-left">Role</th>
-                <th className="p-3 text-left">Amount</th>
-                <th className="p-3 text-left">Type</th>
-                <th className="p-3 text-left">Status</th>
-                <th className="p-3 text-left">Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredTransactions.length > 0 ? (
-                filteredTransactions?.map((transaction) => (
-                  <tr key={transaction._id} className="border-b text-gray-800">
-                    <td className="p-3">{transaction.userId.name}</td>
-                    <td className="p-3">{transaction.userId.role}</td>
-                    <td className="p-3 font-bold text-gray-900">${transaction.amount.toFixed(2)}</td>
-                    <td className="p-3 capitalize">{transaction.type}</td>
-                    <td className="p-3">
-                      <span
-                        className={`px-3 py-1 rounded-lg text-sm font-semibold ${
-                          transaction.status === "pending"
-                            ? "bg-yellow-400 text-black"
-                            : transaction.status === "completed"
-                            ? "bg-green-500 text-white"
-                            : "bg-red-500 text-white"
-                        }`}
-                      >
-                        {transaction.status}
-                      </span>
-                    </td>
-                    <td className="p-3">
-                      {new Date(transaction.timestamp).toLocaleDateString()}
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={6} className="text-center p-4 text-gray-500">
-                    No transactions found.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex items-center">
+            <CheckCircleIcon className="h-8 w-8 text-green-500" />
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-500">Completed Transactions</p>
+              <p className="text-xl font-semibold text-gray-900">{completedTransactions}</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex items-center">
+            <XCircleIcon className="h-8 w-8 text-red-500" />
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-500">Failed Transactions</p>
+              <p className="text-xl font-semibold text-gray-900">{failedTransactions}</p>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  );
-};
 
-export default TransactionsPage;
+      {/* Filters and Search */}
+      <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
+        <div className="p-4 border-b border-gray-200">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div className="flex flex-1 items-center space-x-4">
+              <div className="relative flex-1 max-w-xs">
+                <input
+                  type="text"
+                  placeholder="Search transactions..."
+                  className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <MagnifyingGlassIcon className="h-5 w-5 text-gray-400 absolute left-3 top-2.5" />
+              </div>
+              <select
+                className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+              >
+                <option value="all">All Status</option>
+                <option value="completed">Completed</option>
+                <option value="failed">Failed</option>
+              </select>
+              <select
+                className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={methodFilter}
+                onChange={(e) => setMethodFilter(e.target.value)}
+              >
+                <option value="all">All Methods</option>
+                <option value="esewa">eSewa</option>
+                <option value="khalti">Khalti</option>
+                <option value="paypal">Paypal</option>
+              </select>
+            </div>
+            <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <FunnelIcon className="h-5 w-5" />
+              <span>{filteredTransactions.length} results</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Table */}
+        {isLoading ? (
+          <div className="flex justify-center items-center h-64">
+            <ClockIcon className="h-8 w-8 text-gray-400 animate-spin" />
+          </div>
+        ) : (
+          <>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      <button
+                        onClick={() => sortTransactions("createdAt")}
+                        className="flex items-center space-x-1 hover:text-gray-700"
+                      >
+                        <span>Date</span>
+                        <ArrowsUpDownIcon className="w-4 h-4" />
+                      </button>
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      <button
+                        onClick={() => sortTransactions("jobId")}
+                        className="flex items-center space-x-1 hover:text-gray-700"
+                      >
+                        <span>Job Title</span>
+                        <ArrowsUpDownIcon className="w-4 h-4" />
+                      </button>
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Client
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Freelancer
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Amount
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Status
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {paginatedTransactions.map((transaction) => (
+                    <tr key={transaction._id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {formatDate(transaction.createdAt)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{transaction.jobId.title}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {`${transaction.clientId.name} ${transaction.clientId.lastName}`}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {`${transaction.freelancerId.name} ${transaction.freelancerId.lastName}`}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-left text-sm text-gray-900 ">
+                        Rs {transaction.totalAmount}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                        <span
+                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full capitalize
+                            ${
+                              transaction.status === "completed"
+                                ? "bg-green-100 text-green-800"
+                                : "bg-red-100 text-red-800"
+                            }`}
+                        >
+                          {transaction.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pagination */}
+            <div className="px-6 py-4 border-t border-gray-200">
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-gray-500">
+                  Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
+                  {Math.min(currentPage * itemsPerPage, filteredTransactions.length)} of {filteredTransactions.length}{" "}
+                  results
+                </div>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                    disabled={currentPage === 1}
+                    className="px-3 py-1 border rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Previous
+                  </button>
+                  <button
+                    onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                    disabled={currentPage === totalPages}
+                    className="px-3 py-1 border rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
+
+export default TransactionsPage
+
