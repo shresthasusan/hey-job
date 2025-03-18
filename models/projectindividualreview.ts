@@ -1,7 +1,6 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
 interface IReview extends Document {
-    projectId: mongoose.Schema.Types.ObjectId;
     reviewerId: mongoose.Schema.Types.ObjectId; // Who gives the review
     revieweeId: mongoose.Schema.Types.ObjectId; // Who receives the review
     contractId: mongoose.Schema.Types.ObjectId;
