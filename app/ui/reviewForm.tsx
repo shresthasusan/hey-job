@@ -7,17 +7,23 @@ import SliderRating from "./dashboard-components/rating-card/slider";
 import Emoji from "./dashboard-components/rating-card/Emoji";
 
 interface ReviewFormProps {
-  projectId?: string | "";
+  contractId?: string | "";
   reviewerId?: string | "";
   revieweeId?: string | "";
 }
 
-const ReviewForm = ({ projectId, reviewerId, revieweeId }: ReviewFormProps) => {
+const ReviewForm = ({
+  contractId,
+  reviewerId,
+  revieweeId,
+}: ReviewFormProps) => {
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState<"success" | "error" | null>(null);
+  const [messageType, setMessageType] = useState<"success" | "error" | null>(
+    null
+  );
   const [submitted, setSubmitted] = useState(false);
   const [animateRating, setAnimateRating] = useState(false);
   const [alreadyReviewed, setAlreadyReviewed] = useState(false);
@@ -31,7 +37,9 @@ const ReviewForm = ({ projectId, reviewerId, revieweeId }: ReviewFormProps) => {
   useEffect(() => {
     const checkReviewStatus = async () => {
       try {
-        const res = await fetchWithAuth(`/api/reviews?projectId=${projectId}&reviewerId=${reviewerId}&revieweeId=${revieweeId}`);
+        const res = await fetchWithAuth(
+          `/api/reviews&contractId=${contractId}reviewerId=${reviewerId}&revieweeId=${revieweeId}`
+        );
         const data = await res.json();
         if (data.reviewed) {
           setAlreadyReviewed(true);
@@ -42,7 +50,7 @@ const ReviewForm = ({ projectId, reviewerId, revieweeId }: ReviewFormProps) => {
     };
 
     checkReviewStatus();
-  }, [projectId, reviewerId, revieweeId]);
+  }, [contractId, reviewerId, revieweeId]);
 
   const submitReview = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,7 +63,7 @@ const ReviewForm = ({ projectId, reviewerId, revieweeId }: ReviewFormProps) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          projectId,
+          contractId,
           reviewerId,
           revieweeId,
           rating,
@@ -97,11 +105,11 @@ const ReviewForm = ({ projectId, reviewerId, revieweeId }: ReviewFormProps) => {
 
   return (
     <div className="bg-white rounded-xl shadow-lg overflow-hidden w-full max-w-md border border-gray-100">
-      <div className="px-6 py-4 border-b bg-gradient-to-r from-blue-50 to-indigo-50">
+      <div className="px-6 py-4 border-b bg-gradient-to-r from-primary-100 to-primary-300">
         <div className="flex items-center gap-2">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 text-blue-500"
+            className="h-5 w-5 text-primary-500"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -196,7 +204,7 @@ const ReviewForm = ({ projectId, reviewerId, revieweeId }: ReviewFormProps) => {
                       onClick={() => handleRatingChange(value)}
                       className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 ${
                         rating === value
-                          ? "bg-blue-500 text-white scale-110 shadow-md"
+                          ? "bg-primary-500 text-white scale-110 shadow-md"
                           : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                       }`}
                     >
@@ -215,7 +223,7 @@ const ReviewForm = ({ projectId, reviewerId, revieweeId }: ReviewFormProps) => {
                 <textarea
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-[120px] transition duration-200"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 min-h-[120px] transition duration-200"
                   placeholder="Share your experience working on this project..."
                 />
                 <div className="absolute bottom-3 right-3 text-xs text-gray-400">
@@ -270,7 +278,7 @@ const ReviewForm = ({ projectId, reviewerId, revieweeId }: ReviewFormProps) => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200 disabled:opacity-70"
+              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition duration-200 disabled:opacity-70"
             >
               {loading ? (
                 <div className="flex items-center">

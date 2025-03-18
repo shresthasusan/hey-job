@@ -23,6 +23,16 @@ interface IUser extends Document {
   kycVerified: boolean;
   oauth: boolean;
   isFirstLogin: boolean;
+  reviews: {
+    client: {
+      rating: number;
+      reviewCount: number;
+    };
+    freelancer: {
+      rating: number;
+      reviewCount: number;
+    };
+  };
 }
 
 // Define the schema corresponding to the document interface.
@@ -96,6 +106,32 @@ const userSchema = new Schema<IUser>(
     oauth: {
       type: Boolean,
       default: false,
+    },
+    reviews: {
+      client: {
+        rating: {
+          type: Number,
+          default: 0,
+          min: 0,
+          max: 5,
+        },
+        reviewCount: {
+          type: Number,
+          default: 0,
+        },
+      },
+      freelancer: {
+        rating: {
+          type: Number,
+          default: 0,
+          min: 0,
+          max: 5,
+        },
+        reviewCount: {
+          type: Number,
+          default: 0,
+        },
+      },
     },
   },
 
