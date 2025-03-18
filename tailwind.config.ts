@@ -31,7 +31,7 @@ const config: Config = {
           500: '#7928CA',
           600: '#253E94',
         },
-        sucess: {
+        success: {
           400: '#d2fff0',
           500: '#00C985',
           600: '#007310',

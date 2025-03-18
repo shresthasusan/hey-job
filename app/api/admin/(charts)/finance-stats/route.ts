@@ -28,6 +28,8 @@ export async function GET(req: NextRequest) {
                 $group: {
                     _id: "$clientId",
                     totalSpent: { $sum: "$totalAmount" }
+
+
                 }
             },
             { $sort: { totalSpent: -1 } },
