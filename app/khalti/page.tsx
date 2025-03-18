@@ -35,7 +35,7 @@ function App() {
     setIsLoading(true);
 
     try {
-      const response = await fetchWithAuth("/api/payment", {
+      const response = await fetchWithAuth("/api/kalti-payment", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
