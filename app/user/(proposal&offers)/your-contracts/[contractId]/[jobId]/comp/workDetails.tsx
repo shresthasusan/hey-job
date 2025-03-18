@@ -28,7 +28,7 @@ type ContractState = {
     paymentType: string;
     price: number;
     deadline: string;
-    status: 'pending' | 'active' | 'completed' | 'canceled' | 'declined'
+    status: "pending" | "active" | "completed" | "canceled" | "declined";
   };
   freelancerId: string;
   clientId: string;
@@ -198,7 +198,7 @@ export default function ContractDetailsPage({ contractId, jobId }: Props) {
             userRole={userRole} // Replace with auth logic
             projectStatus={contract?.status}
           />
-          <div className="flex gap-3">
+          <div className="flex w-full gap-3">
             <ProjectActions
               contractId={contractId}
               userRole={userRole}
@@ -210,8 +210,6 @@ export default function ContractDetailsPage({ contractId, jobId }: Props) {
               freelancerId={contract?.freelancerId}
               jobId={jobId}
             />
-
-        
           </div>
         </div>
       </div>
@@ -225,7 +223,7 @@ interface ProjectActionsProps {
   userRole: "freelancer" | "client";
   projectStatus?: "ongoing" | "completed" | "revisions" | "canceled";
   clientId?: string;
-  contractStatus?: 'pending' | 'active' | 'completed' | 'canceled' | 'declined'
+  contractStatus?: "pending" | "active" | "completed" | "canceled" | "declined";
   freelancerId?: string;
   jobId?: string;
   onSuccess?: () => void;
@@ -248,48 +246,50 @@ const ProjectActions: React.FC<ProjectActionsProps> = ({
     const buttonClass = "mr-2";
 
     if (projectStatus === "completed") {
-     {  if (contractStatus === "active") {
-       if (userRole === "client") {
-        buttons.push(
-          <Link
-            key="proceed-to-payment"
-            href={`/paymentBilling/${contractId}/gateway-select/${clientId}`}
-            className={`${buttonClass} bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600`}
-          >
-            Proceed to Payment
-          </Link>
-        );
-      } else if (userRole === "freelancer") {
-        return (
-          <p className="text-yellow-500 italic">
-            Payment is pending at client side.
-          </p>
-        );
-      } 
-     return buttons.length > 0 ? (
-        <div className="flex flex-wrap gap-2">{buttons}</div>
-      ) : null;} 
-      
-      else if(contractStatus === "completed"){
-         if(userRole === "client"){
-          return (
-            <ReviewForm revieweeId={freelancerId} reviewerId={clientId} projectId={jobId} />
-          );
-        } else if(userRole === "freelancer"){
-          return (
-            <ReviewForm revieweeId={clientId} reviewerId={freelancerId} projectId={jobId} />
-
-          );
+      {
+        if (contractStatus === "active") {
+          if (userRole === "client") {
+            buttons.push(
+              <Link
+                key="proceed-to-payment"
+                href={`/paymentBilling/${contractId}/gateway-select/${clientId}`}
+                className={`${buttonClass} bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600`}
+              >
+                Proceed to Payment
+              </Link>
+            );
+          } else if (userRole === "freelancer") {
+            return (
+              <p className="text-yellow-500 italic">
+                Payment is pending at client side.
+              </p>
+            );
+          }
+          return buttons.length > 0 ? (
+            <div className="flex flex-wrap gap-2">{buttons}</div>
+          ) : null;
+        } else if (contractStatus === "completed") {
+          if (userRole === "client") {
+            return (
+              <ReviewForm
+                revieweeId={freelancerId}
+                reviewerId={clientId}
+                contractId={contractId}
+              />
+            );
+          } else if (userRole === "freelancer") {
+            return (
+              <ReviewForm
+                revieweeId={clientId}
+                reviewerId={freelancerId}
+                contractId={contractId}
+              />
+            );
+          }
+        }
       }
-    
-    }
-  }
-
-      
-      
     }
 
-    
     if (projectStatus === "canceled") {
       return (
         <p className="text-gray-500 italic">
@@ -377,12 +377,7 @@ const ProjectActions: React.FC<ProjectActionsProps> = ({
     );
   };
 
-  return (
-    <div className="mt-4">
-      <h3 className="text-lg font-semibold mb-2">Project Actions</h3>
-      {renderButtons()}
-    </div>
-  );
+  return <div className="mt-4 w-full">{renderButtons()}</div>;
 };
 
 {
