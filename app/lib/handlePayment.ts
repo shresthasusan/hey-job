@@ -26,24 +26,25 @@ export const handlePayment = async (
     onError: (message: string) => void
 ): Promise<void> => {
     try {
-        const response = await fetchWithAuth("/api/esewa-payment", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                contractId,
-                method,
-            }),
-        });
-
-        if (!response.ok) {
-            throw new Error(`Payment initiation failed: ${response.statusText}`);
-        }
-
-        const paymentData: PaymentResponse = await response.json();
 
         if (method === "esewa") {
+            const response = await fetchWithAuth("/api/esewa-payment", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    contractId,
+                    method,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Payment initiation failed: ${response.statusText}`);
+            }
+
+            const paymentData: PaymentResponse = await response.json();
+
             const form = document.createElement("form");
             form.method = "POST";
             form.action = "https://rc-epay.esewa.com.np/api/epay/main/v2/form"; // Use production URL in prod
@@ -75,8 +76,30 @@ export const handlePayment = async (
             document.body.removeChild(form);
         } else if (method === "Khalti") {
             // Placeholder for Khalti integration
-            console.log("Khalti payment initiated with:", paymentData);
-            // Add Khalti-specific logic here (e.g., redirect or SDK call)
+            console.log("Khalti payment initiated with:", contractId);
+            const response = await fetchWithAuth("/api/kalti-payment", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    method: "khalti",
+                    contractId,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Payment initiation failed");
+            }
+
+            const data = await response.json();
+
+            if (!data.khaltiPaymentUrl) {
+                throw new Error("Khalti payment URL not received");
+            }
+
+            // Redirect to Khalti payment URL
+            window.location.href = data.khaltiPaymentUrl;
         } else {
             throw new Error(`Unsupported payment method: ${method}`);
         }
