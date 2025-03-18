@@ -37,6 +37,7 @@ const ReviewForm = ({
   // Check if the review has already been submitted
   useEffect(() => {
     const checkReviewStatus = async () => {
+      setLoading(true);
       try {
         const res = await fetchWithAuth(
           `/api/reviews?contractId=${contractId}&reviewerId=${reviewerId}&revieweeId=${revieweeId}`
@@ -48,6 +49,7 @@ const ReviewForm = ({
       } catch (error) {
         console.error("Error checking review status:", error);
       }
+      setLoading(false);
     };
 
     checkReviewStatus();
