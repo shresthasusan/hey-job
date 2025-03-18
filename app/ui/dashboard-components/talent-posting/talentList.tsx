@@ -34,14 +34,7 @@ interface Freelancer {
   rate: string;
   saved: boolean;
   profilePicture: string;
-  reviews: {
-    client: {
-      rating: 0;
-    };
-    freelancer: {
-      rating: 0;
-    };
-  };
+  rating: number;
 }
 
 const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
@@ -154,7 +147,7 @@ const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
                 <p className="text-sm flex font-medium text-gray-500">
                   <MapPinIcon className="w-5 h-5" /> {freelancer.location}
                 </p>
-                <StarRating rating={freelancer.reviews.freelancer.rating} />
+                <StarRating rating={freelancer.rating} />
               </div>
             </div>
             <SaveButton

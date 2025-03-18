@@ -4,6 +4,8 @@ import User from '@/models/user'; // Adjust the import based on your project str
 import Contract from '@/models/contract'; // Adjust the import based on your project structure
 import { NextResponse, NextRequest } from 'next/server';
 import { connectMongoDB } from '@/app/lib/mongodb';
+import ClientInfo from '@/models/clientinfo';
+import FreelancerInfo from '@/models/freelancerInfo';
 
 export async function POST(req: NextRequest) {
     try {
@@ -57,17 +59,22 @@ export async function POST(req: NextRequest) {
 
 
         // Update the User document with the new average rating and review count
-        const user = await User.findById(revieweeId);
-        if (user) {
-            if (isClient) {
-                user.reviews.client.rating = avgRating;
-                user.reviews.client.reviewCount = totalReviews;
-            } else if (isFreelancer) {
-                user.reviews.freelancer.rating = avgRating;
-                user.reviews.freelancer.reviewCount = totalReviews;
+
+
+        if (isClient) {
+            const clientInfo = await ClientInfo.findOne({ userId: revieweeId });
+            if (clientInfo) {
+                clientInfo.rating = avgRating;
+                await clientInfo.save();
             }
-            await user.save();
+        } else if (isFreelancer) {
+            const freelancerInfo = await FreelancerInfo.findOne({ userId: revieweeId });
+            if (freelancerInfo) {
+                freelancerInfo.rating = avgRating;
+                await freelancerInfo.save();
+            }
         }
+
 
         return NextResponse.json({ success: true, review: newReview }, { status: 201 });
     } catch (error) {
