@@ -73,14 +73,21 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: Request) {
+
     try {
         await connectMongoDB();
         const { searchParams } = new URL(req.url);
         const contractId = searchParams.get('contractId');
         const reviewerId = searchParams.get('reviewerId');
         const revieweeId = searchParams.get('revieweeId');
-        const userId = searchParams.get('userId');
         const recentReview = searchParams.get('recentReview');
+        const user = searchParams.get('userId');
+
+        const userD = req.headers.get("user");
+       const userData = userD ? JSON.parse(userD) : null;
+
+
+    const userId = userData.id;
 
         if (recentReview && userId) {
             // Fetch the 3 most recent reviews for the user
@@ -92,7 +99,7 @@ export async function GET(req: Request) {
             return NextResponse.json({ success: true, recentReviews }, { status: 200 });
         }
 
-        if (!userId) {
+        if (!recentReview && !user) {
             if (!contractId || !reviewerId || !revieweeId) {
                 return NextResponse.json({ success: false, message: "Missing required fields" }, { status: 400 });
             }
@@ -103,9 +110,9 @@ export async function GET(req: Request) {
             } else {
                 return NextResponse.json({ success: true, reviewed: false }, { status: 200 });
             }
-        } else if (userId) {
+        } else if (user) {
             const userReviews = await User.findById(userId).select('reviews');
-            return NextResponse.json({ success: true, reviews: userReviews }, { status: 200 });
+            return NextResponse.json({ success: true, userReviews }, { status: 200 });
         } else {
             return NextResponse.json({ success: false, message: "Missing required fields" }, { status: 400 });
         }
