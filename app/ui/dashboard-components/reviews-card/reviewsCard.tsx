@@ -9,6 +9,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 interface Review {
   reviewerId: {
     name: string;
+    lastName: string;
     profilePicture?: string;
   };
   comment: string;
@@ -110,7 +111,7 @@ const ReviewsCard = () => {
                 </div>
                 <div className="flex flex-col gap-1">
                   <p className="text-gray-600 text-[1.1rem]">
-                    {review.reviewerId.name}
+                    {review.reviewerId.name} {review.reviewerId.lastName}
                   </p>
                   <div className="flex justify-start items-center text-[.7rem] gap-1 divider-x">
                     <StarRating rating={review.rating} /> <div>1 week ago</div>
