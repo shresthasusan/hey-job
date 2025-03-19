@@ -4,6 +4,7 @@ import { useAuth } from "@/app/providers";
 import { BuildingOffice2Icon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import StarRating from "../starRating";
 
 export default function DisplayClientProfile() {
   const { session, status } = useAuth();
@@ -551,12 +552,16 @@ export default function DisplayClientProfile() {
                   </svg>
                   <div>
                     <p className="font-medium text-gray-800">Rating</p>
+                    <StarRating rating={clientData?.rating} />{" "}
+                    {/* 
+                    <br />
                     <p className="text-gray-600">
                       {clientData?.rating !== undefined &&
                       clientData?.rating !== null
                         ? `${clientData.rating} / 5`
                         : "Not rated yet"}
                     </p>
+                     */}
                   </div>
                 </div>
               </div>

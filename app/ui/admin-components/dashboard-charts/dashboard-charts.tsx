@@ -13,7 +13,7 @@ const Charts = () => {
   const [chartSelected, setChartSelected] = useState<string>("Account-Growth");
 
   return (
-    <div className="flex lg:w-1/2 w-full">
+    <div className="flex w-full">
       <Card className="flex flex-col gap-2 p-6 shadow-lg rounded-lg border border-primary-500 bg-white">
         {/* User Growth Chart */}
         <div className="flex justify-between items-center">
