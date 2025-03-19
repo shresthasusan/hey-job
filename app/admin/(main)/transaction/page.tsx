@@ -48,12 +48,14 @@ const TransactionsPage = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 10
 
+
   useEffect(() => {
     fetchWithAuth("/api/admin/fetchalltransactions?alltransaction=true")
       .then((response) => response.json())
       .then((data) => {
-        setTransactions(data.transactions)
-        setFilteredTransactions(data.transactions)
+        const transactionsArray = Array.isArray(data.transactions) ? data.transactions : []
+        setTransactions(transactionsArray)
+        setFilteredTransactions(transactionsArray)
         setIsLoading(false)
       })
       .catch((error) => {
@@ -130,13 +132,13 @@ const TransactionsPage = () => {
     setFilteredTransactions(sortedTransactions)
   }
 
-  const totalAmount = filteredTransactions.reduce((sum, transaction) => sum + transaction.totalAmount, 0)
-  const completedTransactions = filteredTransactions.filter((t) => t.status === "completed").length
-  const failedTransactions = filteredTransactions.filter((t) => t.status === "failed").length
+  const totalAmount = filteredTransactions?.reduce((sum, transaction) => sum + transaction.totalAmount, 0)
+  const completedTransactions = filteredTransactions?.filter((t) => t.status === "completed").length
+  const failedTransactions = filteredTransactions?.filter((t) => t.status === "failed").length
 
   // Pagination
-  const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage)
-  const paginatedTransactions = filteredTransactions.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+  const totalPages = Math.ceil(filteredTransactions?.length / itemsPerPage)
+  const paginatedTransactions = filteredTransactions?.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -208,7 +210,7 @@ const TransactionsPage = () => {
             </div>
             <div className="flex items-center space-x-2 text-sm text-gray-600">
               <FunnelIcon className="h-5 w-5" />
-              <span>{filteredTransactions.length} results</span>
+              <span>{filteredTransactions?.length} results</span>
             </div>
           </div>
         </div>
@@ -275,7 +277,7 @@ const TransactionsPage = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {paginatedTransactions.map((transaction) => (
+                  {paginatedTransactions?.map((transaction) => (
                     <tr key={transaction._id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {formatDate(transaction.createdAt)}
@@ -313,7 +315,7 @@ const TransactionsPage = () => {
               <div className="flex items-center justify-between">
                 <div className="text-sm text-gray-500">
                   Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
-                  {Math.min(currentPage * itemsPerPage, filteredTransactions.length)} of {filteredTransactions.length}{" "}
+                  {Math.min(currentPage * itemsPerPage, filteredTransactions?.length)} of {filteredTransactions?.length}{" "}
                   results
                 </div>
                 <div className="flex space-x-2">
