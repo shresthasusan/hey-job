@@ -36,6 +36,7 @@ export interface Job {
   fullName: string;
   fileUrls: string[];
   status: string;
+  proposalCount: number;
 }
 
 export const getTimeAgo = (dateString: string) => {
