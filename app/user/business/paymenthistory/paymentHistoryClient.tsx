@@ -57,9 +57,10 @@ const PaymentHistoryClient = () => {
           `/api/fetchpayment/${userId}?alltransaction=true`
         );
         const data = await response.json();
-        setPaymentHistory(data.transactionsWithType);
+        setPaymentHistory(data.transactionsWithType || []);
       } catch (error) {
         console.error("Error fetching payment history:", error);
+        setPaymentHistory([]); // Ensure paymentHistory is always an array
       } finally {
         setIsLoading(false);
       }
@@ -96,9 +97,10 @@ const PaymentHistoryClient = () => {
         `/api/fetchpayment/${userId}?alltransaction=true`
       );
       const data = await response.json();
-      setPaymentHistory(data.transactionsWithType);
+      setPaymentHistory(data.transactionsWithType || []);
     } catch (error) {
       console.error("Error refreshing payment history:", error);
+      setPaymentHistory([]); // Ensure paymentHistory is always an array
     } finally {
       setIsLoading(false);
     }

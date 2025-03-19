@@ -79,8 +79,8 @@ export async function POST(req: Request) {
       product_code: process.env.NEXT_PUBLIC_ESEWA_MERCHANT_CODE!,
       product_delivery_charge: "0",
       product_service_charge: '0',
-      success_url: `${process.env.NEXT_PUBLIC_SUCCESS_URL}`,
-      failure_url: `${process.env.NEXT_PUBLIC_FAILURE_URL}`,
+      success_url: `${process.env.NEXT_PUBLIC_SUCCESS_URL}/esewa`,
+      failure_url: `${process.env.NEXT_PUBLIC_FAILURE_URL}/esewa`,
       signed_field_names: "total_amount,transaction_uuid,product_code",
     };
 

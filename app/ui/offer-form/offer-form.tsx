@@ -160,6 +160,7 @@ const OfferForm = ({ jobId, freelancerId }: OfferFormProps) => {
               updatedChatsData[chatIndex].updatedAt = Date.now();
               updatedChatsData[chatIndex].messageSeen = false;
               updatedChatsData[chatIndex].lastMessage = initialMessage;
+              updatedChatsData[chatIndex].chatStatus = "open";
 
               // Save back to Firestore
               await updateDoc(selectedUserChatRef, {

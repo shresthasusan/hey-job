@@ -5,6 +5,7 @@ import type React from "react";
 import { fetchWithAuth } from "../lib/fetchWIthAuth";
 import SliderRating from "./dashboard-components/rating-card/slider";
 import Emoji from "./dashboard-components/rating-card/Emoji";
+import CardSkeleton from "./dashboard-components/skeletons/cardSkeleton"; // Assuming CardSkeleton is the skeleton component
 
 interface ReviewFormProps {
   contractId?: string | "";
@@ -36,9 +37,10 @@ const ReviewForm = ({
   // Check if the review has already been submitted
   useEffect(() => {
     const checkReviewStatus = async () => {
+      setLoading(true);
       try {
         const res = await fetchWithAuth(
-          `/api/reviews&contractId=${contractId}reviewerId=${reviewerId}&revieweeId=${revieweeId}`
+          `/api/reviews?contractId=${contractId}&reviewerId=${reviewerId}&revieweeId=${revieweeId}`
         );
         const data = await res.json();
         if (data.reviewed) {
@@ -47,6 +49,7 @@ const ReviewForm = ({
       } catch (error) {
         console.error("Error checking review status:", error);
       }
+      setLoading(false);
     };
 
     checkReviewStatus();
@@ -102,6 +105,10 @@ const ReviewForm = ({
     setAnimateRating(false);
     setTimeout(() => setAnimateRating(true), 50);
   };
+
+  if (loading) {
+    return <CardSkeleton />;
+  }
 
   return (
     <div className="bg-white rounded-xl shadow-lg overflow-hidden w-full max-w-md border border-gray-100">

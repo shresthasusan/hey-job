@@ -2,9 +2,8 @@
 
 import { connectMongoDB } from "@/app/lib/mongodb";
 import Payment from "@/models/payment";
+import User from "@/models/user"; // Assuming you have a User model
 import { NextRequest, NextResponse } from "next/server";
-
-
 
 export async function GET(req: NextRequest) {
     try {
@@ -23,20 +22,37 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ success: false, message: "Invalid type parameter" }, { status: 400 });
         }
 
-        const topSpender = await Payment.aggregate([
+        const topSpenders = await Payment.aggregate([
             {
                 $group: {
                     _id: "$clientId",
                     totalSpent: { $sum: "$totalAmount" }
-
-
                 }
             },
             { $sort: { totalSpent: -1 } },
-            { $limit: 1 }
+            { $limit: 8 },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "client"
+                }
+            },
+            {
+                $unwind: "$client"
+            },
+            {
+                $project: {
+                    _id: 1,
+                    totalSpent: 1,
+                    "client.name": 1,
+                    "client.lastName": 1
+                }
+            }
         ]);
 
-        const topEarner = await Payment.aggregate([
+        const topEarners = await Payment.aggregate([
             {
                 $group: {
                     _id: "$freelancerId",
@@ -44,10 +60,29 @@ export async function GET(req: NextRequest) {
                 }
             },
             { $sort: { totalEarned: -1 } },
-            { $limit: 1 }
+            { $limit: 8 },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "freelancer"
+                }
+            },
+            {
+                $unwind: "$freelancer"
+            },
+            {
+                $project: {
+                    _id: 1,
+                    totalEarned: 1,
+                    "freelancer.name": 1,
+                    "freelancer.lastName": 1
+                }
+            }
         ]);
 
-        return NextResponse.json({ success: true, data: { topSpender, topEarner } });
+        return NextResponse.json({ success: true, data: { topSpenders, topEarners } });
     } catch (error) {
         console.error("Error fetching financial statistics:", error);
         return NextResponse.json({ success: false, message: "Server error" }, { status: 500 });

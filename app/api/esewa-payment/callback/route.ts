@@ -80,10 +80,18 @@ export async function GET(req: NextRequest) {
                     },
                 }
             );
+            console.log("contract and payment updated successfully");
 
             // Perform direct redirect
 
-            return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/paymentBilling/success/${payment.contractId}/${payment.freelancerId}?data=${data}`, 302);
+            const redirectUrl = new URL(
+                `/paymentBilling/success/${payment.contractId}/${payment.freelancerId}`,
+                process.env.NEXT_PUBLIC_BASE_URL
+            );
+            redirectUrl.searchParams.set("method", "esewa");
+            redirectUrl.searchParams.set("data", data);
+            return NextResponse.redirect(redirectUrl.toString(), 302);
+
         } else if (status === "FAILED") {
             // Update the payment status to failed
             await Payment.updateOne(

@@ -1,6 +1,8 @@
 import { ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import UserProfile from "../user/profile/page";
+import UserProfileLoader from "../lib/userProfileLoader";
 
 // Define metadata for the app (Next.js 13+)
 export const metadata = {
@@ -16,6 +18,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <>
       <div className="px-4 py-4">
+        <UserProfileLoader />
         <Link href="/">
           <Image
             src="/logo/login-logo.png" // Replace with your logo's path in the public folder

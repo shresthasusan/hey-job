@@ -73,7 +73,7 @@ export async function GET(req: NextRequest) {
       if (bestMatches) {
         // Step 1: Retrieve freelancer's industries and skills
         const freelancerInfo = await FreelancerInfo.
-        findOne({ userId: userId }).select("industries skills");
+          findOne({ userId: userId }).select("industries skills");
 
         if (!freelancerInfo) {
           console.log("Freelancer not found");
@@ -81,7 +81,7 @@ export async function GET(req: NextRequest) {
         }
 
         // Step 2: Extract relevant industry-related skills from mapping
-        const relatedSkills = freelancerInfo.industries.flatMap(industry => 
+        const relatedSkills = freelancerInfo.industries.flatMap(industry =>
           industrySkillsMapping[industry as keyof typeof industrySkillsMapping] || []);
 
         // Step 3: Query jobs where requiredSkills match freelancer's skills or industry-related skills
@@ -133,10 +133,15 @@ export async function GET(req: NextRequest) {
     const savedJobIds = savedJobRecords.map((record) => record.jobId.toString());
 
     // Add 'saved' field and include jobId for each job
-    const jobsWithSavedFlag = jobs.map(job => ({
-      jobId: job._id,  // Include the job ID in the response
-      ...job._doc,     // Spread other job details
-      saved: savedJobIds.includes(job._id.toString()), // Check if the job is saved
+    const jobsWithSavedFlag = await Promise.all(jobs.map(async (job) => {
+      const proposalCount = await proposal.countDocuments({ jobId: job._id });
+
+      return {
+        jobId: job._id,  // Include the job ID in the response
+        ...job._doc,     // Spread other job details
+        saved: savedJobIds.includes(job._id.toString()), // Check if the job is saved
+        proposalCount,   // Include the proposal count
+      };
     }));
 
     return NextResponse.json({ jobs: jobsWithSavedFlag });

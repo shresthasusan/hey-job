@@ -31,23 +31,6 @@ const JobDetailsSlider: React.FC = () => {
   });
   const [loading, setLoading] = useState(true); // Loading state
 
-  // Fetch job stats when the panel opens
-  useEffect(() => {
-    if (jobDetailsVisible && job?.jobId) {
-      setLoading(true); // Start loading
-      fetchWithAuth(`/api/job-stats/${job.jobId}`)
-        .then((res) => res.json())
-        .then((data) => {
-          setJobStats({
-            proposals: data.proposals || "N/A",
-            interviewing: data.interviewing || "N/A",
-          });
-        })
-        .catch(() => setJobStats({ proposals: "Error", interviewing: "Error" }))
-        .finally(() => setLoading(false)); // Stop loading
-    }
-  }, [jobDetailsVisible, job?.jobId]);
-
   const onClose = () => {
     setJobDetailsVisible(false);
   };
@@ -157,7 +140,7 @@ const JobDetailsSlider: React.FC = () => {
           <h3 className="text-lg  mb-2">Activity on this job</h3>
           <div className="text-gray-700 space-y-1">
             <p>
-              <strong>Proposals: </strong> {jobStats.proposals}
+              <strong>Proposals: </strong> {job?.proposalCount}
             </p>
             <p>
               <strong>Interviewing: </strong> {jobStats.interviewing}

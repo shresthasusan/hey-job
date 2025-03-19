@@ -2,7 +2,14 @@
 
 import type React from "react";
 
-import { Suspense, useContext, useEffect, useState } from "react";
+import {
+  Suspense,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -15,6 +22,7 @@ import {
   CurrencyRupeeIcon,
   CheckIcon,
   ClipboardDocumentIcon,
+  BanknotesIcon,
 } from "@heroicons/react/24/outline";
 import { CheckCircleIcon as CheckCircleSolid } from "@heroicons/react/24/solid";
 import {
@@ -30,14 +38,16 @@ import { db } from "@/app/lib/firebase";
 import UserProfileLoader from "@/app/lib/userProfileLoader";
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 import { useAuth } from "@/app/providers";
+import { useSession } from "next-auth/react";
+import { set } from "mongoose";
+import Image from "next/image";
 
 interface PaymentDetails {
   transaction_code: string;
   status: string;
   total_amount: string;
   transaction_uuid: string;
-  product_code: string;
-  signature?: string;
+
   [key: string]: any;
 }
 
@@ -88,6 +98,7 @@ interface Props {
 }
 
 const PaymentSuccessContent = ({ contractId, freelancerId }: Props) => {
+  const { data: session } = useSession();
   const [paymentDetails, setPaymentDetails] = useState<PaymentDetails | null>(
     null
   );
@@ -95,14 +106,20 @@ const PaymentSuccessContent = ({ contractId, freelancerId }: Props) => {
     useState<ContractDetails | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { session } = useAuth();
   const clientId = session?.user?.id;
   const [hasClosedChat, setHasClosedChat] = useState(false);
 
+  // const { loadUserData } = useContext(Appcontext);
   const context = useContext(Appcontext) as AppContextValue;
   const { userData, chatData } = context;
   const searchParams = useSearchParams();
+  const method = searchParams.get("method");
   const data = searchParams.get("data");
+  const total_amount = searchParams.get("amount");
+  const status = searchParams.get("status");
+  const purchase_order_id = searchParams.get("purchase_order_id");
+  const transaction_id = searchParams.get("transaction_id");
+
   const [copied, setCopied] = useState<string | null>(null);
 
   const copyToClipboard = (text: string, field: string) => {
@@ -183,90 +200,115 @@ const PaymentSuccessContent = ({ contractId, freelancerId }: Props) => {
     }
   }, [data]);
 
-  // Handle closing the chat once userData is available
-  useEffect(() => {
-    const handleCloseChat = async () => {
-      try {
-        const userId = userData?.id;
+  // Memoize the handleCloseChat function to prevent unnecessary re-creations
+  const handleCloseChat = useCallback(async () => {
+    if (!session) {
+      console.log("Session not available, aborting...");
+      return;
+    }
 
-        // Early return if required data isn't ready
-        if (!userId || !chatData) {
-          console.log("Missing userId or chatData, aborting...");
-          return;
-        }
+    try {
+      const userId = userData?.id;
 
-        const conversationExists = chatData.find(
-          (chat: ChatDataItem) => chat.rId === freelancerId
-        );
+      // Early return if required data isn't ready
+      if (!userId || !chatData) {
+        console.log("Missing userId or chatData, aborting...");
+        return;
+      }
 
-        if (!conversationExists) {
-          console.log("freelancerId", freelancerId);
-          console.log("userId", userId);
-          console.log("no chat");
-          return;
-        }
+      const conversationExists = chatData.find(
+        (chat: ChatDataItem) => chat.rId === freelancerId
+      );
 
-        if (conversationExists.chatStatus === "closed") {
-          console.log("Chat already closed, skipping...");
-          return;
-        }
+      if (!conversationExists) {
+        console.log("freelancerId", freelancerId);
+        console.log("userId", userId);
+        console.log("no chat");
+        return;
+      }
 
-        const chatsRef = collection(db, "chats");
-        const message = "paid the due amount";
-        const eMessageId = conversationExists.messageId;
+      if (conversationExists.chatStatus === "closed") {
+        console.log("Chat already closed, skipping...");
+        return;
+      }
 
-        await updateDoc(doc(db, "messages", eMessageId), {
-          messages: arrayUnion({
-            sId: userId,
-            text: message,
-            createdAt: new Date(),
-          }),
-        });
+      const chatsRef = collection(db, "chats");
+      const message = "paid the due amount";
+      const eMessageId = conversationExists.messageId;
 
-        const userIDs = [freelancerId, userId];
+      await updateDoc(doc(db, "messages", eMessageId), {
+        messages: arrayUnion({
+          sId: userId,
+          text: message,
+          createdAt: new Date(),
+        }),
+      });
 
-        for (const id of userIDs) {
-          const selectedUserChatRef = doc(chatsRef, id);
-          const UserChatSnap = await getDoc(selectedUserChatRef);
+      const userIDs = [freelancerId, userId];
 
-          if (UserChatSnap.exists()) {
-            const UserChatData = UserChatSnap.data();
-            const chatIndex = UserChatData.chatsData.findIndex(
-              (c: ChatDataItem) => c.messageId === eMessageId
-            );
+      for (const id of userIDs) {
+        const selectedUserChatRef = doc(chatsRef, id);
+        const UserChatSnap = await getDoc(selectedUserChatRef);
 
-            if (chatIndex !== -1) {
-              const updatedChatsData = [...UserChatData.chatsData];
+        if (UserChatSnap.exists()) {
+          const UserChatData = UserChatSnap.data();
+          const chatIndex = UserChatData.chatsData.findIndex(
+            (c: ChatDataItem) => c.messageId === eMessageId
+          );
 
-              // Safeguard: Ensure ContractArray is defined before filtering
-              updatedChatsData[chatIndex].ContractArray = (
-                updatedChatsData[chatIndex].ContractArray || []
-              ).filter((id: string) => id !== contractId);
+          if (chatIndex !== -1) {
+            const updatedChatsData = [...UserChatData.chatsData];
 
-              if (updatedChatsData[chatIndex].ContractArray?.length === 0) {
-                updatedChatsData[chatIndex].chatStatus = "closed";
-              }
-              updatedChatsData[chatIndex].lastMessage = message;
-              updatedChatsData[chatIndex].updatedAt = Date.now();
-              updatedChatsData[chatIndex].messageSeen = false;
+            // Safeguard: Ensure ContractArray is defined before filtering
+            updatedChatsData[chatIndex].ContractArray = (
+              updatedChatsData[chatIndex].ContractArray || []
+            ).filter((id: string) => id !== contractId);
 
-              await updateDoc(selectedUserChatRef, {
-                chatsData: updatedChatsData,
-              });
+            if (updatedChatsData[chatIndex].ContractArray?.length === 0) {
+              updatedChatsData[chatIndex].chatStatus = "closed";
             }
+            updatedChatsData[chatIndex].lastMessage = message;
+            updatedChatsData[chatIndex].updatedAt = Date.now();
+            updatedChatsData[chatIndex].messageSeen = false;
+
+            await updateDoc(selectedUserChatRef, {
+              chatsData: updatedChatsData,
+            });
           }
         }
-        console.log("Chat closed");
-        setHasClosedChat(true);
-      } catch (error) {
-        console.error("Error closing chat:", error);
       }
-    };
+      console.log("Chat closed");
+      setHasClosedChat(true);
+    } catch (error) {
+      console.error("Error closing chat:", error);
+    }
+  }, [session, userData, chatData, freelancerId, contractId]);
 
-    if (userData) {
+  // Use a ref to track if the effect has already run
+  const hasRunRef = useRef(false);
+
+  useEffect(() => {
+    if (session && !hasRunRef.current && chatData) {
+      hasRunRef.current = true;
       handleCloseChat();
     }
-  }, [userData, chatData, freelancerId, contractId]);
+  }, [session, handleCloseChat, chatData]);
+
+  useEffect(() => {
+    if (method === "khalti") {
+      if (!total_amount || !status || !purchase_order_id || !transaction_id) {
+        console.log("Missing khalti payment data");
+        return;
+      }
+
+      setPaymentDetails({
+        transaction_code: transaction_id,
+        status: status,
+        total_amount: (Number(total_amount) / 100).toString(),
+        transaction_uuid: purchase_order_id,
+      });
+    }
+  }, [method, total_amount, status, purchase_order_id, transaction_id]);
 
   // Animation variants
   const containerVariants = {
@@ -437,6 +479,26 @@ const PaymentSuccessContent = ({ contractId, freelancerId }: Props) => {
                           ? formatCurrency(contractDetails.price)
                           : "Price information unavailable"}
                       </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-start">
+                    <BanknotesIcon className="h-5 w-5 text-primary-500 mr-2 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm text-primary-600 font-medium">
+                        Payment Method
+                      </p>
+                      <span className="flex items-center justify-center mt-2 ">
+                        {method && (
+                          <Image
+                            src={`/logo/${method}.png`}
+                            width={`${method === "khalti" ? "100" : "50"}`}
+                            height={`${method === "khalti" ? "50" : "30"}`}
+                            alt={method}
+                          />
+                        )}
+                      </span>
                     </div>
                   </div>
                 </div>
