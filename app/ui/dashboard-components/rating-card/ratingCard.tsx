@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation"; // Import usePathname from Next.j
 import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 import { useAuth } from "@/app/providers";
 import RatingSkeletonCard from "../skeletons/ratingSkeletonCard"; // Assuming RatingSkeletonCard is the skeleton component
+import { set } from "mongoose";
 
 const Rating = () => {
   const pathname = usePathname(); // Get the current pathname
@@ -24,20 +25,18 @@ const Rating = () => {
 
     const fetchPayments = async () => {
       try {
+        const isFreelancerPath = pathname.startsWith("/user");
         setLoading(true); // Start loading
-        const response = await fetchWithAuth(`/api/reviews?userId=${userId}`, {
-          next: { revalidate: 3600 }, // Supports Next.js revalidation
-        });
+        const response = await fetchWithAuth(
+          `/api/reviews?mode=${isFreelancerPath ? "freelancerRating" : "clientRating"}`,
+          {
+            next: { revalidate: 3600 }, // Supports Next.js revalidation
+          }
+        );
 
-        const { reviews: data } = await response.json();
-        console.log(data);
-
-        if (data) {
-          const isFreelancerPath = pathname.startsWith("/user");
-          isFreelancerPath
-            ? setRating(data.reviews?.freelancer?.rating ?? 0)
-            : setRating(data.reviews?.client?.rating ?? 0);
-        }
+        const { reviews } = await response.json();
+        console.log(reviews);
+        setRating(reviews?.rating || 0); // Set the rating from the response
       } catch (error) {
         console.error("Error fetching payments:", error);
       } finally {

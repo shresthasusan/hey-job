@@ -134,6 +134,7 @@ export async function captureOrder(orderId: string) {
             throw new Error(`Failed to capture PayPal order: ${data.message}`);
         }
         await connectMongoDB();
+
         await Payment.updateOne(
             { transactionId: orderId },
             {
@@ -143,6 +144,18 @@ export async function captureOrder(orderId: string) {
         );
 
         const updatedPayment = await Payment.findOne({ transactionId: orderId });
+        await Contract.updateOne(
+            { _id: updatedPayment?.contractId },
+            {
+                status: "completed",
+                updatedAt: new Date(),
+                $push: {
+                    statusHistory: {
+                        status: "completed", updatedAt: new Date(),
+                    },
+                },
+            }
+        );
         const freelancerId = updatedPayment?.freelancerId.toString();
 
         return { data, freelancerId, transcation_uuid: updatedPayment?.transactionId, transaction_code: updatedPayment?.transactionCode };

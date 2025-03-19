@@ -10,7 +10,6 @@ export async function GET(req: NextRequest) {
         await connectMongoDB();
         const url = new URL(req.url);
         const type = url.searchParams.get("type") || "month"; // Default to month-wise aggregation
-
         let groupBy;
         if (type === "day") {
             groupBy = { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } };
@@ -23,19 +22,20 @@ export async function GET(req: NextRequest) {
         }
 
         const financialStats = await Payment.aggregate([
+            { $match: { status: "completed" } }, // Only include completed transactions
             {
                 $group: {
                     _id: groupBy,
                     turnOver: { $sum: "$totalAmount" },
                     freelancerEarnings: { $sum: "$freelancerAmount" },
                     platformRevenue: { $sum: "$platformFee" },
-                    completedTransactions: { $sum: { $cond: [{ $eq: ["$status", "completed"] }, 1, 0] } },
+                    completedTransactions: { $sum: 1 },
                 }
             },
             { $sort: { "_id": 1 } }
         ]);
 
-        return NextResponse.json({ success: true, data: financialStats });
+        return NextResponse.json({ success: true, data: financialStats, type: type });
     } catch (error) {
         console.error("Error fetching financial statistics:", error);
         return NextResponse.json({ success: false, message: "Server error" }, { status: 500 });

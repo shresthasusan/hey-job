@@ -77,32 +77,33 @@ export async function GET(req: Request) {
     try {
         await connectMongoDB();
         const { searchParams } = new URL(req.url);
+        const userData = req.headers.get("user");
+        const userD = userData ? JSON.parse(userData) : null;
+
+
+        if (!userD || !userD.id) {
+            return NextResponse.json({ message: "Unauthorized: No user data" }, { status: 401 });
+        }
+        const userId = userD.id;
+
         const contractId = searchParams.get('contractId');
         const reviewerId = searchParams.get('reviewerId');
         const revieweeId = searchParams.get('revieweeId');
-        const recentReview = searchParams.get('recentReview');
         const user = searchParams.get('userId');
+        const recentReview = searchParams.get('recentReview');
+        const mode = searchParams.get('mode');
 
-        const userD = req.headers.get("user");
-       const userData = userD ? JSON.parse(userD) : null;
-
-
-    const userId = userData.id;
-
-        if (recentReview && userId) {
+        if (recentReview) {
             // Fetch the 3 most recent reviews for the user
             const recentReviews = await Review.find({ revieweeId: userId })
-                .sort({ createdAt: -1 })
-                .limit(3)
-                .populate('reviewerId', 'name'); // Populate reviewer details if needed
+                .sort({ createdAt: -1 }).select('rating comment')
+                .limit(4)
+                .populate('reviewerId', 'name lastName profilePicture'); // Populate reviewer name and lastName
 
             return NextResponse.json({ success: true, recentReviews }, { status: 200 });
         }
 
-        if (!recentReview && !user) {
-            if (!contractId || !reviewerId || !revieweeId) {
-                return NextResponse.json({ success: false, message: "Missing required fields" }, { status: 400 });
-            }
+        if (contractId && reviewerId && revieweeId) {
             const existingReview = await Review.findOne({ contractId, reviewerId, revieweeId });
 
             if (existingReview) {
@@ -110,11 +111,14 @@ export async function GET(req: Request) {
             } else {
                 return NextResponse.json({ success: true, reviewed: false }, { status: 200 });
             }
-        } else if (user) {
-            const userReviews = await User.findById(userId).select('reviews');
-            return NextResponse.json({ success: true, userReviews }, { status: 200 });
+
+        }
+        if (mode === 'freelancerRating') {
+            const userReviews = await FreelancerInfo.findOne({ userId: userId }).select('rating');
+            return NextResponse.json({ success: true, reviews: userReviews }, { status: 200 });
         } else {
-            return NextResponse.json({ success: false, message: "Missing required fields" }, { status: 400 });
+            const userReviews = await ClientInfo.findOne({ userId: userId }).select('rating');
+            return NextResponse.json({ success: true, reviews: userReviews }, { status: 200 });
         }
     } catch (error) {
         return NextResponse.json({ success: false, error: (error as Error).message }, { status: 500 });
