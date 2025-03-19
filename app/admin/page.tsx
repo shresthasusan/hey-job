@@ -4,6 +4,8 @@ import Charts from "../ui/admin-components/dashboard-charts/dashboard-charts";
 import FinancialHighlights from "../ui/admin-components/financial-stats";
 import { fetchWithAuth } from "../lib/fetchWIthAuth";
 import DashboardCharts from "../ui/admin-components/dashboard-charts/dashboardbelow-charts";
+import TurnOverCharts from "../ui/admin-components/dashboard-charts/dashboardbelow-charts";
+import DashboardSide from "../ui/admin-components/dashboard-charts/dashboardbelowside-chart";
 
 const Page = () => {
   return (
@@ -28,8 +30,9 @@ const Page = () => {
         {/* Financial Highlights Component */}
 
         {/* Additional Components */}
-        <div className="flex flex-col gap-6">
-          <DashboardCharts />
+        <div className="grid grid-cols-2 gap-6">
+          <TurnOverCharts />
+          <DashboardSide />
         </div>
       </div>
     </div>

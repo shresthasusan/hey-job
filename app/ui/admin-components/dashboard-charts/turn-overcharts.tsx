@@ -8,6 +8,9 @@ import { fetchWithAuth } from "@/app/lib/fetchWIthAuth";
 interface ChartData {
   _id: string;
   turnOver: number;
+  freelancerEarnings: number;
+  platformRevenue: number;
+  completedTransactions: number;
 }
 
 interface ChartProps {
@@ -21,12 +24,50 @@ const TurnOverChart = ({ timeframe }: ChartProps) => {
   useEffect(() => {
     async function fetchChartData() {
       setLoading(true);
-      const res = await fetchWithAuth(
-        `/api/admin/transcations-chart?timeframe=${timeframe}`
-      );
-      const data: ChartData[] = await res.json();
-      setChartData(data);
-      setLoading(false);
+      try {
+        const res = await fetchWithAuth(
+          `/api/admin/transcations-chart?type=${timeframe}`
+        );
+        const jsonResponse = await res.json();
+
+        console.log("API Response:", jsonResponse); // Debugging log
+
+        if (jsonResponse.success && Array.isArray(jsonResponse.data)) {
+          interface ApiResponse {
+            success: boolean;
+            data: ApiResponseData[];
+          }
+
+          interface ApiResponseData {
+            _id: string;
+            turnOver?: number;
+            freelancerEarnings?: number;
+            platformRevenue?: number;
+            completedTransactions?: number;
+          }
+
+          const formattedData: ChartData[] = (jsonResponse as ApiResponse).data
+            .map((item: ApiResponseData) => ({
+              _id: item._id, // Keep _id as a string date
+              turnOver: item.turnOver || 0,
+              freelancerEarnings: item.freelancerEarnings || 0,
+              platformRevenue: item.platformRevenue || 0,
+              completedTransactions: item.completedTransactions || 0,
+            }))
+            .sort(
+              (a, b) => new Date(a._id).getTime() - new Date(b._id).getTime()
+            ); // Sort by date
+
+          setChartData(formattedData);
+        } else {
+          setChartData([]); // Handle empty data
+        }
+      } catch (error) {
+        console.error("Error fetching chart data:", error);
+        setChartData([]);
+      } finally {
+        setLoading(false);
+      }
     }
 
     fetchChartData();
@@ -54,19 +95,21 @@ const TurnOverChart = ({ timeframe }: ChartProps) => {
           {/* Area Chart */}
           <AreaChart
             data={chartData}
-            categories={["turnOver"]}
+            categories={[
+              "turnOver",
+              "freelancerEarnings",
+              "platformRevenue",
+              "completedTransactions",
+            ]}
             index="_id"
-            colors={["blue"]}
+            colors={["blue", "emerald", "amber", "lime"]}
             yAxisWidth={50}
             title="Turn Over Metrics"
             xAxisLabel="Time"
             yAxisLabel="Amount"
           />
-          <p className="text-center flex gap-4 mt-6 text-sm">
-            <span className="text-blue-500">
-              Total Turnover: ${chartData[0]?.turnOver}
-            </span>
-          </p>
+
+          {/* Display Data as Text Below Chart */}
         </motion.div>
       )}
     </>

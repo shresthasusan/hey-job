@@ -2,8 +2,9 @@
 import React, { useState } from "react";
 import Card from "../../card";
 import TurnOverChart from "./turn-overcharts";
+import PaymentMethodsChart from "./method-chards-chart";
 
-const TurnOverCharts = () => {
+const DashboardSide = () => {
   const [querySelect, setQuerySelect] = useState<string>("month"); // Default to month
 
   return (
@@ -28,10 +29,10 @@ const TurnOverCharts = () => {
         </div>
 
         {/* Render Selected Chart */}
-        <TurnOverChart timeframe={querySelect} />
+        <PaymentMethodsChart timeframe={querySelect} />
       </Card>
     </div>
   );
 };
 
-export default TurnOverCharts;
+export default DashboardSide;
