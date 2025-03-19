@@ -1,14 +1,10 @@
+"use client";
 import { ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import UserProfile from "../user/profile/page";
 import UserProfileLoader from "../lib/userProfileLoader";
-
-// Define metadata for the app (Next.js 13+)
-export const metadata = {
-  title: "My App",
-  description: "A payment success application",
-};
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 
 interface RootLayoutProps {
   children: ReactNode;
@@ -31,7 +27,15 @@ export default function RootLayout({ children }: RootLayoutProps) {
       </div>
 
       {/* Page Content */}
-      {children}
+      <PayPalScriptProvider
+        options={{
+          clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "",
+          currency: "USD",
+          intent: "capture",
+        }}
+      >
+        {children}
+      </PayPalScriptProvider>
     </>
   );
 }

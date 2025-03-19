@@ -1,7 +1,9 @@
+"use client";
 import "./ui/globals.css";
 import { poppins } from "./ui/fonts";
 import AuthProvider from "./providers";
 import Appcontextprovider from "./context/appContext";
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 
 export default function RootLayout({
   children,
