@@ -76,11 +76,21 @@ export async function GET(req: Request) {
     try {
         await connectMongoDB();
         const { searchParams } = new URL(req.url);
+        const userData = req.headers.get("user");
+        const userD = userData ? JSON.parse(userData) : null;
+
+
+        if (!userD || !userD.id) {
+            return NextResponse.json({ message: "Unauthorized: No user data" }, { status: 401 });
+        }
+        const userId = userD.id;
+
         const contractId = searchParams.get('contractId');
         const reviewerId = searchParams.get('reviewerId');
         const revieweeId = searchParams.get('revieweeId');
-        const userId = searchParams.get('userId');
+        const user = searchParams.get('userId');
         const recentReview = searchParams.get('recentReview');
+        const mode = searchParams.get('mode');
 
         if (recentReview && userId) {
             // Fetch the 3 most recent reviews for the user
@@ -92,10 +102,7 @@ export async function GET(req: Request) {
             return NextResponse.json({ success: true, recentReviews }, { status: 200 });
         }
 
-        if (!userId) {
-            if (!contractId || !reviewerId || !revieweeId) {
-                return NextResponse.json({ success: false, message: "Missing required fields" }, { status: 400 });
-            }
+        if (contractId && reviewerId && revieweeId) {
             const existingReview = await Review.findOne({ contractId, reviewerId, revieweeId });
 
             if (existingReview) {
@@ -103,11 +110,14 @@ export async function GET(req: Request) {
             } else {
                 return NextResponse.json({ success: true, reviewed: false }, { status: 200 });
             }
-        } else if (userId) {
-            const userReviews = await User.findById(userId).select('reviews');
+
+        }
+        if (mode === 'freelancerRating') {
+            const userReviews = await FreelancerInfo.findOne({ userId: userId }).select('rating');
             return NextResponse.json({ success: true, reviews: userReviews }, { status: 200 });
         } else {
-            return NextResponse.json({ success: false, message: "Missing required fields" }, { status: 400 });
+            const userReviews = await ClientInfo.findOne({ userId: userId }).select('rating');
+            return NextResponse.json({ success: true, reviews: userReviews }, { status: 200 });
         }
     } catch (error) {
         return NextResponse.json({ success: false, error: (error as Error).message }, { status: 500 });
