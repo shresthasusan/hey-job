@@ -1,18 +1,23 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
+  CheckCircleIcon,
   CreditCardIcon,
+  ExclamationCircleIcon,
   ReceiptPercentIcon,
 } from "@heroicons/react/24/outline";
 import { handlePayment } from "../lib/handlePayment";
 import { fetchWithAuth } from "../lib/fetchWIthAuth";
+import { PayPalButtons } from "@paypal/react-paypal-js";
+import { createOrder, captureOrder } from "../actions/paypal";
 
 const paymentMethods = [
   { name: "esewa", color: "bg-green-500" },
   { name: "Khalti", color: "bg-purple-500" },
+  { name: "PayPal", color: "bg-blue-500" },
 ];
 
 const containerVariants = {
@@ -59,9 +64,48 @@ function Payment({
   contractId: string;
   userId: string;
 }) {
+  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const paypalRef = useRef(null);
+
+  const handleCreateOrder = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const orderId = await createOrder(contractId);
+      return orderId;
+    } catch (err) {
+      setError("Failed to create order. Please try again.");
+      console.error("Create order error:", err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCaptureOrder = async (data: any) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const orderData = await captureOrder(data.orderID);
+      setSuccess(`Payment completed! Order ID: ${data.orderID}`);
+      // Redirect to the success page with the appropriate parameters
+      router.push(
+        `/paymentBilling/success/${contractId}/${orderData.freelancerId}?method=paypal&amount=${billDetails.total}&code=${orderData.transaction_code}&transaction_id=${orderData.transcation_uuid}`
+      );
+      return;
+    } catch (err) {
+      setError("Payment failed. Please try again.");
+      console.error("Capture order error:", err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
   const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [billDetails, setBillDetails] = useState({
     basePrice: 0,
     serviceCharge: 0,
@@ -223,7 +267,7 @@ function Payment({
 
         <div className="mt-6">
           <AnimatePresence mode="sync">
-            {selectedMethod && (
+            {selectedMethod && selectedMethod !== "PayPal" && (
               <motion.div
                 className="w-full"
                 variants={buttonVariants}
@@ -247,6 +291,42 @@ function Payment({
                   </motion.span>
                 </button>
               </motion.div>
+            )}
+            {selectedMethod === "PayPal" && (
+              <>
+                {error && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-md flex items-start">
+                    <ExclamationCircleIcon className="h-5 w-5 text-red-500 mr-2 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <h3 className="font-medium text-red-800">Error</h3>
+                      <p className="text-sm">{error}</p>
+                    </div>
+                  </div>
+                )}
+                {success && (
+                  <div className="bg-green-50 border border-green-200 text-green-700 p-4 rounded-md flex items-start">
+                    <CheckCircleIcon className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <h3 className="font-medium text-green-800">Success</h3>
+                      <p className="text-sm">{success}</p>
+                    </div>
+                  </div>
+                )}
+
+                <div
+                  ref={paypalRef}
+                  className={
+                    loading ? "opacity-50 pointer-events-none mt-5" : ""
+                  }
+                >
+                  <PayPalButtons
+                    createOrder={handleCreateOrder}
+                    onApprove={handleCaptureOrder}
+                    style={{ layout: "vertical", shape: "rect" }}
+                    disabled={loading}
+                  />
+                </div>
+              </>
             )}
           </AnimatePresence>
         </div>

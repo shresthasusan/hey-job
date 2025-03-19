@@ -120,6 +120,11 @@ const PaymentSuccessContent = ({ contractId, freelancerId }: Props) => {
   const purchase_order_id = searchParams.get("purchase_order_id");
   const transaction_id = searchParams.get("transaction_id");
 
+  // PayPal specific parameters
+  const code = searchParams.get("code");
+
+  const isPayPal = method === "paypal";
+
   const [copied, setCopied] = useState<string | null>(null);
 
   const copyToClipboard = (text: string, field: string) => {
@@ -162,6 +167,16 @@ const PaymentSuccessContent = ({ contractId, freelancerId }: Props) => {
         const { data } = await response.json();
         console.log("Contract details fetched successfully:", data);
         setContractDetails(data);
+
+        if (isPayPal) {
+          // Set payment details with the contract price
+          setPaymentDetails({
+            transaction_code: code || "Unknown",
+            status: "Completed",
+            total_amount: total_amount || "0",
+            transaction_uuid: transaction_id || "Unknown",
+          });
+        }
       } catch (err) {
         console.error("Error fetching contract details:", err);
         setError(
@@ -184,7 +199,7 @@ const PaymentSuccessContent = ({ contractId, freelancerId }: Props) => {
     if (contractId && clientId) {
       fetchContractDetails();
     }
-  }, [contractId, clientId]);
+  }, [contractId, clientId, isPayPal, total_amount, code, transaction_id]);
 
   // Decode and parse the payment data
   useEffect(() => {
@@ -346,6 +361,9 @@ const PaymentSuccessContent = ({ contractId, freelancerId }: Props) => {
   };
 
   const formatCurrency = (amount: string | number) => {
+    if (isPayPal) {
+      return `$${typeof amount === "number" ? amount.toLocaleString() : amount}`;
+    }
     return `NPR ${typeof amount === "number" ? amount.toLocaleString() : amount}`;
   };
 

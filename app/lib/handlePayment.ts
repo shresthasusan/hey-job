@@ -100,7 +100,8 @@ export const handlePayment = async (
 
             // Redirect to Khalti payment URL
             window.location.href = data.khaltiPaymentUrl;
-        } else {
+        }
+        else {
             throw new Error(`Unsupported payment method: ${method}`);
         }
     } catch (error) {
