@@ -1,4 +1,3 @@
-// Adjust the import based on your project structure
 import Review from '@/models/projectindividualreview'; // Adjust the import based on your project structure
 import User from '@/models/user'; // Adjust the import based on your project structure
 import Contract from '@/models/contract'; // Adjust the import based on your project structure
@@ -30,17 +29,13 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ success: false, message: "Reviewee is neither a client nor a freelancer in this contract" }, { status: 400 });
         }
 
-
         // Fetch all completed contracts where the reviewee is either the client or the freelancer
         let completedContracts = [];
         if (isClient) {
             completedContracts = await Contract.find({ status: 'completed', clientId: revieweeId });
-
         } else if (isFreelancer) {
             completedContracts = await Contract.find({ status: 'completed', freelancerId: revieweeId });
-
         }
-
 
         // Calculate the average rating for the reviewee based on their role
         const allReviews = await Review.find({ revieweeId });
@@ -56,11 +51,7 @@ export async function POST(req: NextRequest) {
 
         const avgRating = totalReviews > 0 ? totalRating / totalReviews : 0;
 
-
-
         // Update the User document with the new average rating and review count
-
-
         if (isClient) {
             const clientInfo = await ClientInfo.findOne({ userId: revieweeId });
             if (clientInfo) {
@@ -75,12 +66,12 @@ export async function POST(req: NextRequest) {
             }
         }
 
-
         return NextResponse.json({ success: true, review: newReview }, { status: 201 });
     } catch (error) {
         return NextResponse.json({ success: false, error: (error as Error).message }, { status: 500 });
     }
 }
+
 export async function GET(req: Request) {
     try {
         await connectMongoDB();
@@ -89,6 +80,17 @@ export async function GET(req: Request) {
         const reviewerId = searchParams.get('reviewerId');
         const revieweeId = searchParams.get('revieweeId');
         const userId = searchParams.get('userId');
+        const recentReview = searchParams.get('recentReview');
+
+        if (recentReview && userId) {
+            // Fetch the 3 most recent reviews for the user
+            const recentReviews = await Review.find({ revieweeId: userId })
+                .sort({ createdAt: -1 })
+                .limit(3)
+                .populate('reviewerId', 'name'); // Populate reviewer details if needed
+
+            return NextResponse.json({ success: true, recentReviews }, { status: 200 });
+        }
 
         if (!userId) {
             if (!contractId || !reviewerId || !revieweeId) {
@@ -101,7 +103,6 @@ export async function GET(req: Request) {
             } else {
                 return NextResponse.json({ success: true, reviewed: false }, { status: 200 });
             }
-
         } else if (userId) {
             const userReviews = await User.findById(userId).select('reviews');
             return NextResponse.json({ success: true, reviews: userReviews }, { status: 200 });
