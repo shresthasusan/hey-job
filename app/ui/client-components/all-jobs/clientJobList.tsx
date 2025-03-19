@@ -25,6 +25,7 @@ interface Job {
   proposalCount: number
   fullName: string
   location: string
+  status: string
   createdAt: string
   budget: number
   tags: string[]
@@ -39,7 +40,7 @@ const AllJobsList: React.FC<AllJobsListProps> = ({ userId }) => {
   const [selectedJob, setSelectedJob] = useState<Job | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
-  const [sortBy, setSortBy] = useState("newest")
+  const [sortBy, setSortBy] = useState("active")
 
   useEffect(() => {
     if (userId) {
@@ -80,23 +81,16 @@ const AllJobsList: React.FC<AllJobsListProps> = ({ userId }) => {
   const filteredJobs = jobs
     .filter(
       (job) =>
+        (sortBy === "active" && job.status === "active") ||
+        (sortBy === "completed" && job.status === "completed") ||
+        (sortBy === "all" && job.status !== ""),
+    )
+    .filter(
+      (job) =>
         job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         job.description.toLowerCase().includes(searchTerm.toLowerCase()),
     )
-    .sort((a, b) => {
-      if (sortBy === "newest") {
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      } else if (sortBy === "oldest") {
-        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-      } else if (sortBy === "budget-high") {
-        return b.budget - a.budget
-      } else if (sortBy === "budget-low") {
-        return a.budget - b.budget
-      } else if (sortBy === "proposals") {
-        return b.proposalCount - a.proposalCount
-      }
-      return 0
-    })
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -145,11 +139,9 @@ const AllJobsList: React.FC<AllJobsListProps> = ({ userId }) => {
               onChange={(e) => setSortBy(e.target.value)}
               className="block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm rounded-md"
             >
-              <option value="newest">Newest First</option>
-              <option value="oldest">Oldest First</option>
-              <option value="budget-high">Highest Budget</option>
-              <option value="budget-low">Lowest Budget</option>
-              <option value="proposals">Most Proposals</option>
+              <option value="active">Active Jobs</option>
+              <option value="completed">Completed Jobs</option>
+              <option value="all">All Jobs</option>
             </select>
           </div>
         </div>
@@ -183,7 +175,7 @@ const AllJobsList: React.FC<AllJobsListProps> = ({ userId }) => {
             <button
               onClick={() => {
                 setSearchTerm("")
-                setSortBy("newest")
+                setSortBy("active")
               }}
               className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
             >
@@ -267,4 +259,3 @@ const AllJobsList: React.FC<AllJobsListProps> = ({ userId }) => {
 }
 
 export default AllJobsList
-

@@ -27,6 +27,7 @@ interface Job {
   createdAt: string;
   budget: number;
   tags: string[];
+  status: string;
   proposalCount: number;
 }
 
@@ -72,12 +73,14 @@ const ProjectCarousel: React.FC = () => {
           );
           const data = await response.json();
 
-          // Sort jobs by creation date in descending order
-          const sortedJobs = data.jobs.sort(
-            (a: Job, b: Job) =>
-              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-          );
-          setJobs(sortedJobs);
+          // Filter jobs with status 'active' and sort by creation date in descending order
+          const activeJobs = data.jobs
+            .filter((job: Job) => job.status === "active")
+            .sort(
+              (a: Job, b: Job) =>
+                new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            );
+          setJobs(activeJobs);
         } catch (error) {
           console.error("Error fetching jobs:", error);
         } finally {
