@@ -50,7 +50,7 @@ const TransactionsPage = () => {
 
 
   useEffect(() => {
-    fetchWithAuth("/api/admin/fetchalltransactions?alltransaction=true")
+    fetchWithAuth("/api/admin/fetchalltransactions")
       .then((response) => response.json())
       .then((data) => {
         const transactionsArray = Array.isArray(data.transactions) ? data.transactions : []
