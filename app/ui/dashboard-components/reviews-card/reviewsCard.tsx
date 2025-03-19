@@ -23,7 +23,7 @@ const ReviewsCard = () => {
     const fetchReviews = async () => {
       const response = await fetchWithAuth("/api/reviews?recentReview=true");
       const { recentReviews } = await response.json();
-      setRecentReviews(recentReviews);
+      setRecentReviews(recentReviews || []);
     };
     fetchReviews();
   }, []);
