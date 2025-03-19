@@ -92,12 +92,12 @@ export async function GET(req: Request) {
         const recentReview = searchParams.get('recentReview');
         const mode = searchParams.get('mode');
 
-        if (recentReview && userId) {
+        if (recentReview) {
             // Fetch the 3 most recent reviews for the user
             const recentReviews = await Review.find({ revieweeId: userId })
-                .sort({ createdAt: -1 })
-                .limit(3)
-                .populate('reviewerId', 'name'); // Populate reviewer details if needed
+                .sort({ createdAt: -1 }).select('rating comment')
+                .limit(4)
+                .populate('reviewerId', 'name lastName profilePicture'); // Populate reviewer name and lastName
 
             return NextResponse.json({ success: true, recentReviews }, { status: 200 });
         }
