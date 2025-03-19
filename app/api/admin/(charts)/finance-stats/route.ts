@@ -23,6 +23,7 @@ export async function GET(req: NextRequest) {
         }
 
         const topSpenders = await Payment.aggregate([
+            { $match: { status: "completed" } },
             {
                 $group: {
                     _id: "$clientId",
@@ -53,6 +54,7 @@ export async function GET(req: NextRequest) {
         ]);
 
         const topEarners = await Payment.aggregate([
+            { $match: { status: "completed" } },
             {
                 $group: {
                     _id: "$freelancerId",

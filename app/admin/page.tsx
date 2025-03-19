@@ -3,6 +3,7 @@ import "../ui/globals.css";
 import Charts from "../ui/admin-components/dashboard-charts/dashboard-charts";
 import FinancialHighlights from "../ui/admin-components/financial-stats";
 import { fetchWithAuth } from "../lib/fetchWIthAuth";
+import DashboardCharts from "../ui/admin-components/dashboard-charts/dashboardbelow-charts";
 
 const Page = () => {
   return (
@@ -28,7 +29,7 @@ const Page = () => {
 
         {/* Additional Components */}
         <div className="flex flex-col gap-6">
-          {/* Add any additional components here */}
+          <DashboardCharts />
         </div>
       </div>
     </div>
