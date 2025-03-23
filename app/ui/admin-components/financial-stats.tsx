@@ -52,7 +52,7 @@ const FinancialHighlights: React.FC = () => {
     <div className="mb-8">
       <div className="grid grid-cols-1 md:grid-cols-2  gap-6">
         {/* Top Spenders Card */}
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="bg-white rounded-lg shadow-md border border-primary-500 overflow-hidden">
           <div className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-2xl text-primary-500 font-semibold">
@@ -93,7 +93,7 @@ const FinancialHighlights: React.FC = () => {
         </div>
 
         {/* Top Earners Card */}
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="bg-white rounded-lg shadow-md border border-primary-500 overflow-hidden">
           <div className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-2xl font-semibold text-primary-500">
