@@ -1,14 +1,12 @@
 "use server";
 
 import { headers } from "next/headers";
-import { v4 as uuidv4 } from "uuid";
-import { fetchWithAuth } from "../lib/fetchWIthAuth";
 import { connectMongoDB } from "../lib/mongodb";
 import Contract from "@/models/contract";
 import Payment from "@/models/payment"; // Import the Payment model
 
 const PAYPAL_API_URL =
-    process.env.NODE_ENV === "production" ? "https://api-m.paypal.com" : "https://api-m.sandbox.paypal.com";
+    process.env.NODE_ENV === "production" ? "https://api-m.sandbox.paypal.com" : "https://api-m.sandbox.paypal.com";
 
 // Get access token from PayPal
 async function getPayPalAccessToken() {
