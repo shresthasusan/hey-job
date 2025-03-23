@@ -22,6 +22,7 @@ import Alert from "../alert";
 import { Appcontext } from "@/app/context/appContext";
 import proposal from "@/models/proposal";
 import { log } from "console";
+import UserProfileLoader from "@/app/lib/userProfileLoader";
 
 interface OfferFormProps {
   jobId: string;
@@ -226,6 +227,7 @@ const OfferForm = ({ jobId, freelancerId }: OfferFormProps) => {
   };
   return (
     <div className="w-full flex gap-10 flex-col">
+      <UserProfileLoader />
       <p className="text-left text-4xl font-medium">Make an Offer</p>
       {/* Display alert */}
       <FreelancerDetail freelancerId={freelancerId} />
