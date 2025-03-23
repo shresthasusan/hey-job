@@ -1,5 +1,4 @@
 import User from "@/models/user";
-import Session from "@/models/session";
 import { NextAuthOptions } from "next-auth";
 import { connectMongoDB } from "./mongodb";
 import CredentialsProvider from "next-auth/providers/credentials";
