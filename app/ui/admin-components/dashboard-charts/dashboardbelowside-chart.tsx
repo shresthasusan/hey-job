@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import Card from "../../card";
-import TurnOverChart from "./turn-overcharts";
 import PaymentMethodsChart from "./method-chards-chart";
 
 const DashboardSide = () => {
@@ -22,8 +21,8 @@ const DashboardSide = () => {
             className="border border-gray-300 bg-gray-50 rounded-md px-8 py-1 shadow-sm text-gray-700 focus:ring focus:ring-blue-300"
             name="querySelect"
           >
-            <option value="day">Day</option>
-            <option value="month">Month</option>
+            <option value="day">month</option>
+            <option value="month">day</option>
             <option value="year">Year</option>
           </select>
         </div>
