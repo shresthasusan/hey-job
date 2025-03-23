@@ -342,8 +342,8 @@ const ChatWindow: React.FC = () => {
             <Image
               src={
                 msg.sId === userData?.id
-                  ? userData.avatar || "/default-image.png"
-                  : chatUser.avatar || "/default-image.png"
+                  ? userData.avatar || "/images/image.png"
+                  : chatUser.avatar || "/images/image.png"
               }
               className={`object-cover h-16 w-16 mr-4 rounded-full`}
               alt="User avatar"
@@ -519,8 +519,8 @@ const ChatWindow: React.FC = () => {
                       <Image
                         src={
                           msg.sId === userData?.id
-                            ? userData.avatar || "/default-image.png"
-                            : chatUser.avatar || "/default-image.png"
+                            ? userData.avatar || "/images/image.png"
+                            : chatUser.avatar || "/images/image.png"
                         }
                         className={`${msg.attachment ? "hidden" : ""} object-cover h-8 w-8 rounded-full`}
                         alt="User avatar"
@@ -573,7 +573,7 @@ const ChatWindow: React.FC = () => {
                     {chatUser.username}
                   </div>
                   <Image
-                    src={chatUser.avatar || "/default-image.png"}
+                    src={chatUser.avatar || "/images/image.png"}
                     className="object-cover rounded-full"
                     alt="Group image"
                     width={200}
