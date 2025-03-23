@@ -48,7 +48,6 @@ export async function createOrder(contractId?: string) {
             throw new Error("Contract not found");
         }
 
-        amount = contract.price;
         const jobId = contract.jobId;
         const freelancerId = contract.freelancerId;
         const taxAmount = contract.price * 0.13; // 13% tax 
@@ -56,6 +55,7 @@ export async function createOrder(contractId?: string) {
         const clientAmount = parseFloat((contract.price + platformFee).toFixed(2)); // Amount paid by client
         const freelancerCut = contract.price * 0.10; // 10% cut from freelancer
         const freelancerAmount = contract.price - freelancerCut - taxAmount; // Amount to freelancer
+        amount = contract.price + platformFee;
 
         const accessToken = await getPayPalAccessToken();
         const headersList = headers();
