@@ -3,6 +3,7 @@ import { connectMongoDB } from "@/app/lib/mongodb";
 import Proposal from "@/models/proposal";
 import { getServerSession } from "next-auth";
 import Jobs from "@/models/jobs";
+import User from "@/models/user";
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
     const { id } = params;
@@ -16,10 +17,9 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
         const userData = req.headers.get("user");
         const user = userData ? JSON.parse(userData) : null;
-        if (!user.emailVerified) {
-
-
-            return NextResponse.json({ message: `Unauthorized email not verified` }, { status: 400 });
+        const userFromDB = await User.findById(id);
+        if (!userFromDB || !userFromDB.emailVerified) {
+            return NextResponse.json({ message: "Unauthorized: email not verified" }, { status: 400 });
         }
 
         const { jobId, bidAmount, coverLetter, duration, attachments } = await req.json();

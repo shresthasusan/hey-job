@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
             freelancerId: freelancer._id, // Include freelancer ID
             ...freelancer.toObject(),    // Include freelancer details
             saved: Saved ? true : false, // Set saved flag based on whether it's saved
-            profilePicture: user?.profilePicture || "/images/avatar.png", // Include profile picture
+            profilePicture: user?.profilePicture || "/images/image.png", // Include profile picture
           };
           return NextResponse.json({ freelancer: freelancerWithDetails });
 
@@ -50,7 +50,7 @@ export async function GET(req: NextRequest) {
           freelancerId: freelancer._id, // Include freelancer ID
           ...freelancer.toObject(),    // Include freelancer details
           saved: false,                // Default to false for individual fetch
-          profilePicture: user?.profilePicture || "/images/avatar.png", // Include profile picture
+          profilePicture: user?.profilePicture || "/images/image.png", // Include profile picture
         };
 
         return NextResponse.json({ freelancer: freelancerWithDetails });
@@ -64,7 +64,7 @@ export async function GET(req: NextRequest) {
       if (bestMatches) {
         // Fetch best match freelancers excluding current user
         const clientPrefferedIndustriesSkills = await clientinfo.findOne
-        ({ userId: userId }).select("industry prefferedSkills");
+          ({ userId: userId }).select("industry prefferedSkills");
 
         // Step 2: Construct a query to find matching freelancers
         const recommendedFreelancers = await FreelancerInfo.find({
@@ -73,9 +73,9 @@ export async function GET(req: NextRequest) {
           skills: {
             $in: [
               ...(clientPrefferedIndustriesSkills?.industry || []), // Match preferred skills
-              ...(clientPrefferedIndustriesSkills?.industry?.flatMap(industry => 
+              ...(clientPrefferedIndustriesSkills?.industry?.flatMap(industry =>
                 industrySkillsMapping[industry as keyof typeof industrySkillsMapping] || []) || []),
-                 // Match related industry skills
+              // Match related industry skills
             ]
           },
         });
@@ -122,7 +122,7 @@ export async function GET(req: NextRequest) {
           freelancerId: freelancer._id, // Include freelancer ID
           ...freelancer._doc,          // Include freelancer details
           saved: savedFreelancerIds.includes(freelancer.userId.toString()), // Check if saved
-          profilePicture: user?.profilePicture || "/images/avatar.png", // Include profile picture
+          profilePicture: user?.profilePicture || "/images/image.png", // Include profile picture
         };
       })
     );

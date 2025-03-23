@@ -22,7 +22,7 @@ const TurnOverCharts = () => {
             name="querySelect"
           >
             <option value="day">Day</option>
-            <option value="month">Month</option>
+            <option value="month">month</option>
             <option value="year">Year</option>
           </select>
         </div>

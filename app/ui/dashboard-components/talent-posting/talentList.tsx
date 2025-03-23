@@ -106,7 +106,7 @@ const FreelancerList = ({ bestMatches, savedFreelancers, query }: Props) => {
               <div className="flex gap-3 items-center">
                 <div className="rounded-full overflow-hidden w-[90px] h-[90px] flex items-center">
                   <Image
-                    src={freelancer.profilePicture}
+                    src={freelancer.profilePicture || "/images/image.png"}
                     alt="freelancer dp"
                     width={90}
                     height={90}

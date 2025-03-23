@@ -105,7 +105,7 @@ const KYCStatus: React.FC = () => {
     <div className="fixed top-[75px] z-[5] left-0 right-0 bg-yellow-500 text-white p-2 px-10 flex justify-between items-center">
       <span>
         Your KYC is not verified. Please complete your KYC verification.{" "}
-        <Link href={`/kyc-form/${session?.user.id}`} className="underline">
+        <Link href={`/kyc-form`} className="underline">
           Verify Now
         </Link>
       </span>
