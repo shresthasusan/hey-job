@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Contract from "@/models/contract";
 import Proposal from "@/models/proposal";
 import { connectMongoDB } from "@/app/lib/mongodb";
+import User from "@/models/user";
 
 
 export async function POST(req: NextRequest) {
@@ -28,13 +29,18 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ message: "User data is missing or invalid" }, { status: 400 });
         }
 
-        if (!user.emailVerified || !user.kycVerified) {
+        const userFromDB = await User.findById(user.id).select("emailVerified kycVerified").lean();
+        if (!userFromDB) {
+            return NextResponse.json({ message: "User not found" }, { status: 404 });
+        }
+
+        if (!userFromDB.emailVerified || !userFromDB.kycVerified) {
             const notVerified = [];
-            if (!user.emailVerified) {
-                console.log("Email Verified:", user.emailVerified); // Debugging
+            if (!userFromDB.emailVerified) {
+                console.log("Email Verified:", userFromDB.emailVerified); // Debugging
                 notVerified.push("email");
             }
-            if (!user.kycVerified) notVerified.push("KYC");
+            if (!userFromDB.kycVerified) notVerified.push("KYC");
 
             return NextResponse.json({ message: `Unauthorized: ${notVerified.join(" and ")} not verified relogin if you've submitted` }, { status: 400 });
         }
