@@ -12,7 +12,7 @@ const DashboardSide = () => {
         {/* Chart Header */}
         <div className="flex justify-between items-center">
           <h1 className="px-8 font-medium text-primary-600 text-lg">
-            Financial Analytics
+            Payment Methods Analytics
           </h1>
           {/* Dropdown for Time Frame Selection */}
           <select
