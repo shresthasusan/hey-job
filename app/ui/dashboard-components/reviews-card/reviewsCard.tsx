@@ -29,11 +29,36 @@ const ReviewsCard = () => {
     fetchReviews();
   }, []);
 
-  const truncateString = (str: string, num: number) => {
-    if (str.length <= num) {
-      return str;
-    }
-    return str.slice(0, num) + "... ";
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await fetchWithAuth("/api/reviews?recentReview=true");
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("Fetched data:", data);
+
+        // Extract the correct array of reviews
+        if (data && Array.isArray(data.recentReviews)) {
+          setReviews(data.recentReviews);
+        } else {
+          console.error("Unexpected response format:", data);
+          setError("Unexpected data format received.");
+        }
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+        setError("Unable to load reviews. Please try again later.");
+      }
+    };
+
+    fetchReviews();
+  }, []);
+
+  const toggleExpand = (id: string) => {
+    setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
   const handleNext = () => {
@@ -51,6 +76,10 @@ const ReviewsCard = () => {
   };
 
   const visibleReviews = recentReviews.slice(currentIndex, currentIndex + 2);
+
+  function truncateString(arg0: string, arg1: number): import("react").ReactNode {
+    throw new Error("Function not implemented.");
+  }
 
   return (
     <div className="flex flex-col max-w-[600px] w-[40%] min-w-[250px] gap-2 relative rounded-3xl h-[250px] px-5 py-2 overflow-hidden shadow-[0_10px_20px_rgba(228,228,228,_0.7)]">

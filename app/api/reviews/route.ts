@@ -73,6 +73,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: Request) {
+
     try {
         await connectMongoDB();
         const { searchParams } = new URL(req.url);
