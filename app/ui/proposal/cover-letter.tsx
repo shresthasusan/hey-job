@@ -11,6 +11,7 @@ interface CoverLetterProps {
   setFiles: (files: File[]) => void;
 }
 
+
 const CoverLetter = ({
   coverLetter,
   setCoverLetter,
