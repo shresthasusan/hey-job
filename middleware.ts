@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
-import { authenticateToken } from "./app/lib/authorizationMiddleware";
+import {NextRequest, NextResponse} from "next/server";
+import {getToken} from "next-auth/jwt";
+import {authenticateToken} from "./app/lib/authorizationMiddleware";
 
 
 export async function middleware(req: NextRequest) {
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  const token = await getToken({req, secret: process.env.NEXTAUTH_SECRET});
   const pathname = req.nextUrl.pathname;
 
   // Define routes
@@ -63,8 +63,8 @@ export async function middleware(req: NextRequest) {
 
     if (!authTokenMiddleware?.user) {
       return NextResponse.json(
-        { error: authTokenMiddleware?.error || "Authentication required" },
-        { status: 401 }
+        {error: authTokenMiddleware?.error || "Authentication required"},
+        {status: 401}
       );
     }
 
@@ -72,8 +72,8 @@ export async function middleware(req: NextRequest) {
 
     if (pathname.startsWith('/api/admin/super-admin') && authTokenMiddleware.user.role !== "superadmin") {
       return NextResponse.json(
-        { error: "Unauthorized: Superadmin role required" },
-        { status: 403 }
+        {error: "Unauthorized: Superadmin role required"},
+        {status: 403}
       );
     }
 
@@ -102,9 +102,9 @@ export async function middleware(req: NextRequest) {
   // 2. Redirect unauthenticated users trying to access user-protected routes to login
   if (!token && !isAuthPage && !isAdminAuthPage) {
     if (pathname.startsWith("/api")) {
-      return new NextResponse(JSON.stringify({ error: "Unauthorized" }), {
+      return new NextResponse(JSON.stringify({error: "Unauthorized"}), {
         status: 401,
-        headers: { "Content-Type": "application/json" },
+        headers: {"Content-Type": "application/json"},
       });
     }
     return NextResponse.redirect(
@@ -113,14 +113,14 @@ export async function middleware(req: NextRequest) {
   }
 
   // 3. Redirect unauthenticated users trying to access admin panel to admin login
-  if (isAdminPanel && (!token || token.role !== "admin")) {
-    return NextResponse.redirect(
-      new URL(
-        `/admin/login?callbackUrl=${encodeURIComponent(req.url)}`,
-        req.url
-      )
-    );
-  }
+  // if (isAdminPanel && (!token || token.role !== "admin")) {
+  //   return NextResponse.redirect(
+  //     new URL(
+  //       `/admin/login?callbackUrl=${encodeURIComponent(req.url)}`,
+  //       req.url
+  //     )
+  //   );
+  // }
 
 
 
@@ -130,12 +130,12 @@ export async function middleware(req: NextRequest) {
   }
 
   // 5. Handle API routes
-  if (pathname.startsWith("/api/admin") && (!token || token.role !== "admin")) {
-    return new NextResponse(JSON.stringify({ error: "Unauthorized" }), {
-      status: 401,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
+  // if (pathname.startsWith("/api/admin") && (!token || token.role !== "admin")) {
+  //   return new NextResponse(JSON.stringify({ error: "Unauthorized" }), {
+  //     status: 401,
+  //     headers: { "Content-Type": "application/json" },
+  //   });
+  // }
 
   // 7. If none of the above conditions are met, proceed with the request
   return NextResponse.next();
