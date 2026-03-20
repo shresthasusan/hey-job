@@ -61,7 +61,7 @@ const OrderCard = ({ mode }: Props) => {
         </div>
 
         {/* Completed Orders with Green Background */}
-        <div className="bg-success-400 text-sucess-600 relative rounded-3xl p-[3px] pl-10">
+        <div className="bg-success-400 text-green-600 relative rounded-3xl p-[3px] pl-10">
           <p>{completeCount} Completed</p>
           <CheckBadgeIcon className="h-4 w-5 absolute -translate-y-[50%]  left-3 top-1/2 " />
         </div>
